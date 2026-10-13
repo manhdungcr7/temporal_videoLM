@@ -18,6 +18,7 @@ Mục tiêu của repo là để người khác clone về rồi tự tiếp t�
 ## Mục lục
 
 0. [Tóm tắt một trang](#0-tóm-tắt-một-trang)
+- **0A. [Trạng thái hiện tại, phương pháp đang xây dựng và việc làm tiếp (cập nhật 13/10/2026 tối)](#0a-trạng-thái-hiện-tại-phương-pháp-đang-xây-dựng-và-việc-làm-tiếp)** ← **đọc phần này trước**
 1. [Bài toán và thiết lập](#1-bài-toán-và-thiết-lập)
 2. [Cấu trúc repo](#2-cấu-trúc-repo)
 3. [Cách chạy lại](#3-cách-chạy-lại)
@@ -50,11 +51,142 @@ Mục tiêu của repo là để người khác clone về rồi tự tiếp t�
 - Kết quả CMTB: **52,9 → 94,1** (pilot), **73,1 → 92,3 = oracle** (held-out) (J8).
 - Bước tìm mốc đi theo câu hỏi với **cả âm thanh không phải lời nói** (chuông, bíp, huýt sáo: đúng 86–91%; attention thô chỉ 7%) (J9).
 
-**Còn mở:**
+**Còn mở** *(tình hình mới nhất và việc làm tiếp: xem mục 0A)*:
 - TA chưa cải thiện trong cách làm một lượt.
 - TF cần suy luận có chủ ý. Pipeline đầy đủ J11 đang được đánh giá.
 - Cần làm cho phương pháp chạy **trong một lượt** (thử đầu tiên: áp bias từ lớp 21 thì quá muộn, phải từ lớp 13).
 - Cần chứng minh **tổng quát** trên mô hình và benchmark khác.
+
+---
+
+## 0A. Trạng thái hiện tại, phương pháp đang xây dựng và việc làm tiếp
+
+*(cập nhật tối 13/10/2026. Mục 0 ở trên là tóm tắt của giai đoạn trước; mục này là tình hình mới nhất. Chi tiết số liệu ở mục 4.15–4.22.)*
+
+### 0A.1 Mục tiêu của paper và các ràng buộc (nguyên văn yêu cầu của nhóm)
+
+- **Bài toán:** phương pháp giúp mô hình xác định đúng **thời gian diễn ra các sự kiện** trong video và **hiểu thật sự thứ tự trước–sau**,
+  tốt cho **nhiều ngữ cảnh**. Nếu đổi cách hỏi hoặc đổi sang bối cảnh khác mà làm sai thì chắc chắn không được nhận. SVHalluc
+  chỉ là *một* benchmark để chứng minh bằng thực nghiệm.
+- **Phương pháp phải:** hoàn toàn mới; đơn giản (kiểu LayerNorm / residual); dùng cho mọi video LM; **tự động hoàn toàn** (không
+  định tuyến theo tên task, không chọn tay theo mẫu); ưu tiên can thiệp **trong mô hình** (attention / Q-former) hơn là ASR;
+  âm thanh có thể không phải lời nói (tiếng chó sủa…), và **cảnh** cũng tính như âm thanh.
+- **Quy trình do nhóm đặt ra:** nghiên cứu trước, chứng minh hiệu quả **trước khi huấn luyện**; huấn luyện chỉ ở mức nhẹ (tối đa khoảng
+  một phiên Kaggle T4×2). Thử trên vài mẫu SVHalluc trước; **chỉ khi gần 100%** mới chạy SVHalluc đầy đủ, rồi benchmark và mô hình khác.
+  **Không chạy full benchmark** (kể cả baseline chính thức J4) khi chưa có phương pháp. `nb12` (J10 held-out) và seed `1234`
+  giữ lại cho lần xác nhận cuối.
+
+### 0A.2 Những phát hiện mới nhất (đã kiểm chứng)
+
+| # | Phát hiện | Số liệu | Mục |
+|---|---|---|---|
+| 1 | Thời điểm của **mốc nổi bật** (lời nói) đã nằm sẵn trong mô hình; thời điểm của **một hành động cụ thể** thì không | Có **31–141 trên 576 head** chỉ đúng chunk có tiếng nói (kiểm chéo: 0,91–1,00 so với ngẫu nhiên 0,52); **0 head** chỉ đúng nửa video có sự kiện hình ảnh (0,44–0,56 so với 0,50) | 4.20 |
+| 2 | Mù thứ tự **không riêng SVHalluc** | Daily-Omni Event Sequence: đảo ngược video chỉ đổi 35% đáp án, độ chính xác 50 → 41,7 | 4.18 |
+| 3 | Mô-đun A (định tuyến attention) **gây hại ngoài SVHalluc** | Daily-Omni, n=220: 66,4 → 54,5 | 4.17 |
+| 4 | Câu hỏi TA/TF **không nhắc gì tới hành động** ("the narrated event"), nên tìm sự kiện là bài toán **hai bước** (câu hỏi → nội dung lời nói → chunk hình ảnh khớp). Quan hệ một bước câu hỏi → prompt hình không thể đúng | Giải thích kết quả mục 1 | 4.20 |
+| 5 | Prompt ghi kiểu "…content of chunk t is" chỉ mang **định dạng**; prompt kiểu "…in one word:" mang **nội dung thật** | Token dự đoán kế tiếp: `: " . that` ở mọi chunk, so với `Ingredients / Cooking / Stir / Wr(ap)…` | 4.20 |
+| 6 | Thêm khối prompt dài làm mô hình **dồn về một đáp án**: TA → "Yes", TF → "Present". Phần "tăng" độ chính xác chỉ là hiệu ứng của mẫu | Xem bảng theo (task, đáp án đúng) ở 4.16 | 4.16 |
+| 7 | Đặt prompt ngay sau chunk của nó gây thiên lệch về chunk cuối (RoPE) | Tương quan relevance–t: −0,15 (vị trí chung) so với +0,82 (đặt theo thời gian) | 4.15 |
+| 8 | Chỉ huấn luyện m embedding dò (mô hình đóng băng) học được một phần nội dung chunk, chưa đủ | KL 0,78 → 0,48; khớp token 65 → 73% | 4.19 |
+
+### 0A.3 Phương pháp đang xây dựng: **chunk prompts + attention tăng cường theo độ liên quan** ("CQ")
+
+**Đặc tả (do bạn trong nhóm đề xuất):**
+1. Mỗi chunk 2 s (một chunk TMRoPE) có **hai prompt dò**: `The essential visual content of chunk t in one word:` (chỉ nhìn **hình** của chunk t) và
+   `The essential audio content of chunk t in one word is:` (chỉ nhìn **tiếng** của chunk t); t = 1…n. Gọi là C_{t,v} và C_{t,a}.
+   Các prompt **không thấy nhau và không thấy câu hỏi**; chỉ phần câu hỏi/đáp án mới thấy được các prompt.
+2. **Vị trí:** mọi prompt cùng position (như thể mỗi prompt đứng ngay trước câu hỏi), tức bắt đầu từ p0 = ngay sau media; câu hỏi nằm ở p0 + độ dài prompt dài nhất.
+   *(Đã thử thêm biến thể "prompt đặt ngay sau chunk của nó" (mục 4.15); nhóm chọn lại vị trí chung.)*
+3. **Ba điều kiện so sánh** (cùng một lượt chấm xoay thứ tự đáp án):
+   - `cq`: có prompt, attention bình thường;
+   - `cq_boost_p`: tăng attention của token câu hỏi/đáp án vào các prompt liên quan;
+   - `cq_boost_pr`: như trên **và** tăng cả vào **token thô** (video hoặc audio) của chunk và modality tương ứng.
+4. **Độ liên quan:** mỗi layer, mỗi head, mỗi token câu hỏi/đáp án lấy **attention của nó tới token cuối của mỗi prompt** (chữ "is" hoặc dấu `:`).
+   Bias cộng vào logit attention: `λ · log(r / max r)` (λ = 2). Prompt liên quan nhất giữ nguyên trọng số; prompt khác bị đẩy xuống. Tính **riêng cho từng head**.
+
+**Cài đặt:** `repo/kaggle/jobs/j12_chunk_prompts.py` (hàm attention tuỳ biến `cq_attention` được thay vào `ALL_ATTENTION_FUNCTIONS['sdpa']` trong lúc chạy; mask + position ids tự dựng như `j8_acar.Lay`).
+Chạy trên server bằng `server_jobs/build_server_job.py` (mục 3.3). Kết quả: `results/j12*.jsonl`.
+
+**Kết quả hiện tại (chưa đạt):**
+
+| Lần chạy | n | base | cq | cq_boost_p | cq_boost_pr |
+|---|---|---|---|---|---|
+| J12 (prompt "…is", vị trí chung) | 11 | 36,4 | 54,5 | 63,6 | 63,6 |
+| J12d (prompt "…in one word:", vị trí chung) | 28 | 35,7 | 42,9 | 39,3 | 42,9 |
+| J12b (chỉ TF, prompt đặt ngay sau chunk) | 10 | 30,0 | 30,0 | 30,0 | 40,0 |
+
+**Vì sao con số trên không đáng tin (kết luận quan trọng nhất):** tách J12d theo (task, đáp án đúng) cho thấy "tăng" là do mô hình **dồn về một đáp án**:
+
+| Task | Đáp án đúng | n | base | cq | cq_boost_p | cq_boost_pr |
+|---|---|---|---|---|---|---|
+| TA | A (Yes) | 4 | 1/4 | **4/4** | **4/4** | **4/4** |
+| TA | B (No) | 4 | 3/4 | **0/4** | **0/4** | **0/4** |
+| TF | A (Past) | 4 | 1/4 | 0/4 | 0/4 | 0/4 |
+| TF | B (Present) | 4 | 1/4 | 3/4 | 3/4 | **4/4** |
+| TF | C (Future) | 2 | 1/2 | 0/2 | 0/2 | 0/2 |
+| CMTB | A | 3 | 1/3 | 2/3 | 2/3 | 2/3 |
+| CMTB | B | 3 | 1/3 | 0/3 | 0/3 | 0/3 |
+| CMTB | C | 4 | 1/4 | 3/4 | 2/4 | 2/4 |
+
+Với CQ, mô hình chọn **A (Yes) ở 8/8 câu TA** và **B (Present) ở 9–10/10 câu TF**. Điểm đã cộng qua mọi cách xoay phương án, nên đây không phải thiên lệch vị trí chữ cái.
+Cùng hiện tượng ở J12 cũ (TA đáp `AAA`, TF `BBB`) và J12b (TF `BBBCBBBBBB`).
+
+**Giả thuyết về nguyên nhân (CHƯA tách):**
+- (a) Khối prompt là câu **thì hiện tại** ("…is…") đứng ngay trước câu hỏi, mà ta đã biết thì của câu điều khiển TF (nhân quả, mục 4.8) → thử prompt thì quá khứ.
+- (b) Văn bản dài chen giữa video và câu hỏi khiến mô hình trả lời từ văn bản → thử prompt có mặt nhưng giữ nguyên chữ mà **che hết media**.
+- (c) Câu hỏi đọc được prompt → thử che cho **câu hỏi không nhìn thấy prompt**; nếu kết quả về lại base thì lệch đến từ việc đọc prompt.
+
+**Relevance chưa chỉ đúng chunk sự kiện (J13):** xem 4.20. Prompt "one word" đã có nội dung thật nhưng câu hỏi vẫn không tìm được prompt hình đúng (0/576 head). Lý do có khả năng cao: **hai bước** (phát hiện 4 ở bảng trên).
+
+### 0A.4 Các ứng viên khác (cùng đang được cân nhắc)
+
+| Ứng viên | Tình trạng | Ghi chú |
+|---|---|---|
+| **Mô-đun A** (định tuyến attention theo mốc, 1 lượt) | CMTB 47 → 79 (P2), 53 → 94 (J8); gây hại ở Daily-Omni (P4) | Cần công tắc tự động; chỉ giải "lúc đó thấy gì" |
+| **Soi cô lập từng vùng + đọc theo quy tắc** (P5) | 44 → 77 (n=70) | Cơ chế đúng; bước đọc ra nặn theo đề, không tổng quát |
+| **Token dò có huấn luyện nhẹ** (T1, đề xuất của nhóm) | Giai đoạn 1 xong (mục 4.19) | Giai đoạn 2 (nhãn thứ tự tự sinh) chưa làm; xem 8.4 |
+| **Pipeline kiểu con người J11 / STMR** | dev2: base 34,1 → CoT 73,2 (TF 81,2) | Nhiều bước, chậm; là baseline mạnh |
+| SLA (ghi "đã nhìn lúc nào" vào residual) | **Đã bỏ** | Tiền đề sai (mốc đã nằm trong residual, đích thì không tìm được) |
+
+### 0A.5 Việc nên làm tiếp (theo thứ tự ưu tiên)
+
+1. **Tách nguyên nhân "dồn về một đáp án"** (3 điều kiện ở 0A.3): prompt thì quá khứ; prompt che media; câu hỏi bị che không đọc prompt.
+   Báo kết quả **theo (task, đáp án đúng)**. Dùng ≥ 30 câu cân bằng đáp án, seed 777 hoặc 4242 (không dùng 2468 đã dùng để thiết kế).
+2. **Đo relevance theo từng token câu hỏi** thay vì trung bình. Các câu SVHalluc là template cố định, nên chấm riêng từng bộ ba (từ, layer, head). Sửa `j13_relevance_heads.py` để ghi từng token.
+3. **Phép đo hai bước, không huấn luyện:** dùng các head tìm tiếng nói (J13) để lấy chunk có tiếng nói; sinh vài từ từ prompt audio; so với prompt visual
+   của từng chunk (embedding hoặc attention); kiểm tra chunk khớp nhất có rơi vào nửa video có sự kiện nhiều hơn 50% không. Đo offline trên 35 câu của J13d.
+4. Nếu 2–3 không cho tín hiệu: **huấn luyện nhẹ** prompt (T1 giai đoạn 2, 8.4).
+5. Khi đã có phương pháp: kiểm tra **diễn đạt lại câu hỏi**, rồi **seed held-out `1234` một lần**, rồi benchmark khác (Daily-Omni, TempCompass, NExT-QA, TVBench, Charades-STA) và mô hình khác (Qwen2.5-Omni-7B…).
+6. (Tuỳ chọn) chạy hết phần còn dang dở của T2 (39 câu) và P4 (20 câu) nếu cần số cuối.
+
+### 0A.6 Quy tắc làm việc (để khỏi làm lại cái sai)
+
+- **Luôn báo theo (task, đáp án đúng)** hoặc độ chính xác cân bằng. Mô hình dồn về một đáp án rất dễ, và một tỉ lệ tổng gộp che chuyện đó.
+- **Đừng kết luận từ dưới ~30 câu.** Các bảng ở mục 0A.3 chỉ có 10–28 câu: khác nhau 1–2 câu là nhiễu.
+- Chọn head, siêu tham số, ngưỡng trên **một seed**, đo trên **seed khác**. Seed `1234` là held-out, chỉ dùng một lần.
+- Phương pháp **không được dựa vào tên task** hay vào dạng câu hỏi của benchmark; phải làm được cho câu hỏi mở và cho mọi video LM.
+- **Bảo mật:** không commit `remote_config*.json` (URL + token server), token Kaggle hay HuggingFace. `.gitignore` đã chặn.
+
+### 0A.7 Cách chạy lại các thí nghiệm gần nhất
+
+```bash
+# 1. Build job cho server (từ thư mục gốc của repo). Chia 2 nửa cho 2 server:
+python server_jobs/build_server_job.py j12 /tmp/j12_s0.py --shard 0/2 --prompts oneword --out-name j12d_oneword.jsonl
+python server_jobs/build_server_job.py j12 /tmp/j12_s1.py --shard 1/2 --prompts oneword --out-name j12d_oneword.jsonl
+python server_jobs/build_server_job.py j13 /tmp/j13.py --decode --out-name j13d_oneword.jsonl     # relevance theo head + token dự đoán
+
+# 2. Gửi lên server (xem 3.3 để dựng server). Sau mỗi (re)start server phải chạy fix_ffmpeg trước:
+REMOTE_CFG=remote_config5.json python remote_client.py run remote_tests/fix_ffmpeg.py
+REMOTE_CFG=remote_config5.json python remote_client.py run /tmp/j12_s0.py --name j12d0 --nowait
+REMOTE_CFG=remote_config5.json python remote_client.py status <job_id>
+REMOTE_CFG=remote_config5.json python remote_client.py get j12d_oneword.jsonl results/j12d_oneword_s0.jsonl
+
+# 3. Phân tích relevance theo head (file lớn đã nén .gz):
+gunzip -k results/j13d_oneword.jsonl.gz
+python remote_tests/analyze_j13.py results/j13d_oneword.jsonl
+```
+Một vài lưu ý: mỗi câu mất khoảng 1–2 phút (clip ≤ 42 s; clip dài hơn bị bỏ, nên 16 mẫu chỉ còn khoảng 11); phiên Kaggle hết sau ~12 h, hãy tải kết quả về thường xuyên.
+Ba server (4, 5, 6) đang **rảnh**; các kết quả dang dở của T2 và P4 đã lưu ở `results/`.
 
 ---
 
@@ -120,8 +252,16 @@ temporal_videoLM/
 │   │   ├── job_utils.py          ← lấy mẫu cân bằng, chấm điểm (≤4 lựa chọn), tạo clip biến thể, vòng lặp có resume + hạn giờ
 │   │   ├── j1_event_perception.py … j11_full.py   ← từng thí nghiệm (mô tả trong docstring đầu file)
 │   │   ├── j4_official_protocol.py ← tái lập protocol của bài báo (CHƯA chạy, để dành)
-│   │   └── inpass.py             ← mô-đun A: tự định tuyến trong 1 lượt (đang debug)
+│   │   ├── inpass.py             ← mô-đun A: tự định tuyến trong 1 lượt
+│   │   ├── p1_two_pointer.py, p2_inpass_eval.py, p4_dailyomni_onepass.py, p5_isolate_verify.py, p6_focused_search.py
+│   │   │                         ← loạt P (chỉ chạy trên server, chưa có notebook): hai con trỏ, định tuyến 1 lượt, Daily-Omni, soi cô lập, tìm kiếm tập trung
+│   │   ├── t1_probe_distill.py   ← T1: chưng cất cho m embedding dò (chỉ học embedding, mô hình đóng băng)
+│   │   ├── t2_order_blindness.py ← T2: mù thứ tự trên Daily-Omni (đảo ngược / đổi chỗ hai nửa video)
+│   │   ├── j12_chunk_prompts.py  ← J12: chunk prompts + attention tăng cường theo độ liên quan (phương pháp đang xây dựng)
+│   │   └── j13_relevance_heads.py ← J13: đo relevance theo từng head / layer, kèm token dự đoán tại cuối mỗi prompt
 │   └── nb*.ipynb                 ← notebook đã build sẵn
+│
+├── server_jobs/build_server_job.py ← ghép job + helper thành MỘT file để chạy trên server từ xa; có --shard để chia việc cho nhiều server
 │
 ├── kaggle_gpu_server.py, build_kaggle_gpu_server_notebook.py
 │                                 ← server GPU trên Kaggle (HTTP + ngrok) để chạy job từ xa
@@ -193,6 +333,9 @@ temporal_videoLM/
    python remote_client.py upload <local> <rel>                    # -> OUT/uploads/<rel>
    ```
 4. Muốn chạy một job trong `repo/kaggle/jobs` trên server, ghép file theo thứ tự: `time_left = lambda: 10**9` + **khai báo tường minh `PER_LABEL`, `SEED`** + `job_utils.py` + (nếu cần) phần helper của `j8_acar.py` + file job. Xem mục 9 để biết vì sao.
+   **Đã có sẵn công cụ ghép:** `python server_jobs/build_server_job.py <j12|j13|plain> OUT.py [...]` (docstring đầu file giải thích tham số: `--shard K/N`, `--prompts oneword|is`, `--per-label`, `--seed`, `--tasks`, `--out-name`; với job không cần helper j8: `plain --job-file <file>`). Ví dụ đầy đủ ở mục 0A.7.
+5. **Chia việc cho nhiều server:** build mỗi nửa với `--shard 0/2` và `--shard 1/2`, gửi lên hai server, rồi ghép hai file kết quả theo `idx`. Job có resume theo `idx`, nên chạy lại cùng file không làm lại câu đã xong.
+6. **Dừng một job trên server:** dùng `python remote_client.py restart` (kết thúc luôn job đang chạy). Hãy tải kết quả dang dở về trước. Sau restart phải chạy lại `remote_tests/fix_ffmpeg.py`.
 
 ### 3.4 Chạy thử / debug trên máy yếu (1 mẫu)
 - Dùng `repo/kaggle/jobs/nb_runner.py` với các biến `LAB_*` ở trên, ví dụ:
@@ -224,7 +367,13 @@ Các hàm sẵn có:
 | `stmr_*` | Pipeline văn bản STMR |
 | `local_text_tests/` | Trần suy luận bằng văn bản, TF bridge (local) |
 | `j1/`, `j4/`, `j5/` (`attn_j5/*.npz`), `j7p/`, `j7h/`, `j8p/`, `j8h/`, `j9/` | Notebook Kaggle J1–J9 |
-| `j11_dev2_v1.jsonl`, `j11v2_dev2_partial.jsonl` | J11 trên server (dev2) |
+| `j11_dev2_v1.jsonl`, `j11v2_dev2_partial.jsonl`, `j11v2_dev2.jsonl`, `j10p/`, `j11p/` | J10 / J11 (pilot Kaggle, dev2 trên server) |
+| `p1_two_pointer.jsonl`, `p2_inpass.jsonl`, `p5_isolate_verify.jsonl`, `p6_focused_search.jsonl`, `p6v2_focused_search.jsonl` | Loạt P (mục 4.17) |
+| `p4_dailyomni_partial.jsonl` | P4: mô-đun A trên Daily-Omni, 220/240 câu (mục 4.17) |
+| `t1_probe_distill.json`, `t1_probes.pt` | T1: chưng cất embedding dò (mục 4.19) |
+| `t2_order_blindness_partial.jsonl` | T2: mù thứ tự, 81/120 câu (mục 4.18) |
+| `j12_chunk_prompts.jsonl`, `j12b_tf_aligned.jsonl`, `j12d_oneword_s0/s1.jsonl` | J12 chunk prompts (mục 4.15–4.16). `s0`/`s1` là hai nửa chạy trên hai server, ghép theo `idx` |
+| `j13_relevance_heads.jsonl.gz`, `j13b_relevance_full.jsonl.gz`, `j13d_oneword.jsonl.gz` | J13 relevance theo head (mục 4.20). Giải nén bằng `gunzip -k`. Các khoá: `last` / `mean` = [layer, head, prompt] |
 
 Hidden state lớn của J1/J4 (`hidden_j1`, `hidden_j4`, khoảng 130 MB) không được đưa lên. Chạy lại nb1/nb4 sẽ có lại.
 
@@ -403,6 +552,95 @@ Phân tích lỗi: **mọi câu sai đều chọn đúng đoạn** (đoạn liê
 - **v1** có 3 lỗi: cửa sổ mốc quá hẹp; ghi "thấy" cho lựa chọn không hề được thấy; câu nói thầm lẫn rác.
 - **v2 đã sửa:** cửa sổ = đỉnh PMI, mở rộng theo attention thô ≥ 0,3·max (IoU 0,50 → 0,83 trên 119 câu); chỉ ghi "thấy" khi điểm dương; chỉ giữ câu đầu của câu nói thầm.
 - **Giữa chừng trên dev2 (n=24):** base 37,5 / acar 54,2 / một bước 54,2 / CoT 66,7. CMTB: CoT 70 thấp hơn acar 80.
+- **Kết quả cuối trên dev2:** base 34,1 → CoT 73,2 (TF 81,2). File `results/j11v2_dev2.jsonl`.
+
+### 4.15 J12: chunk prompts (đặc tả của nhóm), prompt "…is" (n=11) và biến thể đặt vị trí
+Prompt: `The essential visual/audio content of chunk t in one short phrase is`. Hai prompt cô lập mỗi chunk 2 s, vị trí chung, boost theo `λ·log(r/max r)` với r = attention tới chữ "is" (mục 0A.3).
+- **n=11** (16 mẫu, 4 mẫu > 34 s bị bỏ; seed 2468): base 36,4 / cq 54,5 / cq_boost_p 63,6 / cq_boost_pr 63,6. TA (3): 33 → 67; TF (3): 33 phẳng; CMTB (5): 40 → 60 → 80.
+  **Con số này đã bị làm mất giá trị** bởi 4.16: cq cho TA đáp `AAA` khi đáp án là `AAB`, TF đáp `BBB` khi đáp án là `AAB`.
+- **Relevance ở layer 18 (trung bình 16 head, token cuối) gần như phẳng:** 0,002–0,005 cho mọi prompt; prompt visual luôn cao hơn audio 1,24–1,39 lần; giữa các chunk cùng modality chỉ chênh 6–27%. Với λ = 2, mức chênh theo thời gian chỉ đổi 0,1–0,5 logit.
+  Relevance visual còn **tăng theo t** ở 7/11 câu (tương quan 0,56–0,91).
+- **J12b, vị trí chung so với "prompt ngay sau chunk của nó"** (chỉ TF, giới hạn 42 s, n=10): base 30 / boost_p vị trí chung 40 / cq_aligned 30 / boost_p aligned 30 / boost_pr aligned 40. Tương quan relevance–t của prompt visual: **−0,15 (vị trí chung)** so với **+0,82 (aligned)**.
+  Giải thích: với RoPE, mỗi token chỉ có một position, nên chỉ chọn được một trong hai: câu hỏi cách đều mọi prompt (vị trí chung), hoặc mỗi prompt cách đều media của nó (aligned). Aligned làm prompt của chunk cuối nằm sát câu hỏi và bị chú ý nhiều hơn.
+  Cách có cả hai (chưa làm): giữ vị trí chung và xoay query của prompt t theo `−(p0 − vị trí cuối chunk t)` bên trong hàm attention tuỳ biến; chính xác với token văn bản. Chỉ đáng làm khi có head thật sự chỉ đúng chunk (4.20 cho thấy chưa có).
+
+### 4.16 J12d: prompt "…in one word:" và hiện tượng dồn về một đáp án (n=28)
+Prompt: `…visual content of chunk t in one word:` / `…audio content of chunk t in one word is:`. Vị trí chung, token cuối là dấu `:`. Dấu cách sau `:` và dấu xuống dòng giữa prompt được thay bằng dấu cách, vì tokenizer gộp `: ` + `\n` thành một token và làm lệch token cuối.
+Chạy trên hai server (mỗi nửa 16 mẫu), seed 2468, giới hạn 42 s, còn 28 câu hợp lệ.
+
+| | TA (8) | TF (10) | CMTB (10) | Tất cả (28) |
+|---|---|---|---|---|
+| base | 50 | 30 | 30 | 35,7 |
+| cq | 50 | 30 | 50 | 42,9 |
+| cq_boost_p | 50 | 30 | 40 | 39,3 |
+| cq_boost_pr | 50 | 40 | 40 | 42,9 |
+
+Mỗi điều kiện sửa được 7–9 câu nhưng làm hỏng 6–7 câu → **nhiễu**. Bảng theo (task, đáp án đúng) ở mục 0A.3 cho thấy cq **dồn về một đáp án**: TA luôn "Yes", TF luôn "Present" (9–10/10), CMTB đáp án B sai cả 3.
+Cùng hiện tượng ở 4.15. Nguyên nhân chưa tách (xem giả thuyết (a)–(c) ở 0A.3).
+
+### 4.17 Loạt P (P1–P6) và P4 (Daily-Omni)
+| Thí nghiệm | File | Kết quả |
+|---|---|---|
+| **P1 hai con trỏ** (nói thầm + `grow_window`, đích lấy từ mục tiêu kiểm chứng) | `p1_two_pointer.py` | Thời điểm của đích đọc từ residual 66–81%, từ attention thô ≈ ngẫu nhiên. TF **93,8** (n=16) khi có mục tiêu kiểm chứng |
+| **P2 định tuyến 1 lượt** (đo ở layer 12, áp 13–27) | `p2_inpass_eval.py` | CMTB 47,4 → 78,9; một lượt = hai lượt; TA/TF phẳng |
+| **P3 soi cô lập song song** (debug) | `remote_tests/debug_parallel.py` | Một lượt song song khớp soi riêng: tương quan 0,92–1,00 |
+| **P5 soi cô lập + đọc theo quy tắc** (70 câu mới) | `p5_isolate_verify.py` | 44,3 → 77,1 (TA 88,2 / TF 79,2 / CMTB 69,0). Bước đọc ra bám theo dạng câu hỏi nên không tổng quát |
+| **P6 tìm kiếm tập trung** (tổng quát, mô hình đóng băng, v2) | `p6_focused_search.py` | 36,4 = 36,4 (n=11). Kiểm tra audio cô lập không đáng tin (mô hình nói "heard" ngay cả trong im lặng); với CMTB mô hình tự chọn sai nguồn tham chiếu |
+| **P4 mô-đun A trên Daily-Omni** (6 loại, 220/240 câu, dừng sớm để dành máy) | `p4_dailyomni_onepass.py` | base **66,4** → onepass **54,5** → onepass bỏ cổng 57,7 |
+
+P4 theo loại câu hỏi (base → onepass): AV Event Alignment (n=37) 51,4 → 54,1; Comparative (37) 67,6 → 59,5; Context understanding (37) 54,1 → 37,8; Event Sequence (37) 54,1 → 40,5; Inference (36) 86,1 → 66,7; Reasoning (36) 86,1 → 69,4.
+**Kết luận:** mô-đun A chỉ có lợi cho câu hỏi "lúc đó thấy/nghe gì"; **gây hại rõ ở mọi loại khác (−8 đến −20)**, vì nó ép attention về một cửa sổ thời gian ngay cả khi câu hỏi cần toàn bộ video. Phương pháp tổng quát phải có công tắc tự động hoặc không ép.
+
+### 4.18 T2: mù thứ tự trên Daily-Omni (81/120 câu, dừng sớm)
+Với mỗi câu Event Sequence / AV Event Alignment của Daily-Omni (video 30 s, 4 lựa chọn, xoay 4 thứ tự), so base với (i) **đảo ngược video** (audio giữ nguyên) và (ii) **đổi chỗ hai nửa video**. Nếu mô hình dùng thứ tự, đáp án phải đổi phần lớn.
+
+| Loại | n | base | đảo ngược: đúng / đáp án đổi | đổi chỗ hai nửa: đúng / đáp án đổi |
+|---|---|---|---|---|
+| Event Sequence | 48 | 50,0 | 41,7 / 35,4% | 47,9 / 22,9% |
+| AV Event Alignment | 33 | 51,5 | 48,5 / 30,3% | 54,5 / 24,2% |
+
+Cắt hẳn thứ tự thời gian của video mà 65–77% đáp án **không đổi** → mù thứ tự là lỗi chung, không riêng SVHalluc. Đây là động cơ chính của paper.
+Lưu ý: đảo video làm đảo cả hành động; kết quả chỉ nói mô hình ít dùng thứ tự, chưa nói nó dùng gì thay.
+
+### 4.19 T1: chưng cất embedding dò (chỉ huấn luyện m = 8 embedding, mô hình đóng băng)
+Ý tưởng của nhóm: m token dò đặt sau media, token câu hỏi/đáp án **chỉ được đọc các token dò (không đọc media)**; học chỉ embedding của dò sao cho phân phối đáp án khớp với khi mô hình nhìn thẳng video ("thầy" là chính mô hình, không cần nhãn).
+Dữ liệu: clip 4 s cắt ngẫu nhiên từ video Daily-Omni, 4 câu hỏi chung, đáp án thầy sinh tham lam ≤ 16 token. 160 clip huấn luyện (640 mẫu), 40 clip đánh giá (160 mẫu). 800 bước, lr 5e-3, Adam.
+
+| | khớp token (%) | KL |
+|---|---|---|
+| Không media, không dò (prior văn bản) | 65,9 | 0,777 |
+| Dò chưa huấn luyện | 64,9 | 0,796 |
+| Dò sau 200 / 400 / 600 / 800 bước | 73,0 / 60,9 / 73,7 / **73,4** | 0,551 / 0,774 / 0,541 / **0,482** |
+
+- Embedding **có học được** nội dung của clip (KL giảm 38%) nhưng vẫn xa thầy, và đường học không ổn định (bước 400 rơi về mức prior).
+- Tài nguyên: khoảng 20 phút cho 800 bước, bộ nhớ 9,9 + 8,0 GB trên T4×2. **Vừa sức "huấn luyện nhẹ"**.
+- Giai đoạn 1 dạy *cái gì*, chưa dạy *thứ tự*; thầy cũng mù thứ tự. Giai đoạn 2 cần nhãn tự sinh có thứ tự (ghép clip với thời điểm biết trước).
+- File: `results/t1_probe_distill.json`, `results/t1_probes.pt` (8 × 2048 embedding).
+
+### 4.20 J13: relevance theo từng head / layer có chỉ đúng chunk không? (35 câu TA 15 + TF 20)
+Cùng bố cục prompt như J12 (vị trí chung, không boost). Ghi attention của token câu hỏi/đáp án tới mỗi prompt ở **mọi layer (36) × mọi head (16) = 576 head**, hai kiểu: `last` (token cuối) và `mean` (trung bình các token câu hỏi/đáp án).
+Mục tiêu chấm: **prompt audio → chunk có tiếng nói** (từ VAD) và **prompt visual → nửa video có sự kiện** (lấy từ cách dựng benchmark, chỉ dùng để phân tích). Kiểm chéo: chọn head trên nửa số câu, đo trên nửa còn lại (lặp 20 lần). Phân tích: `remote_tests/analyze_j13.py`.
+
+| Cách đo | Audio → tiếng nói: head đạt ≥ 90% | Audio: đo trên nửa còn lại | Visual → nửa có sự kiện: head ≥ 90% | Visual: đo trên nửa còn lại |
+|---|---|---|---|---|
+| J13: prompt "…is", relevance ở chữ "is" | 31 (last) / 32 (mean) | 0,91 / 0,99 | **0** | 0,53 / 0,53 |
+| J13b: prompt "…is", cộng attention trên **cả prompt** | 141 / 128 | 0,94 / 1,00 | **0** | 0,47 / 0,56 |
+| J13d: prompt "one word", relevance ở dấu `:` | 63 / 106 | 1,00 / 0,98 | **0** | 0,44 / 0,53 |
+| Ngẫu nhiên | — | **0,52** | — | **0,50** |
+
+- **Audio:** có hàng chục đến hơn trăm head chỉ đúng chunk có tiếng nói gần như mọi lần. Trung bình 16 head hoặc lấy một layer che mất tín hiệu này (trung bình head: 0,51–0,53 ≈ ngẫu nhiên).
+  Lưu ý mức chênh về khối lượng của head tốt nhất (chọn bằng kiểm chéo) chỉ +0,4% đến +8% so với ngẫu nhiên; chỉ *prompt mạnh nhất* là đúng ổn định. Chưa loại trừ khả năng đây chỉ là "chunk có tiếng thì nổi bật hơn chunk im lặng", không phụ thuộc câu hỏi.
+- **Visual:** **không head nào** ở bất kỳ layer nào, cho cả ba cách đo, chỉ đúng nửa video có sự kiện hơn ngẫu nhiên. Kết quả khớp với J1/P1 (mô hình không tìm được "lúc nào" của một hành động).
+- **Token dự đoán kế tiếp tại cuối mỗi prompt** (J13b, J13d):
+  - prompt "…is": ở **mọi** chunk, cả hai modality, đều ra `: " . that`; chỉ mang **định dạng**;
+  - prompt "…in one word:": prompt visual đoán từ nội dung **của chính chunk đó** (ví dụ video nấu ăn: ` Ingredients / Cooking / Woman`, rồi ` Stir / Heat / Meat`, rồi ` Wr(ap) / Rolling / dum(pling)`), prompt audio thường mở ngoặc kép và đôi khi đoán đúng từ nói ra (` onions`, ` tofu`).
+- **Vì sao visual vẫn không lên:** câu hỏi TA/TF là "the narrated event" và hoàn toàn không mô tả hình ảnh, nên không có gì để khớp với từ khoá trong prompt visual. Phải đi hai bước: câu hỏi → nội dung lời nói → chunk hình có nội dung đó (mà thiết kế "prompt không thấy nhau" hiện chặn mất).
+- **Chưa đo:** relevance **theo từng token** của câu hỏi/đáp án. "mean" trộn các token có thể nhìn các prompt khác nhau, nên có thể che một token cụ thể chỉ đúng. Với `mean`, tín hiệu audio rõ hơn `last` (106 so với 63 head ở J13d) nên nhiều token cùng nhìn đúng; nhưng với visual cả `last` lẫn `mean` đều 0 head.
+
+### 4.21 Sai sót đã mắc và đã sửa trong đợt này
+- Lần chạy J12d đầu bị lẫn cấu hình chỉ-TF của lần trước còn lại trong namespace server; restart server rồi chạy lại sạch (mục 3.3).
+- Prompt kết thúc bằng `: ` bị tokenizer gộp với dấu xuống dòng kế tiếp → token cuối là `:\n`, không phải `:`. Đã bỏ dấu cách sau `:` và đổi dấu ngắt giữa prompt thành dấu cách; đã kiểm tra `last_tokens` trong kết quả = `:`.
+- Báo cáo ban đầu gộp theo task che hiện tượng dồn đáp án; từ nay báo theo (task, đáp án đúng).
 
 ---
 
@@ -441,6 +679,12 @@ Phân tích lỗi: **mọi câu sai đều chọn đúng đoạn** (đoạn liê
 | 7 | J9 / QTAR: PMI trên attention | Đúng âm thanh 86–91% | Tổng quát cho mọi loại âm thanh và cảnh | Chỉ chọn thời điểm, không sửa nhầm nguồn | Là thành phần đóng góp | Kiểm tra cảnh ở quy mô lớn |
 | 8 | J10: tự quyết kênh | Đang chạy (1 mẫu: 0,92) | Tổng quát cho mọi câu hỏi | TF bị quyết thành "heard" | Có thể | Tách "kênh làm mốc" và "kênh để đọc" |
 | 9 | J11: pipeline kiểu con người | Đang chạy | Giải được TF; có câu chuyện nhận thức | Nhiều bước, chậm; một phần dựa vào văn bản | Có thể nếu ablation tốt | Rút gọn: thay bước văn bản bằng can thiệp trong mô hình |
+| 10 | Mô-đun A một lượt (P2/P4) | CMTB 47 → 79; **Daily-Omni 66,4 → 54,5** | Tự động, 1 lượt | Gây hại ở mọi loại câu hỏi khác; ép attention vào một cửa sổ | Không (nếu không có công tắc) | Công tắc tự động; chỉ bật khi câu hỏi nhắc tới mốc |
+| 11 | Soi cô lập + đọc theo quy tắc (P5) | 44 → 77 (n=70) | Cơ chế đúng, một lượt song song | Bước đọc ra bám dạng câu hỏi | Không (chưa tổng quát) | Thay bước đọc bằng đọc do mô hình tự học |
+| 12 | Tìm kiếm tập trung tổng quát, đóng băng (P6) | 36 → 36 | Hoàn toàn tự động | Mô hình 3B không tự quyết đáng tin | Không | Cần huấn luyện nhẹ |
+| 13 | **Chunk prompts + boost attention (J12 / J12b / J12d)** | Tăng giả: dồn về Yes / Present | Đúng tinh thần "token dò trong mô hình" | Câu hỏi không khớp được prompt hình (hai bước); khối prompt làm lệch đáp án | Chưa | Mục 0A.5 |
+| 14 | **Token dò huấn luyện nhẹ (T1)** | KL 0,78 → 0,48 | Rẻ, không nhãn, mô hình đóng băng | Chưa dạy thứ tự; chỉ embedding thì sức chứa hạn chế | Có thể, nếu giai đoạn 2 thành công | 8.4 |
+| 15 | SLA | — | — | Tiền đề sai | Không | Đã bỏ |
 
 **Phản biện sẽ hỏi gì (để chuẩn bị):**
 - Khác TFO (Whisper + cắt clip), OmniAgent, Daily-Omni-Agent ở đâu?
@@ -460,15 +704,21 @@ Phân tích lỗi: **mọi câu sai đều chọn đúng đoạn** (đoạn liê
 6. **Câu hỏi quan hệ (TF) cần suy luận có chủ ý**, trên bằng chứng đã tách nguồn (nội dung lời nói khai báo riêng, ghi rõ "chỉ nghe, không phải bằng chứng hình").
 7. **Token tóm tắt chèn thêm không mang thông tin khi không huấn luyện**, và bị thiên lệch vị trí RoPE.
 8. **Tri giác không phải nút thắt:** đừng tốn công vào việc nâng cấp encoder.
+9. **Mô hình biết mốc nổi bật ở đâu nhưng không tìm được một hành động cụ thể** (J13, P1). Chọn head chỉ đúng mốc (hàng chục đến hơn trăm head); không có head nào chỉ đúng sự kiện hình ảnh.
+10. **Tìm sự kiện của câu hỏi "the narrated event" là hai bước:** câu hỏi → nội dung lời nói → chunk hình khớp. Một bước (câu hỏi → prompt hình) không thể đúng vì câu hỏi không nhắc gì tới hình ảnh.
+11. **Thêm văn bản (prompt dò) vào trước câu hỏi làm mô hình dồn về một đáp án** (TA → Yes, TF → Present). Mọi so sánh phải tách theo (task, đáp án đúng).
+12. **Prompt dò phải kết thúc ở chỗ mà mô hình sắp sinh nội dung** (`…in one word:`), không phải ở `…is`, vì token cuối của "…is" chỉ mang định dạng.
+13. **Một position chỉ chọn được một trong hai khoảng cách:** câu hỏi → prompt hoặc prompt → media của nó (mục 4.15).
 
 ---
 
 ## 8. Đang làm dở và lộ trình tới paper
 
-### 8.1 Đang chạy hoặc chờ kết quả (tại thời điểm viết README)
-- `nb11` (J10 pilot) và `nb13` (J11 **v1**, còn lỗi) trên Kaggle.
-- J11 **v2** trên bộ dev2 (server).
+### 8.1 Đang chạy hoặc chờ kết quả (cập nhật tối 13/10/2026)
+- **Không có job nào đang chạy.** Ba server GPU (4, 5, 6) đều rảnh.
 - `nb12` (J10 held-out): **cố ý chưa chạy.** Chỉ chạy held-out một lần, khi phương pháp đã chốt.
+- Dang dở, chưa cần: T2 (81/120 câu), P4 (220/240 câu); cả hai đã lưu ở `results/`.
+- Việc làm tiếp: **mục 0A.5** (có thứ tự ưu tiên).
 
 ### 8.2 Phương pháp đề xuất cho paper (triển khai thực tế, tổng quát)
 
@@ -500,11 +750,15 @@ Phân tích lỗi: **mọi câu sai đều chọn đúng đoạn** (đoạn liê
 | Chi phí | Thời gian và bộ nhớ so với base |
 
 ### 8.4 Việc nên làm tiếp theo (theo thứ tự)
-1. **Mô-đun A trong 1 lượt:** thử đo ở lớp 8–12 và áp từ lớp 13 (`repo/kaggle/jobs/inpass.py`, `remote_tests/debug_inpass.py`).
-2. Đọc kết quả nb11 / nb13 / J11 v2 và phân tích lỗi theo từng bước.
-3. **Mô-đun B:** debug "hỏi nhỏ song song cô lập, đặt đúng vị trí thời gian" trên 1–2 mẫu, so với nhìn từng đoạn riêng lẻ.
-4. Đóng gói phương pháp đã chốt, rồi chạy held-out **một lần**, rồi chạy các benchmark tổng quát (8.3).
-5. Nếu muốn có phiên bản huấn luyện: prompt tuning cho khe nhớ (mô hình đóng băng), dữ liệu tự sinh (ghép clip có thời điểm sự kiện biết trước), **không dùng dữ liệu SVHalluc**.
+*(Bản cũ của mục này đã lỗi thời: mô-đun A 1 lượt đã làm (P2) và gây hại ngoài SVHalluc (P4); mô-đun B là chunk prompts (J12), kết quả ở mục 4.15–4.20.)*
+1. **Tách nguyên nhân dồn về một đáp án** và báo mọi kết quả theo (task, đáp án đúng) (0A.3, 0A.5 việc 1).
+2. **Đo relevance theo từng token câu hỏi**, và **phép đo hai bước** (câu hỏi → nội dung lời nói → chunk hình khớp) không huấn luyện (0A.5 việc 2–3).
+3. Nếu không có tín hiệu: **T1 giai đoạn 2**, huấn luyện nhẹ. Gợi ý thiết kế:
+   - mô hình đóng băng; học embedding dò (m = 8 hoặc vài chục, có thể thêm một vài tham số nhỏ ở lớp giữa);
+   - dữ liệu **tự sinh, không dùng SVHalluc**: ghép các clip ngắn có thời điểm sự kiện biết trước (cùng cách dựng với `concat_clips`, `halves` trong `job_utils.py`), sinh nhãn "khi nào", "X trước hay Y trước", "lúc nghe Z thì thấy gì", **nhiều cách diễn đạt khác nhau** (để không học thuộc mẫu câu hỏi);
+   - mục tiêu: đáp án đúng theo nhãn tự sinh, cộng chưng cất như giai đoạn 1 để không hỏng khả năng chung; ngân sách khoảng một phiên T4×2.
+4. **Công tắc tự động cho mọi can thiệp attention** (mô-đun A hiện gây hại ngoài SVHalluc): chỉ can thiệp khi câu hỏi nhắc tới mốc.
+5. Đóng gói phương pháp đã chốt, rồi chạy held-out **một lần** (seed `1234`), rồi các benchmark tổng quát (8.3). Kèm kiểm tra diễn đạt lại câu hỏi (mở / nhiều sự kiện / trước–sau theo nhiều cách nói).
 
 ---
 
@@ -518,9 +772,17 @@ Phân tích lỗi: **mọi câu sai đều chọn đúng đoạn** (đoạn liê
 - **Kaggle output:** tải bằng `--file-pattern`, nếu không sẽ kéo về cả venv nặng vài GB.
 - **Session server Kaggle hết sau khoảng 12 h:** tải kết quả về thường xuyên.
 - **Bash heredoc trên Windows:** dấu `\` trong code Python dễ bị nuốt. Dùng `chr(92)` hoặc sửa file trực tiếp.
+- **Tokenizer gộp `: ` với `\n`:** prompt kết thúc bằng dấu cách rồi đến dấu xuống dòng của prompt kế tiếp sẽ thành một token duy nhất, nên "token cuối của prompt" không còn là `:`. Bỏ dấu cách cuối, hoặc ngắt bằng dấu cách.
+- **Namespace server giữ biến cũ:** cấu hình của job trước (ví dụ `J12_TASKS`) còn lại và có thể lẫn vào job sau. Sau khi đổi cấu hình, **restart server** rồi chạy lại `fix_ffmpeg.py`.
+- **Hàm attention tuỳ biến:** `ALL_ATTENTION_FUNCTIONS['sdpa']` bị thay trong lúc chạy `cq_forward` (rồi khôi phục trong `finally`). Chỉ gắn nhãn `_cq_layer` cho layer LLM (36 layer), vì cùng hàm attention cũng được audio / vision encoder dùng.
+- **Out-of-memory khi ghi relevance:** chỉ giữ hàng của câu hỏi/đáp án, và dùng `lm_head` forward pre-hook để chỉ tính logit cho vài vị trí cần.
+- **Chuẩn hoá relevance có thể ra NaN** khi prompt không có attention (chia cho 0): thêm epsilon trước khi chuẩn hoá (đã sửa trong `analyze_j13.py`).
+- **Báo cáo tổng gộp che hiện tượng dồn đáp án:** luôn tách theo (task, đáp án đúng) (mục 0A.6).
 
 ## 10. Tài liệu liên quan
 - `docs/temporal_related_work_2026-10-11.md`: tổng quan công trình liên quan: RED (2610.02976), DTR (2604.12582), SyncRA (2609.34363), AVTrace (2609.19991), From Senses to Decisions (2606.10147), Senses Wide Shut (2605.13737), Compositional Failure (2608.27785), VideoRoPE, PAS, VRoPE, OmniAgent (2512.23646), **TFO (2609.04242)**, MLLMs Know When Before Speaking (2605.21954), Video-XL, Gist tokens, Activation Beacon…
+- `docs/DECISION_BRIEF.md`: bản tóm tắt để quyết định phương pháp (cập nhật tối 13/10/2026): sự thật đã kiểm chứng, các hướng đã thử, việc nên quyết định tiếp.
+- `docs/METHOD_PROPOSAL.md`: đề xuất SLA (**đã bỏ**, giữ làm lịch sử) và lý do.
 - `docs/14_root_causes_and_general_method.md`: bảng 16 giả thuyết nguyên nhân và kết quả giai đoạn đầu.
 - `docs/research_log.md`: nhật ký đầy đủ theo thời gian.
 - Nền tảng nhận thức được dùng: source monitoring (Johnson 1993), working memory / phonological loop (Baddeley), biased competition / attentional template (Desimone & Duncan), event segmentation (Zacks), postdiction (Eagleman & Sejnowski 2000).

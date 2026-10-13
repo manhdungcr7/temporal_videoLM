@@ -1,0 +1,80 @@
+{"idx": 1885, "task": "CMTB", "gold": 0, "dur": 22.08, "target": "seen", "base": [-2.006, -7.795, -6.693], "twopass": [-1.396, -8.279, -8.349], "onepass": [-5.52, -6.199, -6.02], "onepass_seen": [-5.52, -6.199, -6.02], "sec": 83}
+{"idx": 1859, "task": "CMTB", "gold": 1, "dur": 32.11, "target": "seen", "base": [-5.854, -3.011, -10.581], "twopass": [-8.884, -1.025, -9.767], "onepass": [-9.201, -1.099, -9.256], "onepass_seen": [-9.201, -1.099, -9.256], "sec": 136}
+{"idx": 1925, "task": "CMTB", "gold": 2, "dur": 12.16, "target": "seen", "base": [-8.741, -2.765, -6.226], "twopass": [-5.435, -2.115, -7.631], "onepass": [-4.13, -3.505, -6.56], "onepass_seen": [-4.13, -3.505, -6.56], "sec": 43}
+{"idx": 2277, "task": "TA", "gold": 0, "dur": 20.18, "target": "both", "base": [-2.623, -0.733], "twopass": [-2.406, -1.016], "onepass": [-2.278, -1.137], "onepass_seen": [-2.264, -1.123], "sec": 54}
+{"idx": 2294, "task": "TA", "gold": 1, "dur": 29.08, "target": "both", "base": [-1.739, -1.27], "twopass": [-1.892, -1.454], "onepass": [-1.689, -1.517], "onepass_seen": [-2.244, -1.213], "sec": 87}
+{"idx": 1634, "task": "TF", "gold": 0, "dur": 19.11, "target": "both", "base": [-4.245, -3.698, -4.612], "twopass": [-5.005, -4.169, -4.692], "onepass": [-5.188, -3.094, -6.743], "onepass_seen": [-4.977, -3.328, -6.945], "sec": 69}
+{"idx": 1701, "task": "TF", "gold": 1, "dur": 24.08, "target": "both", "base": [-6.038, -2.726, -9.163], "twopass": [-6.01, -2.486, -7.549], "onepass": [-5.944, -2.514, -7.522], "onepass_seen": [-4.861, -3.494, -7.846], "sec": 92}
+{"idx": 1648, "task": "TF", "gold": 2, "dur": 32.09, "target": "both", "base": [-4.275, -5.017, -5.728], "twopass": [-5.066, -4.332, -7.059], "onepass": [-4.846, -3.815, -7.862], "onepass_seen": [-4.989, -3.341, -7.872], "sec": 133}
+{"idx": 1705, "task": "CMTB", "gold": 0, "dur": 17.11, "target": "seen", "base": [-10.795, -0.553, -14.6], "twopass": [-0.645, -8.802, -11.099], "onepass": [-0.682, -8.565, -10.94], "onepass_seen": [-0.682, -8.565, -10.94], "sec": 62}
+{"idx": 1658, "task": "CMTB", "gold": 1, "dur": 19.16, "target": "seen", "base": [-14.752, -1.221, -7.346], "twopass": [-10.48, -1.09, -6.902], "onepass": [-10.97, -1.509, -5.915], "onepass_seen": [-10.97, -1.509, -5.915], "sec": 76}
+{"idx": 1737, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1457, "task": "TA", "gold": 0, "dur": 22.06, "target": "both", "base": [-1.523, -1.304], "twopass": [-1.642, -1.376], "onepass": [-1.709, -1.318], "onepass_seen": [-1.777, -1.262], "sec": 63}
+{"idx": 1432, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2217, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2260, "task": "TF", "gold": 1, "dur": 20.06, "target": "both", "base": [-3.745, -4.213, -4.534], "twopass": [-4.623, -3.732, -5.631], "onepass": [-4.723, -3.535, -5.91], "onepass_seen": [-4.675, -3.636, -6.12], "sec": 74}
+{"idx": 2266, "task": "TF", "gold": 2, "dur": 31.13, "target": "both", "base": [-5.566, -2.988, -4.644], "twopass": [-4.625, -3.328, -6.172], "onepass": [-4.388, -3.458, -6.505], "onepass_seen": [-4.702, -3.585, -6.835], "sec": 129}
+{"idx": 2249, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2246, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2291, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2057, "task": "TA", "gold": 0, "dur": 17.13, "target": "both", "base": [-2.296, -0.874], "twopass": [-2.271, -1.036], "onepass": [-2.244, -1.057], "onepass_seen": [-2.494, -0.962], "sec": 47}
+{"idx": 2096, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1481, "task": "TF", "gold": 0, "dur": 31.11, "target": "both", "base": [-6.031, -3.601, -3.765], "twopass": [-5.722, -4.105, -4.301], "onepass": [-5.356, -3.778, -4.965], "onepass_seen": [-5.031, -3.5, -6.14], "sec": 124}
+{"idx": 1548, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1502, "task": "TF", "gold": 2, "dur": 26.13, "target": "both", "base": [-5.692, -5.317, -3.809], "twopass": [-6.419, -6.146, -3.958], "onepass": [-6.313, -6.016, -4.133], "onepass_seen": [-4.205, -4.869, -7.541], "sec": 100}
+{"idx": 1900, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1877, "task": "CMTB", "gold": 1, "dur": 31.16, "target": "seen", "base": [-9.433, -6.386, -1.667], "twopass": [-8.852, -3.899, -4.962], "onepass": [-7.398, -4.148, -5.734], "onepass_seen": [-7.398, -4.148, -5.734], "sec": 138}
+{"idx": 1950, "task": "CMTB", "gold": 2, "dur": 23.06, "target": "seen", "base": [-13.156, -8.609, -1.226], "twopass": [-10.596, -8.088, -0.705], "onepass": [-10.729, -8.416, -0.666], "onepass_seen": [-10.729, -8.416, -0.666], "sec": 92}
+{"idx": 1475, "task": "TA", "gold": 0, "dur": 17.11, "target": "both", "base": [-1.976, -1.21], "twopass": [-2.233, -1.28], "onepass": [-2.335, -1.178], "onepass_seen": [-2.174, -1.237], "sec": 47}
+{"idx": 1451, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1731, "task": "TF", "gold": 0, "dur": 16.09, "target": "both", "base": [-4.947, -4.963, -2.947], "twopass": [-4.715, -4.958, -3.254], "onepass": [-4.854, -3.097, -5.667], "onepass_seen": [-4.776, -3.182, -5.916], "sec": 59}
+{"idx": 1818, "task": "TF", "gold": 1, "dur": 21.06, "target": "both", "base": [-10.62, -9.862, -0.925], "twopass": [-12.72, -11.345, -0.603], "onepass": [-12.725, -11.318, -0.615], "onepass_seen": [-3.92, -4.42, -8.053], "sec": 78}
+{"idx": 1797, "task": "TF", "gold": 2, "dur": 22.06, "target": "both", "base": [-4.497, -3.591, -5.247], "twopass": [-5.601, -3.484, -5.953], "onepass": [-5.518, -3.557, -6.073], "onepass_seen": [-4.39, -3.773, -8.132], "sec": 77}
+{"idx": 1762, "task": "CMTB", "gold": 0, "dur": 15.06, "target": "seen", "base": [-8.564, -1.236, -12.603], "twopass": [-6.051, -1.684, -11.215], "onepass": [-5.62, -2.792, -11.698], "onepass_seen": [-5.62, -2.792, -11.698], "sec": 60}
+{"idx": 1741, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1770, "task": "CMTB", "gold": 2, "dur": 32.11, "target": "seen", "base": [-4.911, -5.567, -5.7], "twopass": [-8.774, -5.383, -4.883], "onepass": [-8.172, -6.211, -4.86], "onepass_seen": [-8.172, -6.211, -4.86], "sec": 128}
+{"idx": 2049, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2091, "task": "TA", "gold": 1, "dur": 24.08, "target": "both", "base": [-2.313, -0.86], "twopass": [-2.28, -0.998], "onepass": [-2.149, -1.117], "onepass_seen": [-2.2, -1.06], "sec": 67}
+{"idx": 1884, "task": "TF", "gold": 0, "dur": 22.08, "target": "both", "base": [-4.816, -3.277, -6.605], "twopass": [-5.107, -3.451, -6.724], "onepass": [-4.641, -4.04, -7.282], "onepass_seen": [-4.065, -3.846, -7.659], "sec": 84}
+{"idx": 1972, "task": "TF", "gold": 1, "dur": 29.12, "target": "both", "base": [-3.645, -3.755, -5.27], "twopass": [-4.263, -3.42, -5.498], "onepass": [-4.111, -3.126, -6.603], "onepass_seen": [-4.557, -3.002, -7.401], "sec": 117}
+{"idx": 1929, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1780, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1756, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1785, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1487, "task": "TA", "gold": 0, "dur": 32.09, "target": "both", "base": [-1.378, -1.488], "twopass": [-1.624, -1.515], "onepass": [-1.524, -1.602], "onepass_seen": [-1.881, -1.303], "sec": 100}
+{"idx": 1459, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1681, "task": "TF", "gold": 0, "dur": 30.06, "target": "both", "base": [-4.293, -3.418, -5.457], "twopass": [-4.466, -4.021, -5.536], "onepass": [-4.749, -4.186, -5.217], "onepass_seen": [-4.191, -3.324, -7.285], "sec": 114}
+{"idx": 1746, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1728, "task": "TF", "gold": 2, "dur": 33.15, "target": "both", "base": [-5.532, -3.36, -4.227], "twopass": [-5.896, -3.756, -5.49], "onepass": [-5.888, -3.818, -5.38], "onepass_seen": [-5.99, -3.404, -6.763], "sec": 137}
+{"idx": 1617, "task": "CMTB", "gold": 0, "dur": 31.11, "target": "seen", "base": [-16.145, -16.199, -0.067], "twopass": [-9.944, -9.819, -0.499], "onepass": [-11.003, -11.308, -0.339], "onepass_seen": [-11.003, -11.308, -0.339], "sec": 136}
+{"idx": 1601, "task": "CMTB", "gold": 1, "dur": 21.12, "target": "seen", "base": [-14.299, -0.478, -11.174], "twopass": [-12.025, -0.962, -8.993], "onepass": [-12.036, -0.935, -9.06], "onepass_seen": [-12.036, -0.935, -9.06], "sec": 86}
+{"idx": 1664, "task": "CMTB", "gold": 2, "dur": 14.14, "target": "seen", "base": [-11.818, -0.537, -9.092], "twopass": [-10.404, -6.232, -2.341], "onepass": [-11.268, -4.377, -5.033], "onepass_seen": [-11.268, -4.377, -5.033], "sec": 49}
+{"idx": 2316, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2308, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1629, "task": "TF", "gold": 0, "dur": 14.19, "target": "both", "base": [-4.583, -3.231, -7.684], "twopass": [-4.354, -3.651, -7.62], "onepass": [-5.007, -3.249, -7.311], "onepass_seen": [-5.131, -3.342, -7.35], "sec": 47}
+{"idx": 1698, "task": "TF", "gold": 1, "dur": 25.08, "target": "both", "base": [-4.849, -3.334, -6.99], "twopass": [-4.965, -3.059, -7.317], "onepass": [-4.955, -3.072, -7.306], "onepass_seen": [-4.672, -3.125, -7.688], "sec": 93}
+{"idx": 1642, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2296, "task": "CMTB", "gold": 0, "dur": 29.08, "target": "seen", "base": [-8.164, -8.578, -1.531], "twopass": [-3.539, -6.524, -5.805], "onepass": [-4.623, -5.303, -5.639], "onepass_seen": [-4.623, -5.303, -5.639], "sec": 116}
+{"idx": 2273, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2319, "task": "CMTB", "gold": 2, "dur": 20.07, "target": "seen", "base": [-9.218, -11.312, -0.859], "twopass": [-8.747, -9.708, -1.067], "onepass": [-9.956, -10.253, -0.675], "onepass_seen": [-9.956, -10.253, -0.675], "sec": 81}
+{"idx": 1863, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1886, "task": "TA", "gold": 1, "dur": 28.1, "target": "both", "base": [-1.785, -1.238], "twopass": [-2.534, -1.034], "onepass": [-2.317, -1.129], "onepass_seen": [-2.495, -1.073], "sec": 85}
+{"idx": 1468, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1543, "task": "TF", "gold": 1, "dur": 30.05, "target": "both", "base": [-3.052, -4.318, -5.06], "twopass": [-3.318, -4.717, -6.303], "onepass": [-3.348, -4.106, -6.871], "onepass_seen": [-4.151, -3.159, -7.878], "sec": 121}
+{"idx": 1499, "task": "TF", "gold": 2, "dur": 14.14, "target": "both", "base": [-7.128, -5.151, -3.089], "twopass": [-7.939, -5.853, -2.595], "onepass": [-6.969, -4.969, -3.751], "onepass_seen": [-5.322, -3.361, -8.072], "sec": 49}
+{"idx": 1509, "task": "CMTB", "gold": 0, "dur": 27.07, "target": "seen", "base": [-3.007, -5.421, -9.648], "twopass": [-0.777, -9.511, -9.683], "onepass": [-0.336, -11.649, -11.602], "onepass_seen": [-0.336, -11.649, -11.602], "sec": 115}
+{"idx": 1503, "task": "CMTB", "gold": 1, "dur": 26.13, "target": "seen", "base": [-1.074, -9.402, -11.433], "twopass": [-5.271, -5.552, -9.076], "onepass": [-6.136, -4.136, -9.597], "onepass_seen": [-6.136, -4.136, -9.597], "sec": 100}
+{"idx": 1479, "task": "CMTB", "gold": 2, "dur": 27.09, "target": "seen", "base": [-14.63, -11.669, -0.38], "twopass": [-12.405, -13.343, -0.14], "onepass": [-11.887, -12.856, -0.176], "onepass_seen": [-11.887, -12.856, -0.176], "sec": 117}
+{"idx": 2323, "task": "TA", "gold": 0, "dur": 15.06, "target": "both", "base": [-1.268, -1.799], "twopass": [-1.385, -2.01], "onepass": [-1.189, -2.189], "onepass_seen": [-1.685, -1.763], "sec": 40}
+{"idx": 2320, "task": "TA", "gold": 1, "dur": 15.08, "target": "both", "base": [-1.845, -1.267], "twopass": [-1.824, -1.542], "onepass": [-2.017, -1.345], "onepass_seen": [-2.0, -1.359], "sec": 41}
+{"idx": 1624, "task": "TF", "gold": 0, "dur": 24.08, "target": "both", "base": [-4.403, -3.528, -5.918], "twopass": [-4.427, -3.825, -6.474], "onepass": [-4.46, -3.765, -6.531], "onepass_seen": [-4.131, -4.381, -6.381], "sec": 92}
+{"idx": 1672, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1639, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2021, "task": "CMTB", "gold": 0, "dur": 33.11, "target": "seen", "base": [-0.987, -10.752, -5.541], "twopass": [-0.4, -10.97, -9.65], "onepass": [-0.342, -11.287, -10.56], "onepass_seen": [-0.342, -11.287, -10.56], "sec": 142}
+{"idx": 2051, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2085, "task": "CMTB", "gold": 2, "dur": 21.16, "target": "seen", "base": [-2.354, -9.533, -6.768], "twopass": [-7.411, -10.411, -1.169], "onepass": [-6.546, -10.171, -1.546], "onepass_seen": [-6.546, -10.171, -1.546], "sec": 76}
+{"idx": 1514, "task": "TA", "gold": 0, "dur": 16.07, "target": "both", "base": [-1.125, -1.781], "twopass": [-1.337, -1.759], "onepass": [-1.563, -1.594], "onepass_seen": [-1.829, -1.345], "sec": 44}
+{"idx": 1482, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2403, "task": "TF", "gold": 0, "dur": 20.06, "target": "both", "base": [-5.539, -2.516, -7.157], "twopass": [-5.648, -2.992, -9.202], "onepass": [-5.434, -3.434, -9.309], "onepass_seen": [-5.31, -3.708, -9.224], "sec": 71}
+{"idx": 2391, "task": "TF", "gold": 1, "dur": 23.06, "target": "both", "base": [-3.934, -4.356, -5.114], "twopass": [-3.98, -4.753, -5.792], "onepass": [-3.709, -4.115, -7.279], "onepass_seen": [-3.74, -4.248, -7.178], "sec": 87}
+{"idx": 2400, "task": "TF", "gold": 2, "dur": 24.06, "target": "both", "base": [-5.628, -3.16, -7.917], "twopass": [-5.587, -3.298, -8.001], "onepass": [-5.586, -3.289, -8.023], "onepass_seen": [-5.035, -3.973, -8.434], "sec": 88}
