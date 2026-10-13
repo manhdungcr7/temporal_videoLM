@@ -263,8 +263,8 @@ temporal_videoLM/
 │
 ├── server_jobs/build_server_job.py ← ghép job + helper thành MỘT file để chạy trên server từ xa; có --shard để chia việc cho nhiều server
 │
-├── kaggle_gpu_server.py, build_kaggle_gpu_server_notebook.py
-│                                 ← server GPU trên Kaggle (HTTP + ngrok) để chạy job từ xa
+├── kaggle_gpu_server.py, build_kaggle_gpu_server_notebook.py, kaggle_svhalluc_gpu_server.ipynb
+│                                 ← server GPU trên Kaggle (HTTP + ngrok) để chạy job từ xa; .ipynb đã build sẵn, hướng dẫn ở mục 3.3A
 ├── remote_client.py              ← client: ping / info / run FILE / status / get / upload / restart
 ├── remote_config.example.json    ← mẫu cấu hình (file thật remote_config*.json KHÔNG commit)
 ├── remote_tests/                 ← các job đã chạy trên server (tense, timing, anchor_text, daily_anchor, STMR, debug…)
@@ -321,8 +321,8 @@ temporal_videoLM/
 | nb13 | j11_full | Pipeline đầy đủ lấy cảm hứng từ cách con người hiểu video | 3,5–4 h |
 
 ### 3.3 Chạy trên server GPU từ xa (nhanh để lặp)
-1. Build notebook server: `python build_kaggle_gpu_server_notebook.py`. Trên Kaggle, đặt Secret `NGROK_AUTHTOKEN` (bật *Attach*) rồi chạy. Notebook in ra `URL` và `TOKEN`. **Dùng tài khoản Kaggle phụ.**
-2. Ghi vào `remote_config.json` (xem file mẫu). Có nhiều server thì dùng `remote_config2.json`… và chọn bằng `REMOTE_CFG=remote_config2.json`.
+1. **Dựng server trên Kaggle** (lấy ngrok authtoken → thêm Secret → Save & Run All → lấy URL và TOKEN): xem hướng dẫn từng bước ở **mục 3.3A** ngay dưới. Notebook đã build sẵn: `kaggle_svhalluc_gpu_server.ipynb`.
+2. Ghi URL và TOKEN vào `remote_config.json` (xem file mẫu `remote_config.example.json`). Có nhiều server thì dùng `remote_config2.json`… và chọn bằng `REMOTE_CFG=remote_config2.json`.
 3. Các lệnh:
    ```bash
    python remote_client.py ping | info | restart
@@ -336,6 +336,67 @@ temporal_videoLM/
    **Đã có sẵn công cụ ghép:** `python server_jobs/build_server_job.py <j12|j13|plain> OUT.py [...]` (docstring đầu file giải thích tham số: `--shard K/N`, `--prompts oneword|is`, `--per-label`, `--seed`, `--tasks`, `--out-name`; với job không cần helper j8: `plain --job-file <file>`). Ví dụ đầy đủ ở mục 0A.7.
 5. **Chia việc cho nhiều server:** build mỗi nửa với `--shard 0/2` và `--shard 1/2`, gửi lên hai server, rồi ghép hai file kết quả theo `idx`. Job có resume theo `idx`, nên chạy lại cùng file không làm lại câu đã xong.
 6. **Dừng một job trên server:** dùng `python remote_client.py restart` (kết thúc luôn job đang chạy). Hãy tải kết quả dang dở về trước. Sau restart phải chạy lại `remote_tests/fix_ffmpeg.py`.
+
+### 3.3A Hướng dẫn từng bước: dựng server GPU trên Kaggle và kết nối từ máy của bạn
+
+Server là một notebook Kaggle giữ sẵn mô hình trên GPU và mở cổng ra ngoài qua **ngrok**; máy của bạn gửi mã Python lên bằng `remote_client.py`. Notebook đã build sẵn ở **`kaggle_svhalluc_gpu_server.ipynb`** (có thể build lại bằng `python build_kaggle_gpu_server_notebook.py`).
+
+**Bước 1. Lấy ngrok authtoken**
+1. Đăng ký tài khoản miễn phí tại https://dashboard.ngrok.com/signup (có thể đăng nhập bằng Google hoặc GitHub).
+2. Sau khi đăng nhập, vào https://dashboard.ngrok.com/get-started/your-authtoken (menu bên trái: **Getting Started → Your Authtoken**).
+3. Bấm **Copy** để lấy chuỗi authtoken. Đây là **Authtoken**, không phải *API key*. Giữ kín như mật khẩu.
+4. Muốn chạy nhiều server cùng lúc thì mỗi server nên dùng một tài khoản ngrok riêng (gói miễn phí thường chỉ cho một phiên ngrok mỗi tài khoản; kiểm tra lại giới hạn hiện hành trên trang ngrok).
+
+**Bước 2. Tạo notebook trên Kaggle** (nên dùng **tài khoản Kaggle phụ**, xem lưu ý chính sách ở cuối)
+1. Tài khoản Kaggle cần đã xác minh số điện thoại (nếu không sẽ không bật được GPU và Internet).
+2. **Create → New Notebook → File → Import Notebook** (hoặc *Upload*), chọn `kaggle_svhalluc_gpu_server.ipynb`.
+3. **Thêm Secret:** trong notebook, menu **Add-ons → Secrets → Add Secret**
+   - *Label*: `NGROK_AUTHTOKEN` (đúng chính tả, viết hoa);
+   - *Value*: dán authtoken vừa copy;
+   - bật công tắc **Attach** (đính kèm) cho notebook này. Nếu quên bước này, notebook sẽ báo `Không đọc được Kaggle Secret NGROK_AUTHTOKEN`.
+4. **Cấu hình phiên** (panel *Session options / Settings* bên phải):
+   - *Accelerator*: **GPU T4 ×2**;
+   - *Internet*: **On**;
+   - *Persistence*: không cần.
+
+**Bước 3. Chạy Save & Run All**
+1. Bấm **Save Version** (góc trên bên phải) → chọn **Save & Run All (Commit)** → **Save**. Có thể đóng tab; notebook chạy nền tới 12 giờ.
+2. Theo dõi tiến độ: mở **Versions** (hoặc **View Active Events**) → chọn bản đang chạy → xem **Logs**. Giao diện Kaggle thay đổi theo thời gian, hãy tìm mục có tên tương tự.
+3. Các cell chạy theo thứ tự: kiểm tra Internet (OK `pypi.org`, `huggingface.co`, `ngrok.com`) → cài môi trường (khoảng 10 phút lần đầu) → ghi file → khởi động server và nạp mô hình (2–4 phút) → mở ngrok.
+4. Khi sẵn sàng, log in ra khung sau:
+   ```
+   ======================================================================
+     URL   : NgrokTunnel: "https://xxxx-xxxx.ngrok-free.dev" -> "http://localhost:8765"
+     TOKEN : <chuỗi ngẫu nhiên dài>
+   ======================================================================
+   ```
+   **URL** là địa chỉ `https://….ngrok-free.dev` nằm trong dấu ngoặc kép; **TOKEN** là chuỗi ngẫu nhiên bên dưới. Cả hai **thay đổi mỗi lần chạy**.
+
+**Bước 4. Kết nối từ máy của bạn**
+1. Ở thư mục gốc của repo, tạo file `remote_config.json` (đã bị `.gitignore` chặn, không bao giờ commit):
+   ```json
+   {"url": "https://xxxx-xxxx.ngrok-free.dev", "token": "<TOKEN trong log>"}
+   ```
+   Nhiều server: `remote_config2.json`, `remote_config3.json`… rồi chọn bằng `REMOTE_CFG=remote_config2.json python remote_client.py ...`.
+2. Kiểm tra: `python remote_client.py ping` phải in `{"ok": true}`; `python remote_client.py info` cho biết GPU và mô hình.
+3. Chạy `python remote_client.py run remote_tests/fix_ffmpeg.py` **một lần sau mỗi lần (re)start server**, rồi gửi job như mục 3.3 / 0A.7.
+
+**Xử lý lỗi thường gặp**
+| Triệu chứng | Nguyên nhân / cách sửa |
+|---|---|
+| `Không kết nối được … Bật Internet` ở cell 0 | Session options → Internet = **On** |
+| `Không đọc được Kaggle Secret NGROK_AUTHTOKEN` | Chưa thêm Secret, sai tên, hoặc chưa bật **Attach** cho notebook này |
+| ngrok báo authtoken không hợp lệ / đang có phiên khác | Copy sai chuỗi (dùng *Authtoken*, không phải API key), hoặc tài khoản ngrok đó đang chạy một server khác; dùng tài khoản ngrok khác |
+| `server không lên được` | Xem log in ra (đuôi `server.log`); thường là hết bộ nhớ GPU hoặc thiếu GPU thứ hai |
+| `{"error": "bad token"}` hoặc HTTP 401 | TOKEN trong `remote_config.json` không khớp lần chạy hiện tại; lấy TOKEN mới từ log |
+| Không kết nối được tới URL | Phiên đã hết giờ (tối đa 12 giờ) hoặc Kaggle đã ngắt vì rảnh lâu; chạy lại Bước 3 và cập nhật URL + TOKEN |
+| Job treo / cần giải phóng GPU | `python remote_client.py restart` (notebook tự khởi động lại server, sau đó nạp lại mô hình), rồi chạy lại `fix_ffmpeg.py` |
+
+**Bảo mật và chính sách**
+- **Ai có cả URL lẫn TOKEN đều chạy được mã tuỳ ý trong notebook của bạn.** Không đăng lên GitHub, không gửi vào kênh công khai, không chia sẻ log. Đặt `ALLOW_EXEC = False` ở cell cuối nếu chỉ muốn thử kết nối.
+- Server chỉ nghe `127.0.0.1`, chỉ ngrok chuyển tới; token được so sánh theo thời gian hằng số; tải file chỉ trong thư mục kết quả.
+- Chưa xác minh được việc mở tunnel từ notebook Kaggle có nằm trong điều khoản sử dụng hay không, và Kaggle có thể tự ngắt notebook rảnh lâu. Notebook **cố ý không có vòng lặp chống ngắt**. Dùng tài khoản phụ, và tải kết quả về thường xuyên.
+- Quota GPU của Kaggle theo tuần; mỗi phiên Save & Run All dùng tối đa 12 giờ.
 
 ### 3.4 Chạy thử / debug trên máy yếu (1 mẫu)
 - Dùng `repo/kaggle/jobs/nb_runner.py` với các biến `LAB_*` ở trên, ví dụ:
