@@ -1,0 +1,13 @@
+{question}
+
+Identify what the question asks you to verify.
+
+If it asks whether an object, ingredient, or action is visible or occurs, decide from the video images alone. Spoken words and the question's wording are not visual evidence. Describe the visible candidate without naming it first. Compare it with plausible similar objects or actions in the scene, then state the image detail that distinguishes the requested one. Color, location, recipe context, or general resemblance alone does not establish identity. If no distinguishing visual detail is visible, say the claim is not visually confirmed; if a clear matching detail is present, count it as visible. Do not default to either answer when uncertain.
+
+If it asks whether speech describes the visual activity, compare the spoken meaning with what the images show. Do not assume they match just because both concern the same topic. Transcribe only relevant words you can actually hear; do not infer speech from the images.
+
+Give a short response using these labels on separate lines:
+Video evidence: [Concrete observation relevant to the question.]
+Speech evidence: [Relevant words, or "Not needed for this question".]
+Comparison: [The distinguishing evidence and what it supports.]
+Final answer: [A (Yes) or B (No), choose one.]

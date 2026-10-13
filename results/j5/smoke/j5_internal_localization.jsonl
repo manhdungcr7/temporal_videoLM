@@ -1,0 +1,4 @@
+{"idx": 2144, "task": "CMTB", "gold": 0, "dur": 11.11, "win": [0.03, 6.03], "speech_first": true, "n_chunks": 6, "speech_activity": [1.0, 0.875, 1.0, 0.025, 0.0, 0.0], "noisy_detected_win": [0.28, 5.78], "base": [-4.322, -10.673, -3.767], "noisy": [-3.103, -10.368, -4.157], "gate_audio": [-0.134, -14.196, -14.704], "noisy_gate_audio_detected": [-0.143, -14.049, -14.549], "sec": 43}
+{"idx": 2140, "task": "CMTB", "gold": 1, "dur": 27.1, "win": [0.03, 13.03], "speech_first": true, "n_chunks": 14, "speech_activity": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.525, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "noisy_detected_win": [0.03, 25.62], "base": [-10.962, -1.212, -7.728], "noisy": [-10.625, -1.148, -7.32], "gate_audio": [-14.717, -0.092, -15.889], "noisy_gate_audio_detected": [-13.697, -0.337, -12.931], "sec": 105}
+{"idx": 2188, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2185, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}

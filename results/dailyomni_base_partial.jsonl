@@ -1,0 +1,189 @@
+{"i": 0, "type": "Event Sequence", "gold": 1, "video_id": "Ec_lQgZ9wlg", "base": [-15.737, -0.291, -15.393, -17.744], "vision_only": [-19.156, -0.445, -14.742, -18.945], "sec": 76}
+{"i": 1, "type": "AV Event Alignment", "gold": 0, "video_id": "XUWxQYmiBQY", "base": [-7.385, -11.51, -2.69, -14.331], "vision_only": [-13.709, -13.951, -1.576, -14.982], "sec": 75}
+{"i": 2, "type": "AV Event Alignment", "gold": 3, "video_id": "rieb8cBb2z8", "base": [-7.998, -2.186, -9.288, -8.123], "vision_only": [-8.786, -2.778, -9.177, -7.122], "sec": 76}
+{"i": 3, "type": "AV Event Alignment", "gold": 3, "video_id": "Me4W36_lUcI", "base": [-1.735, -10.118, -11.407, -10.337], "vision_only": [-2.949, -9.269, -11.214, -9.964], "sec": 76}
+{"i": 4, "type": "AV Event Alignment", "gold": 3, "video_id": "G_VTkkb34gw", "base": [-7.833, -9.255, -10.974, -2.263], "vision_only": [-10.585, -11.132, -12.882, -1.296], "sec": 76}
+{"i": 5, "type": "AV Event Alignment", "gold": 1, "video_id": "Z0JDTBGh4D8", "base": [-3.8, -5.925, -8.714, -7.066], "vision_only": [-2.317, -7.888, -14.075, -13.778], "sec": 76}
+{"i": 6, "type": "AV Event Alignment", "gold": 3, "video_id": "eLPe7xp0jRw", "base": [-15.907, -10.008, -13.922, -2.133], "vision_only": [-18.938, -12.126, -15.079, -0.696], "sec": 76}
+{"i": 7, "type": "Event Sequence", "gold": 1, "video_id": "d6b4OmUFt7I", "base": [-1.492, -9.375, -21.273, -21.125], "vision_only": [-0.088, -18.603, -23.127, -22.861], "sec": 76}
+{"i": 8, "type": "Event Sequence", "gold": 1, "video_id": "G_VTkkb34gw", "base": [-3.078, -6.437, -12.281, -16.695], "vision_only": [-0.79, -12.407, -14.939, -16.243], "sec": 76}
+{"i": 9, "type": "Event Sequence", "gold": 2, "video_id": "Me4W36_lUcI", "base": [-2.852, -5.86, -8.696, -15.024], "vision_only": [-9.635, -3.643, -5.971, -15.564], "sec": 75}
+{"i": 10, "type": "AV Event Alignment", "gold": 2, "video_id": "Ec_lQgZ9wlg", "base": [-16.811, -16.889, -2.866, -5.858], "vision_only": [-18.352, -16.524, -7.673, -1.454], "sec": 76}
+{"i": 11, "type": "Inference", "gold": 3, "video_id": "G_VTkkb34gw", "base": [-19.761, -23.425, -21.543, -0.152], "vision_only": [-19.38, -22.739, -21.388, -0.185], "sec": 76}
+{"i": 12, "type": "Reasoning", "gold": 3, "video_id": "d6b4OmUFt7I", "base": [-20.742, -22.656, -17.812, -0.187], "vision_only": [-15.185, -14.787, -10.068, -1.951], "sec": 76}
+{"i": 13, "type": "Event Sequence", "gold": 2, "video_id": "XUWxQYmiBQY", "base": [-6.543, -7.754, -5.98, -5.738], "vision_only": [-5.233, -7.459, -4.928, -8.584], "sec": 76}
+{"i": 14, "type": "Event Sequence", "gold": 3, "video_id": "bswbQtOPk6E", "base": [-19.881, -7.819, -1.381, -12.139], "vision_only": [-17.317, -5.887, -2.082, -9.747], "sec": 76}
+{"i": 15, "type": "Context understanding", "gold": 0, "video_id": "Me4W36_lUcI", "base": [-5.882, -5.484, -10.734, -8.187], "vision_only": [-5.648, -4.71, -12.28, -9.984], "sec": 75}
+{"i": 16, "type": "Comparative", "gold": 0, "video_id": "Ec_lQgZ9wlg", "base": [-0.367, -13.859, -14.124, -17.21], "vision_only": [-2.577, -7.225, -7.835, -12.303], "sec": 76}
+{"i": 17, "type": "Comparative", "gold": 2, "video_id": "1TtcXC_u4r4", "base": [-10.189, -3.204, -7.626, -8.079], "vision_only": [-10.278, -5.637, -6.45, -4.95], "sec": 76}
+{"i": 18, "type": "Inference", "gold": 3, "video_id": "Z0JDTBGh4D8", "base": [-22.158, -14.635, -16.361, -0.65], "vision_only": [-20.95, -13.036, -7.286, -3.317], "sec": 75}
+{"i": 19, "type": "Comparative", "gold": 0, "video_id": "d6b4OmUFt7I", "base": [-1.392, -9.845, -16.767, -11.697], "vision_only": [-2.968, -6.82, -13.335, -8.304], "sec": 76}
+{"i": 20, "type": "Event Sequence", "gold": 0, "video_id": "sNf0WG57RtA", "base": [-4.543, -12.277, -3.621, -10.433], "vision_only": [-5.793, -13.566, -3.074, -8.246], "sec": 76}
+{"i": 21, "type": "Inference", "gold": 3, "video_id": "1TtcXC_u4r4", "base": [-23.9, -25.446, -17.04, -0.22], "vision_only": [-21.909, -24.487, -15.933, -0.44], "sec": 76}
+{"i": 22, "type": "Context understanding", "gold": 1, "video_id": "d6b4OmUFt7I", "base": [-10.295, -3.295, -6.162, -12.716], "vision_only": [-3.772, -5.498, -10.084, -13.131], "sec": 76}
+{"i": 23, "type": "Reasoning", "gold": 0, "video_id": "gPpJoyPjiPw", "base": [-0.292, -18.511, -19.956, -19.143], "vision_only": [-3.567, -10.833, -12.481, -5.286], "sec": 76}
+{"i": 24, "type": "Context understanding", "gold": 3, "video_id": "bswbQtOPk6E", "base": [-10.255, -13.802, -18.02, -1.192], "vision_only": [-7.053, -9.897, -17.389, -2.209], "sec": 76}
+{"i": 25, "type": "Context understanding", "gold": 3, "video_id": "Z0JDTBGh4D8", "base": [-20.704, -2.876, -18.603, -6.923], "vision_only": [-24.793, -2.566, -22.722, -4.863], "sec": 75}
+{"i": 26, "type": "Inference", "gold": 0, "video_id": "sNf0WG57RtA", "base": [-0.942, -10.34, -14.918, -14.575], "vision_only": [-8.838, -1.963, -9.322, -10.963], "sec": 76}
+{"i": 27, "type": "Context understanding", "gold": 0, "video_id": "sNf0WG57RtA", "base": [-3.556, -8.009, -5.064, -9.571], "vision_only": [-7.645, -7.286, -2.911, -9.184], "sec": 76}
+{"i": 28, "type": "Reasoning", "gold": 2, "video_id": "iYDcBb9C-Mc", "base": [-9.547, -9.649, -7.368, -10.68], "vision_only": [-8.117, -9.711, -8.211, -11.547], "sec": 76}
+{"i": 29, "type": "Context understanding", "gold": 0, "video_id": "eLPe7xp0jRw", "base": [-7.536, -12.599, -7.567, -2.13], "vision_only": [-6.009, -14.267, -5.493, -4.962], "sec": 76}
+{"i": 30, "type": "Comparative", "gold": 1, "video_id": "sNf0WG57RtA", "base": [-7.301, -12.293, -7.176, -8.379], "vision_only": [-10.727, -13.336, -4.641, -11.141], "sec": 76}
+{"i": 31, "type": "Event Sequence", "gold": 3, "video_id": "7yY1OWjT4zA", "base": [-13.534, -16.393, -14.534, -0.455], "vision_only": [-18.498, -20.701, -17.553, -0.154], "sec": 76}
+{"i": 32, "type": "Reasoning", "gold": 1, "video_id": "zmL97ovp0kU", "base": [-22.915, -8.547, -23.493, -6.063], "vision_only": [-19.463, -12.533, -21.916, -0.932], "sec": 76}
+{"i": 33, "type": "Context understanding", "gold": 3, "video_id": "zGVKSnlJFhY", "base": [-3.655, -6.115, -7.764, -7.545], "vision_only": [-3.308, -12.832, -8.644, -6.551], "sec": 76}
+{"i": 34, "type": "Event Sequence", "gold": 1, "video_id": "MXYFQArjCxg", "base": [-10.081, -1.503, -11.48, -13.074], "vision_only": [-5.135, -3.424, -11.58, -15.236], "sec": 77}
+{"i": 35, "type": "Context understanding", "gold": 3, "video_id": "m4tk3TxWc1I", "base": [-10.16, -12.449, -3.363, -6.253], "vision_only": [-14.687, -10.679, -2.265, -7.328], "sec": 76}
+{"i": 36, "type": "Inference", "gold": 1, "video_id": "7yY1OWjT4zA", "base": [-18.077, -1.242, -21.906, -15.359], "vision_only": [-17.569, -0.272, -20.842, -16.647], "sec": 76}
+{"i": 37, "type": "Event Sequence", "gold": 1, "video_id": "81CM8lLrgoM", "base": [-10.191, -5.332, -4.222, -6.652], "vision_only": [-9.788, -8.686, -1.507, -10.483], "sec": 76}
+{"i": 38, "type": "Context understanding", "gold": 1, "video_id": "81CM8lLrgoM", "base": [-27.464, -0.027, -24.417, -27.55], "vision_only": [-5.513, -8.287, -3.779, -9.107], "sec": 76}
+{"i": 39, "type": "Context understanding", "gold": 1, "video_id": "MXYFQArjCxg", "base": [-6.713, -6.705, -3.642, -9.752], "vision_only": [-2.67, -7.873, -9.053, -10.397], "sec": 75}
+{"i": 40, "type": "Reasoning", "gold": 3, "video_id": "sNf0WG57RtA", "base": [-6.111, -21.119, -20.931, -5.236], "vision_only": [-5.576, -20.31, -20.013, -3.451], "sec": 77}
+{"i": 41, "type": "Inference", "gold": 1, "video_id": "rieb8cBb2z8", "base": [-17.085, -0.186, -21.678, -19.085], "vision_only": [-20.062, -0.125, -23.164, -20.789], "sec": 76}
+{"i": 42, "type": "Inference", "gold": 1, "video_id": "m4tk3TxWc1I", "base": [-20.757, -0.155, -20.296, -21.812], "vision_only": [-11.715, -2.488, -11.77, -11.754], "sec": 75}
+{"i": 43, "type": "Event Sequence", "gold": 1, "video_id": "LttCU4RK-Zc", "base": [-21.445, -3.078, -21.273, -6.312], "vision_only": [-10.241, -5.772, -8.178, -3.827], "sec": 76}
+{"i": 44, "type": "Event Sequence", "gold": 0, "video_id": "H3-6byL6FTs", "base": [-0.189, -20.291, -21.127, -14.275], "vision_only": [-0.676, -17.09, -16.52, -9.598], "sec": 76}
+{"i": 45, "type": "AV Event Alignment", "gold": 1, "video_id": "aseK5-RpkSQ", "base": [-7.368, -4.133, -13.547, -4.337], "vision_only": [-6.538, -5.46, -13.444, -4.077], "sec": 76}
+{"i": 46, "type": "Event Sequence", "gold": 0, "video_id": "vmK5xIPPSU8", "base": [-1.011, -13.425, -14.48, -16.995], "vision_only": [-4.292, -5.643, -7.487, -6.854], "sec": 75}
+{"i": 47, "type": "Event Sequence", "gold": 1, "video_id": "9PsvKIvzgUs", "base": [-18.126, -18.306, -0.181, -19.196], "vision_only": [-20.185, -20.982, -0.123, -20.349], "sec": 76}
+{"i": 48, "type": "Event Sequence", "gold": 3, "video_id": "WkBkvlUoZpU", "base": [-0.752, -14.697, -17.322, -8.83], "vision_only": [-0.252, -17.025, -18.377, -14.939], "sec": 76}
+{"i": 49, "type": "Event Sequence", "gold": 1, "video_id": "Alx0y8O6FKU", "base": [-8.559, -12.427, -15.137, -1.216], "vision_only": [-9.423, -17.087, -19.017, -0.704], "sec": 75}
+{"i": 50, "type": "Inference", "gold": 0, "video_id": "1F6g2NS_vGY", "base": [-12.872, -0.544, -18.896, -20.232], "vision_only": [-20.101, -0.156, -20.616, -22.976], "sec": 74}
+{"i": 51, "type": "Inference", "gold": 2, "video_id": "FqaJYWyQQcE", "base": [-22.468, -6.866, -4.148, -17.991], "vision_only": [-18.488, -1.636, -11.754, -6.285], "sec": 76}
+{"i": 52, "type": "Reasoning", "gold": 0, "video_id": "S8D4VF8Yl1g", "base": [-0.915, -22.915, -21.188, -14.219], "vision_only": [-1.701, -22.052, -21.115, -9.576], "sec": 76}
+{"i": 53, "type": "AV Event Alignment", "gold": 0, "video_id": "WpPgSEzdCns", "base": [-5.678, -4.264, -12.061, -7.202], "vision_only": [-5.814, -4.822, -11.955, -6.189], "sec": 76}
+{"i": 54, "type": "Inference", "gold": 0, "video_id": "G8ywbM85GVE", "base": [-0.144, -18.816, -19.238, -19.504], "vision_only": [-1.738, -12.84, -10.121, -11.98], "sec": 75}
+{"i": 55, "type": "Reasoning", "gold": 3, "video_id": "WkBkvlUoZpU", "base": [-8.511, -18.152, -15.769, -0.777], "vision_only": [-9.605, -9.965, -5.113, -4.363], "sec": 76}
+{"i": 56, "type": "Reasoning", "gold": 3, "video_id": "1F6g2NS_vGY", "base": [-6.314, -15.204, -13.869, -3.353], "vision_only": [-8.944, -12.772, -13.116, -6.123], "sec": 76}
+{"i": 57, "type": "AV Event Alignment", "gold": 0, "video_id": "7jeoNQXpJYM", "base": [-0.245, -20.066, -16.48, -19.597], "vision_only": [-7.811, -16.468, -12.382, -4.46], "sec": 76}
+{"i": 58, "type": "Reasoning", "gold": 0, "video_id": "Alx0y8O6FKU", "base": [-2.948, -7.8, -14.487, -19.151], "vision_only": [-13.295, -7.849, -4.998, -13.303], "sec": 76}
+{"i": 59, "type": "Comparative", "gold": 3, "video_id": "WkBkvlUoZpU", "base": [-7.297, -18.602, -3.891, -4.719], "vision_only": [-8.383, -16.953, -5.461, -2.961], "sec": 76}
+{"i": 60, "type": "Comparative", "gold": 0, "video_id": "G8ywbM85GVE", "base": [-4.367, -7.031, -10.273, -12.461], "vision_only": [-4.226, -6.039, -7.297, -10.82], "sec": 76}
+{"i": 61, "type": "Inference", "gold": 2, "video_id": "WpPgSEzdCns", "base": [-20.503, -24.987, -0.432, -22.323], "vision_only": [-25.414, -27.398, -0.031, -25.304], "sec": 76}
+{"i": 62, "type": "Event Sequence", "gold": 1, "video_id": "S8D4VF8Yl1g", "base": [-5.275, -3.744, -13.947, -7.494], "vision_only": [-7.243, -3.759, -11.313, -4.852], "sec": 77}
+{"i": 63, "type": "Context understanding", "gold": 0, "video_id": "G8ywbM85GVE", "base": [-0.069, -24.788, -22.015, -25.163], "vision_only": [-2.089, -13.292, -11.355, -13.12], "sec": 76}
+{"i": 64, "type": "Context understanding", "gold": 2, "video_id": "1F6g2NS_vGY", "base": [-10.985, -7.001, -5.032, -6.423], "vision_only": [-12.949, -6.621, -2.246, -7.41], "sec": 76}
+{"i": 65, "type": "Context understanding", "gold": 3, "video_id": "WpPgSEzdCns", "base": [-13.73, -13.551, -4.488, -6.41], "vision_only": [-14.256, -13.99, -2.451, -7.49], "sec": 75}
+{"i": 66, "type": "Reasoning", "gold": 3, "video_id": "ev_45FHogv8", "base": [-17.131, -6.108, -21.35, -2.092], "vision_only": [-12.026, -10.635, -21.916, -0.963], "sec": 76}
+{"i": 67, "type": "Context understanding", "gold": 2, "video_id": "8I2nIXrbFpo", "base": [-3.968, -8.616, -11.484, -6.038], "vision_only": [-6.186, -6.826, -7.608, -4.545], "sec": 76}
+{"i": 68, "type": "Inference", "gold": 0, "video_id": "cyfur9LHDII", "base": [-1.682, -23.448, -19.924, -27.917], "vision_only": [-0.044, -24.505, -23.662, -27.888], "sec": 76}
+{"i": 69, "type": "Inference", "gold": 3, "video_id": "f3RcpzE1T9U", "base": [-17.051, -20.067, -14.38, -0.348], "vision_only": [-2.898, -10.64, -6.984, -10.827], "sec": 76}
+{"i": 70, "type": "Comparative", "gold": 3, "video_id": "f3RcpzE1T9U", "base": [-9.424, -7.237, -5.346, -5.643], "vision_only": [-11.288, -6.444, -3.014, -7.045], "sec": 76}
+{"i": 71, "type": "Event Sequence", "gold": 0, "video_id": "17MofPDhLTQ", "base": [-5.121, -9.317, -4.918, -5.254], "vision_only": [-6.254, -10.364, -10.473, -2.481], "sec": 75}
+{"i": 72, "type": "Context understanding", "gold": 1, "video_id": "cyfur9LHDII", "base": [-11.455, -10.111, -1.892, -7.837], "vision_only": [-0.374, -14.484, -16.484, -15.366], "sec": 76}
+{"i": 73, "type": "Context understanding", "gold": 1, "video_id": "f3RcpzE1T9U", "base": [-8.197, -2.228, -15.197, -20.127], "vision_only": [-7.042, -8.222, -5.761, -10.003], "sec": 75}
+{"i": 74, "type": "Comparative", "gold": 2, "video_id": "17MofPDhLTQ", "base": [-23.757, -24.499, -0.053, -22.96], "vision_only": [-5.351, -13.351, -3.054, -12.351], "sec": 76}
+{"i": 75, "type": "Reasoning", "gold": 0, "video_id": "f3RcpzE1T9U", "base": [-13.493, -12.86, -4.016, -7.641], "vision_only": [-19.346, -16.94, -0.94, -10.416], "sec": 76}
+{"i": 76, "type": "Comparative", "gold": 3, "video_id": "FqaJYWyQQcE", "base": [-21.722, -22.878, -19.402, -0.16], "vision_only": [-10.379, -9.067, -2.871, -10.231], "sec": 76}
+{"i": 77, "type": "Inference", "gold": 3, "video_id": "E0K4HLE_0GI", "base": [-13.915, -7.665, -7.595, -7.884], "vision_only": [-6.277, -7.659, -9.089, -5.183], "sec": 72}
+{"i": 78, "type": "Event Sequence", "gold": 2, "video_id": "QFNwukuWJ4I", "base": [-5.219, -3.789, -8.594, -9.961], "vision_only": [-3.981, -3.895, -10.153, -11.325], "sec": 76}
+{"i": 79, "type": "Event Sequence", "gold": 2, "video_id": "0U_X5BIkYoA", "base": [-16.807, -15.628, -3.214, -7.261], "vision_only": [-15.297, -15.219, -3.344, -7.438], "sec": 75}
+{"i": 80, "type": "Event Sequence", "gold": 1, "video_id": "uMkFfqmVr1M", "base": [-9.828, -2.539, -9.836, -7.609], "vision_only": [-7.62, -5.565, -10.635, -3.963], "sec": 76}
+{"i": 81, "type": "Reasoning", "gold": 2, "video_id": "0U_X5BIkYoA", "base": [-27.48, -24.332, -0.214, -20.894], "vision_only": [-27.308, -27.105, -0.066, -23.144], "sec": 76}
+{"i": 82, "type": "AV Event Alignment", "gold": 1, "video_id": "6l8n-VJxqmU", "base": [-10.034, -3.432, -10.877, -5.62], "vision_only": [-8.47, -4.486, -8.002, -4.189], "sec": 76}
+{"i": 83, "type": "AV Event Alignment", "gold": 0, "video_id": "-jR3C_yA_G0", "base": [-8.158, -8.197, -2.22, -10.439], "vision_only": [-7.106, -8.216, -4.427, -6.661], "sec": 76}
+{"i": 84, "type": "Inference", "gold": 2, "video_id": "-l8djVj0FcU", "base": [-28.604, -26.58, -0.041, -27.549], "vision_only": [-22.378, -18.87, -0.292, -21.136], "sec": 76}
+{"i": 85, "type": "AV Event Alignment", "gold": 0, "video_id": "QFNwukuWJ4I", "base": [-4.431, -4.322, -12.697, -6.416], "vision_only": [-6.447, -7.041, -11.892, -3.596], "sec": 77}
+{"i": 86, "type": "Reasoning", "gold": 1, "video_id": "CwW8mqaHQmU", "base": [-20.046, -6.905, -5.038, -19.757], "vision_only": [-20.616, -8.717, -3.405, -19.467], "sec": 76}
+{"i": 87, "type": "Event Sequence", "gold": 3, "video_id": "-l8djVj0FcU", "base": [-12.209, -9.256, -14.655, -1.952], "vision_only": [-11.778, -5.997, -12.239, -3.606], "sec": 76}
+{"i": 88, "type": "Event Sequence", "gold": 2, "video_id": "lyX4hKwSyMk", "base": [-13.039, -13.867, -1.781, -9.328], "vision_only": [-8.212, -9.705, -3.158, -9.548], "sec": 76}
+{"i": 89, "type": "Reasoning", "gold": 3, "video_id": "-l8djVj0FcU", "base": [-27.94, -26.19, -27.542, -0.034], "vision_only": [-19.729, -15.088, -21.322, -0.479], "sec": 76}
+{"i": 90, "type": "Event Sequence", "gold": 0, "video_id": "-jR3C_yA_G0", "base": [-4.193, -20.959, -18.936, -8.834], "vision_only": [-7.114, -17.458, -13.06, -3.474], "sec": 76}
+{"i": 91, "type": "Reasoning", "gold": 1, "video_id": "BbVjTgLJYVQ", "base": [-21.273, -1.187, -19.859, -16.437], "vision_only": [-12.362, -11.612, -11.018, -1.268], "sec": 76}
+{"i": 92, "type": "Reasoning", "gold": 3, "video_id": "7-v3XPyyipk", "base": [-13.297, -10.469, -10.586, -1.555], "vision_only": [-11.407, -5.54, -6.243, -3.696], "sec": 76}
+{"i": 93, "type": "Inference", "gold": 2, "video_id": "6l8n-VJxqmU", "base": [-26.599, -27.708, -0.044, -22.638], "vision_only": [-25.033, -24.775, -0.087, -21.416], "sec": 76}
+{"i": 94, "type": "Comparative", "gold": 1, "video_id": "BbVjTgLJYVQ", "base": [-21.365, -0.162, -20.404, -19.591], "vision_only": [-18.482, -0.318, -16.857, -16.536], "sec": 76}
+{"i": 95, "type": "Context understanding", "gold": 0, "video_id": "6l8n-VJxqmU", "base": [-4.46, -15.874, -6.632, -12.867], "vision_only": [-0.35, -19.436, -20.201, -13.959], "sec": 76}
+{"i": 96, "type": "Reasoning", "gold": 0, "video_id": "bf7tZng_lEI", "base": [-2.273, -10.093, -14.593, -15.796], "vision_only": [-4.246, -8.816, -8.691, -9.519], "sec": 76}
+{"i": 97, "type": "Comparative", "gold": 0, "video_id": "lyX4hKwSyMk", "base": [-0.453, -19.648, -16.062, -21.726], "vision_only": [-0.254, -17.66, -14.934, -18.855], "sec": 76}
+{"i": 98, "type": "Inference", "gold": 0, "video_id": "Ggv1cJYtW8E", "base": [-0.568, -18.178, -21.123, -18.412], "vision_only": [-1.354, -15.815, -18.198, -14.315], "sec": 75}
+{"i": 99, "type": "Context understanding", "gold": 3, "video_id": "0U_X5BIkYoA", "base": [-23.446, -25.133, -24.274, -0.04], "vision_only": [-18.506, -23.693, -17.303, -0.17], "sec": 75}
+{"i": 100, "type": "Comparative", "gold": 2, "video_id": "QFNwukuWJ4I", "base": [-6.083, -9.239, -3.317, -13.997], "vision_only": [-3.445, -7.406, -6.515, -13.968], "sec": 76}
+{"i": 101, "type": "AV Event Alignment", "gold": 1, "video_id": "40VQROcd5sQ", "base": [-8.857, -3.795, -11.795, -5.85], "vision_only": [-14.224, -14.849, -14.802, -0.575], "sec": 76}
+{"i": 102, "type": "Comparative", "gold": 3, "video_id": "uMkFfqmVr1M", "base": [-15.258, -20.071, -17.875, -0.243], "vision_only": [-15.92, -20.006, -17.483, -0.186], "sec": 76}
+{"i": 103, "type": "Reasoning", "gold": 0, "video_id": "lyX4hKwSyMk", "base": [-0.031, -25.195, -26.953, -27.445], "vision_only": [-0.026, -26.643, -26.721, -25.948], "sec": 76}
+{"i": 104, "type": "Context understanding", "gold": 1, "video_id": "7-v3XPyyipk", "base": [-7.573, -3.369, -10.104, -16.729], "vision_only": [-7.99, -1.529, -12.256, -19.263], "sec": 76}
+{"i": 105, "type": "Comparative", "gold": 0, "video_id": "-l8djVj0FcU", "base": [-1.739, -8.223, -14.122, -13.426], "vision_only": [-4.71, -4.476, -9.882, -6.866], "sec": 76}
+{"i": 106, "type": "AV Event Alignment", "gold": 1, "video_id": "jj5j3jksbUM", "base": [-16.162, -7.498, -1.857, -12.6], "vision_only": [-19.173, -19.079, -0.533, -14.376], "sec": 76}
+{"i": 107, "type": "Reasoning", "gold": 2, "video_id": "decrvBAe_Rk", "base": [-11.657, -9.032, -13.087, -1.719], "vision_only": [-13.239, -9.434, -13.145, -1.012], "sec": 76}
+{"i": 108, "type": "Context understanding", "gold": 2, "video_id": "bf7tZng_lEI", "base": [-19.028, -16.285, -9.098, -1.129], "vision_only": [-17.339, -15.839, -4.831, -2.636], "sec": 75}
+{"i": 109, "type": "Event Sequence", "gold": 1, "video_id": "nbuHTaMV8ok", "base": [-6.251, -8.251, -11.205, -9.861], "vision_only": [-8.415, -6.196, -9.165, -10.36], "sec": 76}
+{"i": 110, "type": "Reasoning", "gold": 3, "video_id": "SZRxEbvKih0", "base": [-26.249, -0.241, -25.882, -15.937], "vision_only": [-20.879, -0.52, -12.66, -17.176], "sec": 75}
+{"i": 111, "type": "Event Sequence", "gold": 3, "video_id": "_t2geYpykFo", "base": [-18.517, -15.299, -6.502, -4.025], "vision_only": [-17.193, -16.217, -4.904, -2.584], "sec": 75}
+{"i": 112, "type": "Event Sequence", "gold": 0, "video_id": "HOa6A7GVvEc", "base": [-0.955, -11.549, -16.643, -10.354], "vision_only": [-4.802, -7.498, -10.755, -6.24], "sec": 78}
+{"i": 113, "type": "Reasoning", "gold": 3, "video_id": "HOa6A7GVvEc", "base": [-19.735, -12.47, -20.438, -2.251], "vision_only": [-15.102, -4.25, -10.227, -6.516], "sec": 74}
+{"i": 114, "type": "Event Sequence", "gold": 1, "video_id": "40VQROcd5sQ", "base": [-2.974, -4.802, -11.709, -12.162], "vision_only": [-3.361, -7.955, -12.627, -12.135], "sec": 78}
+{"i": 115, "type": "Event Sequence", "gold": 2, "video_id": "jj5j3jksbUM", "base": [-5.576, -6.717, -6.264, -5.311], "vision_only": [-4.688, -6.516, -5.352, -7.594], "sec": 76}
+{"i": 116, "type": "Inference", "gold": 2, "video_id": "SZRxEbvKih0", "base": [-25.711, -26.016, -0.024, -26.516], "vision_only": [-21.236, -19.962, -0.087, -21.345], "sec": 75}
+{"i": 117, "type": "Reasoning", "gold": 1, "video_id": "nbuHTaMV8ok", "base": [-20.234, -0.445, -14.757, -13.406], "vision_only": [-13.488, -12.621, -8.363, -2.246], "sec": 75}
+{"i": 118, "type": "Event Sequence", "gold": 2, "video_id": "aYVMcCgScVE", "base": [-8.338, -8.517, -6.666, -2.595], "vision_only": [-7.637, -8.317, -6.067, -3.223], "sec": 78}
+{"i": 119, "type": "Inference", "gold": 3, "video_id": "cFkYpIKWH5A", "base": [-16.166, -11.509, -18.298, -2.212], "vision_only": [-18.986, -15.197, -20.072, -0.588], "sec": 76}
+{"i": 120, "type": "Inference", "gold": 3, "video_id": "4sBpUHylq9s", "base": [-17.211, -1.625, -15.156, -12.016], "vision_only": [-16.644, -0.753, -15.597, -13.628], "sec": 76}
+{"i": 121, "type": "Comparative", "gold": 2, "video_id": "6vKvjzuICxg", "base": [-11.502, -13.932, -1.932, -5.971], "vision_only": [-5.986, -11.299, -4.369, -9.064], "sec": 76}
+{"i": 122, "type": "Context understanding", "gold": 1, "video_id": "hUQKQwAAncc", "base": [-1.692, -12.114, -8.661, -15.067], "vision_only": [-0.956, -12.909, -9.3, -13.542], "sec": 76}
+{"i": 123, "type": "Context understanding", "gold": 2, "video_id": "cFkYpIKWH5A", "base": [-7.658, -7.049, -5.346, -8.893], "vision_only": [-7.353, -5.235, -5.165, -9.267], "sec": 76}
+{"i": 124, "type": "Comparative", "gold": 1, "video_id": "jj5j3jksbUM", "base": [-17.618, -0.142, -19.665, -17.634], "vision_only": [-17.61, -0.172, -19.274, -16.555], "sec": 76}
+{"i": 125, "type": "Inference", "gold": 3, "video_id": "BbVjTgLJYVQ", "base": [-18.694, -20.421, -19.413, -0.421], "vision_only": [-12.355, -16.332, -0.699, -13.996], "sec": 76}
+{"i": 126, "type": "AV Event Alignment", "gold": 1, "video_id": "cFkYpIKWH5A", "base": [-21.283, -0.064, -22.916, -20.916], "vision_only": [-18.75, -0.133, -20.922, -18.5], "sec": 76}
+{"i": 127, "type": "Inference", "gold": 1, "video_id": "a_tsqihza4E", "base": [-19.958, -0.45, -16.239, -14.482], "vision_only": [-17.112, -0.409, -14.463, -14.026], "sec": 76}
+{"i": 128, "type": "Context understanding", "gold": 1, "video_id": "6vKvjzuICxg", "base": [-20.289, -0.234, -16.086, -19.953], "vision_only": [-19.893, -0.261, -15.87, -20.487], "sec": 76}
+{"i": 129, "type": "Inference", "gold": 1, "video_id": "ckfRrzOlEuM", "base": [-8.318, -1.607, -8.35, -15.123], "vision_only": [-7.22, -2.58, -6.189, -16.619], "sec": 76}
+{"i": 130, "type": "Context understanding", "gold": 0, "video_id": "6_Foh42T5XM", "base": [-17.207, -16.871, -6.121, -5.949], "vision_only": [-17.244, -16.103, -2.111, -8.627], "sec": 76}
+{"i": 131, "type": "Inference", "gold": 2, "video_id": "_t2geYpykFo", "base": [-15.184, -13.458, -1.372, -10.489], "vision_only": [-8.184, -5.73, -6.691, -8.441], "sec": 75}
+{"i": 132, "type": "Event Sequence", "gold": 0, "video_id": "pUqmv-KY0Q4", "base": [-3.968, -6.14, -6.968, -15.398], "vision_only": [-4.238, -4.878, -10.05, -14.042], "sec": 76}
+{"i": 133, "type": "Reasoning", "gold": 3, "video_id": "5bEu5s8VjVo", "base": [-16.57, -14.828, -16.547, -1.508], "vision_only": [-20.816, -18.496, -20.683, -0.34], "sec": 75}
+{"i": 134, "type": "AV Event Alignment", "gold": 1, "video_id": "3znDkU3P0sU", "base": [-14.019, -12.636, -0.847, -14.519], "vision_only": [-10.325, -15.739, -1.138, -10.489], "sec": 76}
+{"i": 135, "type": "Context understanding", "gold": 3, "video_id": "bVXJPrL4zII", "base": [-15.385, -11.409, -15.752, -0.612], "vision_only": [-17.141, -12.071, -16.117, -0.492], "sec": 72}
+{"i": 136, "type": "AV Event Alignment", "gold": 2, "video_id": "bVXJPrL4zII", "base": [-10.396, -14.708, -1.052, -11.912], "vision_only": [-9.403, -14.364, -1.684, -9.418], "sec": 73}
+{"i": 137, "type": "Inference", "gold": 0, "video_id": "swRx8mQ3xAE", "base": [-7.766, -12.704, -12.376, -2.555], "vision_only": [-11.946, -12.595, -10.415, -2.376], "sec": 76}
+{"i": 138, "type": "AV Event Alignment", "gold": 1, "video_id": "pUqmv-KY0Q4", "base": [-14.834, -0.529, -15.967, -14.467], "vision_only": [-11.257, -4.015, -18.624, -11.749], "sec": 76}
+{"i": 139, "type": "Reasoning", "gold": 0, "video_id": "3cmBbNIcW_0", "base": [-2.575, -19.559, -17.856, -9.348], "vision_only": [-0.912, -18.849, -15.224, -12.591], "sec": 76}
+{"i": 140, "type": "AV Event Alignment", "gold": 1, "video_id": "swRx8mQ3xAE", "base": [-16.109, -16.999, -3.71, -4.07], "vision_only": [-17.492, -19.273, -1.515, -6.617], "sec": 77}
+{"i": 141, "type": "AV Event Alignment", "gold": 2, "video_id": "p_e4Pyo9Mqo", "base": [-3.496, -10.613, -7.106, -8.746], "vision_only": [-1.958, -10.481, -8.262, -11.419], "sec": 76}
+{"i": 142, "type": "Comparative", "gold": 2, "video_id": "swRx8mQ3xAE", "base": [-14.191, -19.113, -6.714, -4.628], "vision_only": [-14.545, -19.381, -5.146, -2.928], "sec": 77}
+{"i": 143, "type": "AV Event Alignment", "gold": 1, "video_id": "AiZKoCH3n7U", "base": [-13.209, -1.185, -11.771, -11.802], "vision_only": [-17.224, -0.248, -17.381, -17.959], "sec": 76}
+{"i": 144, "type": "Event Sequence", "gold": 1, "video_id": "EZT03Wpo9jQ", "base": [-8.284, -2.424, -12.987, -8.534], "vision_only": [-6.465, -4.356, -13.02, -8.669], "sec": 76}
+{"i": 145, "type": "Event Sequence", "gold": 1, "video_id": "PxqzwhVuGyo", "base": [-1.547, -8.883, -14.609, -8.68], "vision_only": [-0.276, -17.206, -19.729, -13.776], "sec": 76}
+{"i": 146, "type": "AV Event Alignment", "gold": 0, "video_id": "pCTnL1odiJQ", "base": [-5.855, -5.644, -15.871, -18.254], "vision_only": [-4.865, -5.943, -15.388, -18.505], "sec": 76}
+{"i": 147, "type": "Inference", "gold": 3, "video_id": "3znDkU3P0sU", "base": [-21.353, -21.259, -15.213, -0.33], "vision_only": [-19.782, -20.907, -9.914, -2.219], "sec": 74}
+{"i": 148, "type": "AV Event Alignment", "gold": 1, "video_id": "Wyg1s_IE5kg", "base": [-10.861, -1.385, -10.643, -11.604], "vision_only": [-13.564, -4.134, -7.736, -13.111], "sec": 75}
+{"i": 149, "type": "Comparative", "gold": 2, "video_id": "pUqmv-KY0Q4", "base": [-6.05, -14.362, -6.143, -4.503], "vision_only": [-4.987, -14.839, -5.339, -5.894], "sec": 76}
+{"i": 150, "type": "Event Sequence", "gold": 0, "video_id": "09buIj5Z5lk", "base": [-2.924, -8.377, -8.127, -9.158], "vision_only": [-5.331, -7.386, -5.144, -7.425], "sec": 82}
+{"i": 151, "type": "AV Event Alignment", "gold": 1, "video_id": "a1JOvtgdSk0", "base": [-18.264, -0.904, -14.694, -10.498], "vision_only": [-20.493, -0.391, -16.891, -14.344], "sec": 72}
+{"i": 152, "type": "AV Event Alignment", "gold": 0, "video_id": "7cGPesEX-UQ", "base": [-0.751, -14.391, -15.727, -17.251], "vision_only": [-0.514, -15.694, -15.631, -15.467], "sec": 80}
+{"i": 153, "type": "Comparative", "gold": 3, "video_id": "ZBN90mXIWko", "base": [-14.882, -7.07, -17.03, -1.616], "vision_only": [-13.817, -5.044, -16.645, -3.512], "sec": 76}
+{"i": 154, "type": "Event Sequence", "gold": 1, "video_id": "_-BAFzpKigw", "base": [-15.018, -2.002, -11.901, -11.682], "vision_only": [-16.994, -0.635, -16.353, -15.017], "sec": 72}
+{"i": 155, "type": "Comparative", "gold": 2, "video_id": "bVXJPrL4zII", "base": [-9.12, -13.815, -3.026, -15.213], "vision_only": [-9.27, -11.692, -1.724, -15.31], "sec": 72}
+{"i": 156, "type": "Comparative", "gold": 3, "video_id": "jMD4D-usWqw", "base": [-16.364, -16.309, -14.2, -0.333], "vision_only": [-15.347, -15.964, -10.644, -0.659], "sec": 76}
+{"i": 157, "type": "Reasoning", "gold": 3, "video_id": "_-BAFzpKigw", "base": [-8.155, -14.186, -14.866, -1.748], "vision_only": [-12.239, -17.068, -15.739, -0.849], "sec": 71}
+{"i": 158, "type": "Comparative", "gold": 2, "video_id": "a1JOvtgdSk0", "base": [-24.768, -23.823, -0.049, -21.948], "vision_only": [-23.053, -21.772, -0.069, -20.155], "sec": 71}
+{"i": 159, "type": "Event Sequence", "gold": 0, "video_id": "2ZZru7Sn848", "base": [-3.685, -12.982, -3.638, -11.724], "vision_only": [-12.538, -10.452, -0.905, -13.772], "sec": 76}
+{"i": 160, "type": "AV Event Alignment", "gold": 2, "video_id": "PFU-MhA1ubc", "base": [-6.853, -7.322, -13.166, -3.025], "vision_only": [-7.118, -11.891, -16.844, -6.204], "sec": 76}
+{"i": 161, "type": "Event Sequence", "gold": 0, "video_id": "AiZKoCH3n7U", "base": [-2.783, -5.158, -9.447, -9.885], "vision_only": [-3.503, -4.628, -9.355, -9.167], "sec": 75}
+{"i": 162, "type": "Context understanding", "gold": 3, "video_id": "AiZKoCH3n7U", "base": [-6.237, -7.534, -7.268, -4.659], "vision_only": [-5.42, -6.405, -7.233, -5.248], "sec": 76}
+{"i": 163, "type": "Inference", "gold": 1, "video_id": "d3pPQ3pnxgc", "base": [-16.107, -3.31, -19.529, -5.373], "vision_only": [-6.367, -6.718, -12.492, -8.898], "sec": 76}
+{"i": 164, "type": "Context understanding", "gold": 0, "video_id": "BfHSffcEydY", "base": [-0.884, -12.22, -16.533, -18.884], "vision_only": [-0.584, -14.271, -17.193, -19.091], "sec": 76}
+{"i": 165, "type": "Inference", "gold": 1, "video_id": "AiZKoCH3n7U", "base": [-19.558, -0.496, -15.41, -14.582], "vision_only": [-19.953, -0.422, -16.391, -14.5], "sec": 76}
+{"i": 166, "type": "Comparative", "gold": 0, "video_id": "2u3tic9llpw", "base": [-6.289, -5.477, -8.36, -6.399], "vision_only": [-4.376, -5.931, -8.438, -5.931], "sec": 73}
+{"i": 167, "type": "Context understanding", "gold": 2, "video_id": "1AYdRPXT9m8", "base": [-10.27, -7.739, -3.223, -5.989], "vision_only": [-15.555, -12.821, -2.203, -6.719], "sec": 76}
+{"i": 168, "type": "Event Sequence", "gold": 2, "video_id": "C3qgLxmr9dI", "base": [-6.271, -5.061, -5.412, -7.959], "vision_only": [-5.911, -5.294, -5.192, -8.052], "sec": 76}
+{"i": 169, "type": "Context understanding", "gold": 1, "video_id": "S0ZyCu3sUAA", "base": [-12.8, -0.245, -21.628, -20.824], "vision_only": [-0.184, -16.777, -20.113, -19.52], "sec": 76}
+{"i": 170, "type": "Reasoning", "gold": 0, "video_id": "2u3tic9llpw", "base": [-0.074, -24.714, -17.238, -26.128], "vision_only": [-0.16, -22.824, -15.214, -24.855], "sec": 72}
+{"i": 171, "type": "AV Event Alignment", "gold": 2, "video_id": "aWyu0p-_UQU", "base": [-1.923, -17.744, -8.377, -15.541], "vision_only": [-1.953, -15.398, -6.766, -13.773], "sec": 76}
+{"i": 172, "type": "Comparative", "gold": 1, "video_id": "RpBnEJYMHLk", "base": [-12.991, -0.397, -18.858, -17.319], "vision_only": [-14.366, -0.928, -16.194, -15.67], "sec": 76}
+{"i": 173, "type": "Reasoning", "gold": 0, "video_id": "GsbaC1YiOYA", "base": [-0.082, -21.746, -24.441, -22.84], "vision_only": [-6.263, -7.193, -11.107, -11.177], "sec": 76}
+{"i": 174, "type": "Context understanding", "gold": 1, "video_id": "Wyg1s_IE5kg", "base": [-9.277, -2.894, -9.972, -10.175], "vision_only": [-7.493, -4.165, -7.352, -9.985], "sec": 76}
+{"i": 175, "type": "Context understanding", "gold": 3, "video_id": "8EexlONNnEE", "base": [-16.85, -2.607, -18.959, -7.225], "vision_only": [-19.598, -2.184, -20.684, -9.973], "sec": 76}
+{"i": 176, "type": "Reasoning", "gold": 3, "video_id": "vAvLt3QI904", "base": [-6.534, -6.065, -10.705, -3.354], "vision_only": [-7.8, -7.355, -10.878, -2.449], "sec": 76}
+{"i": 177, "type": "AV Event Alignment", "gold": 1, "video_id": "C3qgLxmr9dI", "base": [-9.494, -3.854, -9.494, -6.104], "vision_only": [-11.837, -2.516, -13.704, -14.555], "sec": 76}
+{"i": 178, "type": "Inference", "gold": 1, "video_id": "vAvLt3QI904", "base": [-5.133, -2.711, -9.305, -11.922], "vision_only": [-3.89, -4.726, -7.32, -10.421], "sec": 74}
+{"i": 179, "type": "Reasoning", "gold": 3, "video_id": "GDbG4rvL1YA", "base": [-14.413, -19.78, -20.733, -0.194], "vision_only": [-4.788, -11.952, -12.679, -3.179], "sec": 76}
+{"i": 180, "type": "Reasoning", "gold": 1, "video_id": "d3pPQ3pnxgc", "base": [-20.388, -1.052, -20.622, -8.341], "vision_only": [-15.383, -9.508, -17.719, -1.743], "sec": 76}
+{"i": 181, "type": "Inference", "gold": 1, "video_id": "RpBnEJYMHLk", "base": [-18.53, -2.811, -16.147, -4.155], "vision_only": [-16.718, -1.765, -10.75, -13.968], "sec": 75}
+{"i": 182, "type": "Event Sequence", "gold": 1, "video_id": "7PgD-7Ld3iQ", "base": [-3.655, -10.467, -4.592, -10.663], "vision_only": [-5.758, -13.086, -2.493, -10.461], "sec": 76}
+{"i": 183, "type": "Event Sequence", "gold": 2, "video_id": "4e3gNCp9dxY", "base": [-19.778, -13.544, -8.396, -2.005], "vision_only": [-21.388, -14.692, -13.2, -0.755], "sec": 76}
+{"i": 184, "type": "Event Sequence", "gold": 3, "video_id": "OB9OK-riGEg", "base": [-14.205, -20.807, -22.362, -3.338], "vision_only": [-5.012, -10.02, -6.699, -5.012], "sec": 76}
+{"i": 185, "type": "Event Sequence", "gold": 2, "video_id": "2u3tic9llpw", "base": [-13.496, -7.27, -2.332, -13.551], "vision_only": [-12.814, -3.47, -4.407, -11.423], "sec": 72}
+{"i": 186, "type": "Inference", "gold": 3, "video_id": "UtVXARD_8VE", "base": [-25.569, -29.366, -30.444, -0.015], "vision_only": [-23.066, -26.543, -27.441, -0.027], "sec": 76}
+{"i": 187, "type": "Comparative", "gold": 0, "video_id": "_D-zI4nX-2Y", "base": [-6.5, -6.227, -5.164, -6.571], "vision_only": [-5.577, -5.1, -6.045, -6.397], "sec": 72}
+{"i": 188, "type": "Reasoning", "gold": 1, "video_id": "_D-zI4nX-2Y", "base": [-28.393, -0.018, -25.385, -29.432], "vision_only": [-27.455, -0.033, -23.533, -27.377], "sec": 72}

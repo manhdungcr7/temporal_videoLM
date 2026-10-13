@@ -1,0 +1,18 @@
+# secrets — never commit
+remote_config*.json
+!remote_config.example.json
+.kaggle/
+*.env
+
+# heavy / regenerable
+**/clips/
+**/hf_cache/
+**/venv*/
+*.zip
+*.mp4
+*.wav
+__pycache__/
+*.pyc
+results/j1/hidden_j1/
+results/j4/hidden_j4/
+kaggle_svhalluc_single_sample_prompt_lab.ipynb

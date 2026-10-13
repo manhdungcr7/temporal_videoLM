@@ -1,0 +1,14 @@
+{
+  "item_id": "svh_0630",
+  "question": "Is the thinly sliced scallions visible in the video? (A) Yes (B) No",
+  "prediction": "A",
+  "gold": "B",
+  "prompt": "Is the thinly sliced scallions visible in the video? (A) Yes (B) No\nAnswer with exactly one option letter, A or B. Do not write an explanation.",
+  "method": "AV_baseline",
+  "correct": "False",
+  "raw": "A",
+  "condition": "question_only_historical_AV_baseline",
+  "source_zip": "results.zip",
+  "source_member": "svhalluc_external_evidence_20261008_070149/predictions.csv",
+  "note": "Historical question-only AV_baseline log: prediction A, gold B. The notebook freshly reruns the baseline and the edited prompt on this sample; outputs can vary with runtime/model preprocessing."
+}

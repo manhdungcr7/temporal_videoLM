@@ -1,0 +1,160 @@
+{"idx": 2315, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2276, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2325, "task": "CMTB", "gold": 2, "dur": 15.06, "win": [9.03, 15.03], "base": [-1.636, -12.839, -3.597], "prior": [-1.886, -7.027, -4.999], "vision_only": [-0.686, -11.858, -6.069], "audio_only": [-10.305, -14.309, -0.274], "gate_audio": [-3.147, -11.483, -1.873], "crop": [-3.006, -11.077, -1.858], "sec": 94}
+{"idx": 1620, "task": "TA", "gold": 0, "dur": 21.06, "win": [9.03, 21.03], "base": [-0.597, -4.331], "prior": [-1.604, -2.838], "vision_only": [-0.447, -5.994], "audio_only": [-1.531, -2.617], "sec": 74}
+{"idx": 1647, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2190, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2248, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2238, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2144, "task": "CMTB", "gold": 0, "dur": 11.11, "win": [0.03, 6.03], "base": [-4.737, -13.319, -0.925], "prior": [-5.097, -4.511, -3.671], "vision_only": [-1.58, -12.474, -3.244], "audio_only": [-14.429, -14.202, -0.074], "gate_audio": [-0.048, -16.837, -18.231], "crop": [-0.037, -17.896, -18.763], "sec": 73}
+{"idx": 2140, "task": "CMTB", "gold": 1, "dur": 27.1, "win": [0.03, 13.03], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 584.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 528.81 MiB is free. Including non-PyTorch memory, this process has 14.04 GiB memory in use. Of the allocated memory 13.78 GiB is allocated by PyTorch, and 131.41 MiB is reserved by Py"}
+{"idx": 2188, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2231, "task": "TA", "gold": 0, "dur": 27.05, "win": [0.03, 16.03], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 576.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 548.81 MiB is free. Including non-PyTorch memory, this process has 14.02 GiB memory in use. Of the allocated memory 13.78 GiB is allocated by PyTorch, and 119.95 MiB is reserved by Py"}
+{"idx": 2271, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1884, "task": "TF", "gold": 0, "dur": 22.08, "win": [9.03, 18.03], "base": [-2.902, -2.785, -9.207], "prior": [-2.263, -4.545, -6.716], "vision_only": [-3.043, -2.801, -8.528], "audio_only": [-2.991, -3.03, -7.515], "sec": 128}
+{"idx": 1972, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1929, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1973, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1996, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2048, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1781, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1811, "task": "TA", "gold": 1, "dur": 21.08, "win": [12.03, 21.03], "base": [-1.474, -2.06], "prior": [-1.604, -2.838], "vision_only": [-1.052, -4.021], "audio_only": [-1.14, -2.648], "sec": 75}
+{"idx": 1439, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1519, "task": "TF", "gold": 1, "dur": 27.07, "win": [0.03, 11.98], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 578.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 568.81 MiB is free. Including non-PyTorch memory, this process has 14.00 GiB memory in use. Of the allocated memory 13.78 GiB is allocated by PyTorch, and 96.33 MiB is reserved by PyT"}
+{"idx": 1463, "task": "TF", "gold": 2, "dur": 24.09, "win": [0.03, 10.03], "base": [-2.609, -3.297, -8.875], "prior": [-2.323, -4.635, -6.721], "vision_only": [-2.639, -3.218, -8.483], "audio_only": [-2.921, -3.647, -7.178], "sec": 135}
+{"idx": 1517, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1515, "task": "CMTB", "gold": 1, "dur": 16.07, "win": [8.97, 16.03], "base": [-2.045, -3.06, -12.916], "prior": [-1.45, -5.946, -6.102], "vision_only": [-0.845, -5.063, -10.313], "audio_only": [-2.269, -2.73, -7.949], "gate_audio": [-7.422, -0.508, -11.355], "crop": [-7.632, -0.461, -12.797], "sec": 109}
+{"idx": 1520, "task": "CMTB", "gold": 2, "dur": 27.07, "win": [0.03, 11.98], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 588.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 488.81 MiB is free. Including non-PyTorch memory, this process has 14.08 GiB memory in use. Of the allocated memory 13.82 GiB is allocated by PyTorch, and 137.50 MiB is reserved by Py"}
+{"idx": 1521, "task": "TA", "gold": 0, "dur": 18.11, "win": [8.03, 18.03], "base": [-1.398, -2.179], "prior": [-1.548, -2.869], "vision_only": [-1.541, -2.885], "audio_only": [-1.199, -2.676], "sec": 74}
+{"idx": 1491, "task": "TA", "gold": 1, "dur": 17.16, "win": [0.03, 8.03], "base": [-1.894, -1.972], "prior": [-1.582, -2.965], "vision_only": [-1.562, -3.445], "audio_only": [-1.339, -2.808], "sec": 62}
+{"idx": 1486, "task": "TF", "gold": 0, "dur": 11.03, "win": [6.03, 10.98], "base": [-2.798, -2.501, -8.361], "prior": [-2.017, -4.962, -6.751], "vision_only": [-3.349, -2.497, -8.239], "audio_only": [-2.728, -3.174, -7.033], "sec": 50}
+{"idx": 1570, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1508, "task": "TF", "gold": 2, "dur": 27.07, "win": [0.03, 10.98], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 578.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 568.81 MiB is free. Including non-PyTorch memory, this process has 14.00 GiB memory in use. Of the allocated memory 13.78 GiB is allocated by PyTorch, and 96.33 MiB is reserved by PyT"}
+{"idx": 2383, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2339, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2361, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2006, "task": "TA", "gold": 0, "dur": 24.11, "win": [0.03, 13.03], "base": [-0.687, -3.999], "prior": [-1.61, -2.696], "vision_only": [-0.712, -5.22], "audio_only": [-1.162, -3.389], "sec": 88}
+{"idx": 2031, "task": "TA", "gold": 1, "dur": 23.17, "win": [0.03, 11.03], "base": [-0.637, -4.114], "prior": [-1.622, -2.763], "vision_only": [-0.639, -4.827], "audio_only": [-1.407, -2.915], "sec": 107}
+{"idx": 2217, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2260, "task": "TF", "gold": 1, "dur": 20.06, "win": [9.03, 20.03], "base": [-2.432, -3.464, -7.284], "prior": [-2.192, -4.575, -6.723], "vision_only": [-2.644, -3.449, -7.715], "audio_only": [-3.02, -3.09, -6.051], "sec": 104}
+{"idx": 2266, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1511, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1506, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1493, "task": "CMTB", "gold": 2, "dur": 17.16, "win": [0.03, 8.03], "base": [-1.192, -11.383, -4.215], "prior": [-6.026, -6.316, -1.538], "vision_only": [-4.775, -9.799, -1.166], "audio_only": [-0.249, -10.995, -11.718], "gate_audio": [-11.937, -11.875, -0.172], "crop": [-13.385, -13.651, -0.096], "sec": 105}
+{"idx": 1494, "task": "TA", "gold": 0, "dur": 24.13, "win": [0.03, 12.03], "base": [-1.169, -2.825], "prior": [-1.601, -2.671], "vision_only": [-1.55, -3.582], "audio_only": [-1.513, -2.677], "sec": 89}
+{"idx": 1462, "task": "TA", "gold": 1, "dur": 24.09, "win": [0.03, 10.03], "base": [-1.714, -1.956], "prior": [-1.61, -2.696], "vision_only": [-0.963, -4.276], "audio_only": [-1.656, -2.273], "sec": 90}
+{"idx": 1943, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2000, "task": "TF", "gold": 1, "dur": 22.11, "win": [12.03, 21.98], "base": [-3.335, -2.405, -8.163], "prior": [-2.377, -4.564, -6.861], "vision_only": [-4.019, -1.941, -8.527], "audio_only": [-3.105, -3.074, -6.34], "sec": 126}
+{"idx": 1964, "task": "TF", "gold": 2, "dur": 15.13, "win": [0.03, 6.03], "base": [-2.658, -3.353, -7.267], "prior": [-2.27, -4.84, -6.512], "vision_only": [-2.592, -3.514, -8.03], "audio_only": [-2.705, -3.931, -6.072], "sec": 75}
+{"idx": 2070, "task": "CMTB", "gold": 0, "dur": 18.09, "win": [0.03, 8.03], "base": [-3.183, -8.058, -2.464], "prior": [-5.542, -3.088, -3.213], "vision_only": [-3.875, -6.984, -2.546], "audio_only": [-0.527, -9.285, -12.347], "gate_audio": [-0.103, -14.885, -12.158], "crop": [-0.177, -13.614, -10.974], "sec": 127}
+{"idx": 2093, "task": "CMTB", "gold": 1, "dur": 24.08, "win": [13.03, 24.03], "base": [-4.28, -1.741, -10.811], "prior": [-1.941, -4.644, -5.887], "vision_only": [-3.075, -2.348, -9.45], "audio_only": [-0.274, -10.172, -12.809], "gate_audio": [-10.615, -1.158, -3.963], "crop": [-11.278, -0.512, -6.497], "sec": 151}
+{"idx": 2143, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1523, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1498, "task": "TA", "gold": 1, "dur": 14.14, "win": [0.03, 8.03], "base": [-1.433, -2.378], "prior": [-1.599, -2.63], "vision_only": [-1.244, -3.837], "audio_only": [-1.463, -2.666], "sec": 54}
+{"idx": 2129, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2178, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2195, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2233, "task": "CMTB", "gold": 0, "dur": 27.05, "win": [0.03, 16.03], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 582.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 548.81 MiB is free. Including non-PyTorch memory, this process has 14.02 GiB memory in use. Of the allocated memory 13.76 GiB is allocated by PyTorch, and 132.56 MiB is reserved by Py"}
+{"idx": 2202, "task": "CMTB", "gold": 1, "dur": 16.13, "win": [8.97, 16.07], "base": [-13.848, -15.379, -0.082], "prior": [-2.757, -5.784, -4.569], "vision_only": [-7.206, -8.695, -0.621], "audio_only": [-14.884, -16.95, -0.068], "gate_audio": [-9.079, -0.852, -6.618], "crop": [-11.634, -0.306, -9.49], "sec": 108}
+{"idx": 2270, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2088, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2120, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1663, "task": "TF", "gold": 0, "dur": 14.14, "win": [7.03, 14.03], "base": [-3.349, -2.13, -8.161], "prior": [-2.253, -4.854, -6.706], "vision_only": [-4.293, -1.91, -8.574], "audio_only": [-3.39, -2.577, -6.327], "sec": 68}
+{"idx": 1723, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1695, "task": "TF", "gold": 2, "dur": 25.08, "win": [0.03, 10.53], "base": [-2.623, -3.366, -7.975], "prior": [-2.3, -4.714, -6.769], "vision_only": [-2.932, -2.619, -8.643], "audio_only": [-2.884, -3.111, -7.861], "sec": 135}
+{"idx": 2191, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2176, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2230, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1581, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1610, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1876, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1940, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1897, "task": "TF", "gold": 2, "dur": 18.11, "win": [0.03, 9.03], "base": [-1.899, -3.907, -7.477], "prior": [-2.203, -4.718, -6.601], "vision_only": [-2.15, -4.025, -7.306], "audio_only": [-2.705, -2.9, -6.705], "sec": 101}
+{"idx": 1471, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1458, "task": "CMTB", "gold": 1, "dur": 22.06, "win": [11.03, 22.03], "base": [-15.678, -0.127, -11.662], "prior": [-10.238, -0.32, -9.598], "vision_only": [-12.027, -0.554, -7.386], "audio_only": [-17.119, -0.037, -15.857], "gate_audio": [-17.728, -0.033, -16.634], "crop": [-18.605, -0.027, -17.332], "sec": 159}
+{"idx": 1464, "task": "CMTB", "gold": 2, "dur": 24.09, "win": [0.03, 10.03], "base": [-14.122, -7.18, -0.446], "prior": [-6.155, -5.956, -1.999], "vision_only": [-12.676, -7.566, -0.402], "audio_only": [-14.959, -0.177, -13.224], "gate_audio": [-7.808, -9.402, -0.488], "crop": [-6.27, -8.77, -0.848], "sec": 163}
+{"idx": 1700, "task": "TA", "gold": 0, "dur": 24.08, "win": [0.08, 14.03], "base": [-0.422, -5.554], "prior": [-1.595, -2.673], "vision_only": [-0.341, -6.903], "audio_only": [-1.478, -3.025], "sec": 86}
+{"idx": 1706, "task": "TA", "gold": 1, "dur": 26.08, "win": [0.03, 14.03], "base": [-2.182, -1.729], "prior": [-1.575, -2.693], "vision_only": [-0.42, -6.521], "audio_only": [-1.684, -2.317], "sec": 95}
+{"idx": 1629, "task": "TF", "gold": 0, "dur": 14.19, "win": [7.03, 14.03], "base": [-2.282, -3.024, -8.735], "prior": [-2.268, -4.838, -6.69], "vision_only": [-2.704, -3.227, -8.422], "audio_only": [-2.652, -3.089, -7.543], "sec": 67}
+{"idx": 1698, "task": "TF", "gold": 1, "dur": 25.08, "win": [0.03, 10.53], "base": [-2.634, -3.196, -7.907], "prior": [-2.3, -4.714, -6.769], "vision_only": [-2.907, -2.868, -8.353], "audio_only": [-2.884, -3.111, -7.861], "sec": 132}
+{"idx": 1642, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2026, "task": "CMTB", "gold": 0, "dur": 12.07, "win": [6.68, 9.73], "base": [-3.176, -2.082, -16.832], "prior": [-7.101, -1.265, -5.683], "vision_only": [-5.348, -0.824, -16.703], "audio_only": [-0.479, -10.647, -14.283], "gate_audio": [-0.199, -10.152, -16.605], "crop": [-0.126, -10.79, -18.505], "sec": 66}
+{"idx": 2062, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2106, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1923, "task": "TA", "gold": 0, "dur": 12.16, "win": [7.03, 12.03], "base": [-1.226, -2.961], "prior": [-1.61, -2.844], "vision_only": [-0.629, -5.27], "audio_only": [-1.084, -3.021], "sec": 40}
+{"idx": 1936, "task": "TA", "gold": 1, "dur": 23.99, "win": [0.03, 9.98], "base": [-0.824, -3.434], "prior": [-1.455, -2.588], "vision_only": [-0.697, -4.861], "audio_only": [-0.992, -3.492], "sec": 90}
+{"idx": 2003, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2035, "task": "TF", "gold": 1, "dur": 25.17, "win": [0.03, 11.98], "base": [-4.055, -2.008, -8.149], "prior": [-2.302, -4.771, -6.763], "vision_only": [-3.593, -2.077, -8.507], "audio_only": [-2.929, -4.562, -6.233], "sec": 153}
+{"idx": 1995, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1718, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1696, "task": "CMTB", "gold": 1, "dur": 25.08, "win": [0.03, 10.53], "base": [-14.387, -0.789, -4.805], "prior": [-6.452, -2.952, -3.499], "vision_only": [-14.548, -0.302, -7.802], "audio_only": [-11.008, -11.45, -0.344], "gate_audio": [-16.206, -0.062, -13.495], "crop": [-17.483, -0.046, -15.065], "sec": 163}
+{"idx": 1747, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1618, "task": "TA", "gold": 0, "dur": 17.07, "win": [8.83, 17.03], "base": [-0.633, -4.351], "prior": [-1.614, -2.864], "vision_only": [-0.367, -6.555], "audio_only": [-1.505, -2.591], "sec": 57}
+{"idx": 1644, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1645, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1720, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1689, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2204, "task": "CMTB", "gold": 0, "dur": 25.07, "win": [13.03, 25.03], "base": [-2.842, -2.967, -16.662], "prior": [-5.371, -2.714, -6.07], "vision_only": [-4.798, -1.017, -13.736], "audio_only": [-0.103, -12.717, -17.283], "gate_audio": [-0.352, -7.758, -14.176], "crop": [-0.268, -8.377, -15.768], "sec": 189}
+{"idx": 2186, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2242, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2068, "task": "TA", "gold": 0, "dur": 18.09, "win": [0.03, 8.03], "base": [-0.821, -3.415], "prior": [-1.548, -2.869], "vision_only": [-0.775, -4.478], "audio_only": [-1.376, -2.61], "sec": 63}
+{"idx": 2109, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2394, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2382, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2354, "task": "TF", "gold": 2, "dur": 21.13, "win": [0.03, 12.03], "base": [-2.503, -3.3, -7.831], "prior": [-2.226, -4.648, -6.718], "vision_only": [-1.898, -4.117, -8.133], "audio_only": [-2.615, -3.911, -6.169], "sec": 113}
+{"idx": 2172, "task": "CMTB", "gold": 0, "dur": 26.13, "win": [13.03, 26.03], "base": [-4.905, -0.859, -14.394], "prior": [-4.223, -4.661, -3.54], "vision_only": [-6.441, -0.636, -12.328], "audio_only": [-0.51, -8.72, -7.814], "gate_audio": [-0.394, -9.082, -9.886], "crop": [-0.311, -10.569, -10.241], "sec": 199}
+{"idx": 2161, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2221, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1613, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1643, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1490, "task": "TF", "gold": 0, "dur": 20.06, "win": [10.03, 19.98], "base": [-2.723, -2.817, -8.426], "prior": [-2.192, -4.575, -6.723], "vision_only": [-2.838, -2.924, -7.963], "audio_only": [-3.332, -2.457, -7.144], "sec": 105}
+{"idx": 1584, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1532, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1866, "task": "CMTB", "gold": 0, "dur": 27.14, "win": [0.38, 8.43], "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 580.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 568.81 MiB is free. Including non-PyTorch memory, this process has 14.00 GiB memory in use. Of the allocated memory 13.75 GiB is allocated by PyTorch, and 125.21 MiB is reserved by Py"}
+{"idx": 1836, "task": "CMTB", "gold": 1, "dur": 23.08, "win": [0.03, 13.03], "base": [-17.463, -0.252, -7.994], "prior": [-7.434, -3.54, -3.286], "vision_only": [-16.84, -0.851, -5.258], "audio_only": [-17.684, -0.067, -13.82], "gate_audio": [-17.92, -0.049, -14.545], "crop": [-19.889, -0.037, -15.022], "sec": 172}
+{"idx": 1917, "task": "CMTB", "gold": 2, "dur": 10.08, "win": [4.98, 10.03], "base": [-16.226, -0.077, -12.796], "prior": [-5.343, -2.292, -5.382], "vision_only": [-12.707, -0.34, -7.395], "audio_only": [-16.649, -0.047, -15.68], "gate_audio": [-11.923, -3.326, -1.74], "crop": [-11.925, -3.339, -1.941], "sec": 61}
+{"idx": 1516, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1485, "task": "TA", "gold": 1, "dur": 11.03, "win": [6.03, 10.98], "base": [-0.578, -4.148], "prior": [-1.539, -2.703], "vision_only": [-0.93, -4.321], "audio_only": [-0.834, -3.607], "sec": 31}
+{"idx": 1806, "task": "TF", "gold": 0, "dur": 20.12, "win": [9.03, 17.98], "base": [-3.332, -2.239, -8.778], "prior": [-2.156, -4.648, -6.672], "vision_only": [-2.815, -2.893, -8.401], "audio_only": [-3.845, -2.142, -7.548], "sec": 98}
+{"idx": 1849, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1855, "task": "TF", "gold": 2, "dur": 21.11, "win": [0.03, 9.98], "base": [-2.934, -2.59, -8.887], "prior": [-2.161, -4.739, -6.684], "vision_only": [-2.216, -3.286, -8.083], "audio_only": [-2.996, -3.043, -7.59], "sec": 113}
+{"idx": 1762, "task": "CMTB", "gold": 0, "dur": 15.06, "win": [0.03, 8.03], "base": [-10.979, -0.096, -18.135], "prior": [-2.699, -4.004, -9.968], "vision_only": [-4.698, -1.69, -16.115], "audio_only": [-12.349, -0.091, -16.185], "gate_audio": [-1.677, -3.826, -14.783], "crop": [-1.107, -5.201, -14.6], "sec": 99}
+{"idx": 1741, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1770, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2162, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 2197, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2132, "task": "TF", "gold": 0, "dur": 14.1, "win": [8.03, 14.08], "base": [-2.555, -2.907, -7.47], "prior": [-2.253, -4.863, -6.691], "vision_only": [-3.084, -2.709, -7.998], "audio_only": [-3.322, -3.626, -4.619], "sec": 68}
+{"idx": 2183, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2198, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1789, "task": "CMTB", "gold": 0, "dur": 15.13, "win": [7.03, 15.03], "base": [-0.808, -5.347, -13.054], "prior": [-6.015, -3.788, -3.503], "vision_only": [-6.023, -0.718, -10.539], "audio_only": [-0.636, -8.319, -10.339], "gate_audio": [-0.698, -6.588, -9.354], "crop": [-0.736, -7.243, -9.829], "sec": 97}
+{"idx": 1795, "task": "CMTB", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1845, "task": "CMTB", "gold": 2, "dur": 16.11, "win": [0.03, 7.03], "base": [-16.65, -11.615, -0.107], "prior": [-3.491, -6.167, -3.792], "vision_only": [-13.248, -3.752, -2.307], "audio_only": [-18.868, -20.286, -0.016], "gate_audio": [-16.325, -19.88, -0.028], "crop": [-13.603, -18.794, -0.08], "sec": 110}
+{"idx": 1487, "task": "TA", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1459, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2403, "task": "TF", "gold": 0, "dur": 20.06, "win": [10.03, 19.98], "base": [-3.545, -1.959, -9.155], "prior": [-2.184, -4.567, -6.731], "vision_only": [-3.455, -2.017, -8.385], "audio_only": [-3.479, -2.589, -7.768], "sec": 98}
+{"idx": 2391, "task": "TF", "gold": 1, "dur": 23.06, "win": [13.03, 23.03], "base": [-2.737, -3.331, -8.339], "prior": [-2.286, -4.591, -6.622], "vision_only": [-2.326, -4.006, -8.115], "audio_only": [-2.745, -3.495, -7.518], "sec": 126}
+{"idx": 2400, "task": "TF", "gold": 2, "dur": 24.06, "win": [0.03, 11.98], "base": [-3.228, -2.635, -9.072], "prior": [-2.345, -4.54, -6.774], "vision_only": [-3.296, -2.21, -8.319], "audio_only": [-2.853, -3.431, -8.252], "sec": 123}
+{"idx": 1568, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1595, "task": "CMTB", "gold": 1, "dur": 11.14, "win": [6.03, 11.03], "base": [-2.333, -4.193, -6.185], "prior": [-0.935, -9.509, -6.899], "vision_only": [-1.919, -5.075, -7.271], "audio_only": [-2.613, -3.059, -5.309], "gate_audio": [-10.998, -2.326, -2.889], "crop": [-14.995, -1.788, -4.342], "sec": 70}
+{"idx": 1652, "task": "CMTB", "gold": 2, "dur": 16.09, "win": [0.03, 7.03], "base": [-10.673, -17.747, -0.126], "prior": [-4.226, -5.827, -2.511], "vision_only": [-2.835, -14.807, -3.397], "audio_only": [-16.123, -18.041, -0.049], "gate_audio": [-7.321, -17.177, -0.509], "crop": [-9.848, -17.544, -0.153], "sec": 98}
+{"idx": 1961, "task": "TA", "gold": 0, "dur": 10.09, "win": [0.03, 5.03], "base": [-1.141, -3.306], "prior": [-1.498, -2.772], "vision_only": [-1.781, -3.14], "audio_only": [-1.238, -3.441], "sec": 32}
+{"idx": 1983, "task": "TA", "gold": 1, "dur": 23.06, "win": [0.03, 11.98], "base": [-2.004, -1.543], "prior": [-1.614, -2.786], "vision_only": [-1.405, -3.686], "audio_only": [-1.208, -2.997], "sec": 87}
+{"idx": 1969, "task": "TF", "gold": 0, "dur": 14.12, "win": [8.03, 14.08], "base": [-3.958, -1.779, -9.146], "prior": [-2.253, -4.854, -6.706], "vision_only": [-3.74, -1.904, -8.146], "audio_only": [-2.943, -3.053, -7.826], "sec": 61}
+{"idx": 2005, "task": "TF", "gold": 1, "dur": 19.07, "win": [0.03, 11.03], "base": [-2.884, -2.58, -7.392], "prior": [-2.175, -4.706, -6.55], "vision_only": [-2.306, -3.431, -7.587], "audio_only": [-3.857, -3.178, -4.85], "sec": 99}
+{"idx": 1966, "task": "TF", "gold": 2, "dur": 19.13, "win": [0.03, 7.98], "base": [-4.105, -1.644, -8.964], "prior": [-2.178, -4.81, -6.592], "vision_only": [-3.428, -2.084, -8.193], "audio_only": [-3.921, -2.257, -7.273], "sec": 94}
+{"idx": 1484, "task": "CMTB", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1474, "task": "CMTB", "gold": 1, "dur": 13.06, "win": [6.03, 13.03], "base": [-2.525, -1.814, -14.775], "prior": [-5.411, -3.216, -3.435], "vision_only": [-0.634, -5.259, -15.892], "audio_only": [-15.892, -0.06, -14.419], "gate_audio": [-11.32, -0.14, -14.312], "crop": [-13.705, -0.072, -15.932], "sec": 88}
+{"idx": 1466, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2173, "task": "TA", "gold": 0, "dur": 22.1, "win": [13.03, 22.03], "base": [-1.984, -1.602], "prior": [-1.483, -2.812], "vision_only": [-1.845, -2.759], "audio_only": [-1.469, -2.43], "sec": 84}
+{"idx": 2216, "task": "TA", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 1444, "task": "TF", "gold": 0, "error": "RuntimeError('long')"}
+{"idx": 1529, "task": "TF", "gold": 1, "dur": 14.12, "win": [7.03, 13.98], "base": [-2.042, -3.3, -7.62], "prior": [-2.253, -4.854, -6.706], "vision_only": [-2.623, -3.303, -7.74], "audio_only": [-2.234, -3.844, -7.078], "sec": 73}
+{"idx": 1483, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 2147, "task": "CMTB", "gold": 0, "dur": 13.21, "win": [0.03, 7.03], "base": [-1.328, -16.516, -4.68], "prior": [-2.565, -4.854, -5.42], "vision_only": [-5.023, -15.043, -1.109], "audio_only": [-0.042, -16.261, -17.655], "gate_audio": [-0.104, -14.533, -12.096], "crop": [-0.092, -14.936, -12.709], "sec": 88}
+{"idx": 2148, "task": "CMTB", "gold": 1, "dur": 13.21, "win": [6.03, 12.98], "base": [-0.363, -7.136, -12.136], "prior": [-5.193, -6.302, -1.822], "vision_only": [-0.147, -10.702, -13.237], "audio_only": [-10.512, -1.184, -6.254], "gate_audio": [-9.925, -0.355, -8.339], "crop": [-10.581, -0.315, -8.901], "sec": 87}
+{"idx": 2215, "task": "CMTB", "gold": 2, "error": "RuntimeError('long')"}
+{"idx": 1528, "task": "TA", "gold": 0, "dur": 14.12, "win": [7.03, 13.98], "base": [-1.508, -2.211], "prior": [-1.599, -2.63], "vision_only": [-1.31, -3.513], "audio_only": [-1.685, -2.552], "sec": 45}
+{"idx": 1501, "task": "TA", "gold": 1, "dur": 26.13, "win": [0.03, 15.03], "base": [-1.408, -2.525], "prior": [-1.513, -2.739], "vision_only": [-1.981, -2.942], "audio_only": [-1.632, -2.492], "sec": 99}
+{"idx": 2157, "task": "TF", "gold": 0, "dur": 26.08, "win": [14.03, 26.03], "base": [-2.151, -3.159, -9.144], "prior": [-2.239, -4.676, -6.669], "vision_only": [-2.256, -3.545, -8.772], "audio_only": [-3.166, -2.76, -7.244], "sec": 160}
+{"idx": 2229, "task": "TF", "gold": 1, "error": "RuntimeError('long')"}
+{"idx": 2223, "task": "TF", "gold": 2, "error": "RuntimeError('long')"}
