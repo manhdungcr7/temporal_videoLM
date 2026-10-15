@@ -1,0 +1,5 @@
+BIND_READER_SOURCE='avbind_reader.py'
+BIND_NEURAL_SOURCE='avbind_neural.py'
+BIND_MEMORY_MODE='contextual_text'
+TRAIN_ADDRESS_WEIGHT=1.0 if LAB_SERVER==1 else 0.0
+TRAIN_NULL_WEIGHT=0.25 if LAB_SERVER==1 else 0.0

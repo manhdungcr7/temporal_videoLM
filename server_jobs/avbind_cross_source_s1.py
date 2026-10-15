@@ -1,0 +1,1 @@
+BIND_CHECKPOINT='avbind_reader_answer_only_r3.pt'

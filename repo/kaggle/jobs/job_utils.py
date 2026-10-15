@@ -141,6 +141,7 @@ def run_loop(items, out_name, fn, show=(), min_left=1200):
     res = OUT / out_name
     done = {json.loads(l)['idx'] for l in res.read_text().splitlines() if l.strip()} if res.exists() else set()
     print('items', len(items), 'already done', len(done), flush=True)
+    group_stats = {}
     for n, (i, r) in enumerate(items):
         if i in done: continue
         if time_left() < min_left: print('deadline reached: stopping cleanly', flush=True); break
@@ -157,6 +158,17 @@ def run_loop(items, out_name, fn, show=(), min_left=1200):
         g = rec['gold']
         marks = ' '.join(f'{c}={"Y" if int(np.argmax(rec[c])) == g else "-"}' for c in show if isinstance(rec.get(c), list))
         print(n + 1, len(items), rec['task'], i, marks, rec['sec'], 's', flush=True)
+        if globals().get('PROGRESS_GROUPS', False):
+            key = (rec['task'], int(g))
+            z = group_stats.setdefault(key, {c: [0, 0] for c in show})
+            for c in show:
+                if isinstance(rec.get(c), list):
+                    z[c][1] += 1
+                    z[c][0] += int(np.argmax(rec[c]) == g)
+            parts = []
+            for (tt, gg), zz in sorted(group_stats.items()):
+                parts.append(f'{tt}/{chr(65 + gg)} ' + ' '.join(f'{c}={zz[c][0]}/{zz[c][1]}' for c in show if c in zz))
+            print('GROUP_PROGRESS ' + ' | '.join(parts), flush=True)
     return [json.loads(l) for l in res.read_text().splitlines() if l.strip()] if res.exists() else []
 
 

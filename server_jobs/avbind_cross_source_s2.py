@@ -1,0 +1,1 @@
+BIND_CHECKPOINT='avbind_reader_supervised_r3.pt'

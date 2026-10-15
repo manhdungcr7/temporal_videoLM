@@ -4,15 +4,73 @@ remote_config*.json
 .kaggle/
 *.env
 
-# heavy / regenerable
+# environments & dependencies
+.venv/
+**/venv*/
+env/
+ENV/
+.plot_deps/
+*.egg-info/
+dist/
+build/
+
+# bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+
+# weights & model checkpoints
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.onnx
+
+# heavy media, archives & data caches
 **/clips/
 **/hf_cache/
-**/venv*/
 *.zip
+*.tar
+*.tar.gz
+*.gz
 *.mp4
 *.wav
-__pycache__/
-*.pyc
+*.avi
+*.npz
+*.npy
+*.h5
+
+# editor & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# specific project ignores
 results/j1/hidden_j1/
 results/j4/hidden_j4/
 kaggle_svhalluc_single_sample_prompt_lab.ipynb
+
+# results data vs reports
+results/**/*.jsonl
+results/*.jsonl
+results/**/*.json
+results/*.json
+results/**/*.csv
+results/*.csv
+results/**/.plot_cache/
+results/**/.plot_deps/
+results/**/rotations_s*/
+results/**/fits/
+results/**/figures/
+results/**/presentation_clock_audit/
+
+# allow markdown reports and code inside results/
+!results/**/*.md
+!results/*.md
+!results/**/*.py
+!results/*.py
+

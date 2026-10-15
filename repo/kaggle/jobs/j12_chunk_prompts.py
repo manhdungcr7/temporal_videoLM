@@ -18,8 +18,9 @@ from transformers.integrations.sdpa_attention import sdpa_attention_forward
 
 PER_LABEL = int(globals().get('PER_LABEL', 2)); SEED = int(globals().get('SEED', 2468)); LAMBDA = float(globals().get('LAMBDA', 2.0))
 TOK = PROC.tokenizer
-P_V = globals().get('J12_PV', '\nThe essential visual content of chunk {t} in one short phrase is')
-P_A = globals().get('J12_PA', '\nThe essential audio content of chunk {t} in one short phrase is')
+P_V = globals().get('J12_PV', ' Visual information from {t0}s to {t1}s, summarized in one short phrase: ')
+P_A = globals().get('J12_PA', ' Audio information from {t0}s to {t1}s, summarized in one short phrase: ')
+BOOST_LAYERS = tuple(globals().get('J12_BOOST_LAYERS', tuple(range(13, 28))))
 CTX = {}                              # per-forward context for the custom attention
 
 
@@ -28,6 +29,7 @@ def cq_attention(module, query, key, value, attention_mask, scaling=None, dropou
     out, _ = sdpa_attention_forward(module, query, key, value, attention_mask, scaling=scaling, dropout=dropout, **kw)
     c = CTX.get('cfg')
     if not c or c['mode'] == 'none' or getattr(module, '_cq_layer', None) is None: return out, None   # encoders untouched
+    if module._cq_layer not in c['boost_layers']: return out, None
     rows = c['rows'].to(query.device)                                       # question/answer positions
     H, KV = query.shape[1], key.shape[1]; rep = H // KV
     k = key.repeat_interleave(rep, 1); v = value.repeat_interleave(rep, 1)
@@ -62,17 +64,33 @@ def cq_forward(inp, pieces, mode, record=False, layout='shared'):
     for a_, b_ in spans: pcols[a_:b_] = True
     q_start = spans[-1][1]; maxlen = max(b_ - a_ for a_, b_ in spans); p0 = int(pos[0, 0, spans[0][0]])
     groups = torch.zeros(len(spans), L, dtype=torch.bool); raw = torch.zeros(len(spans), L, dtype=torch.bool); is_idx = []
+    prompt_cursor = p0
     for g, ((a_, b_), piece) in enumerate(zip(spans, pieces)):
         t = g // 2; src = 'v' if g % 2 == 0 else 'a'
         own = (lay.v if src == 'v' else lay.a) & (lay.chunk == t)
         m[a_:b_][:, (lay.v | lay.a) & ~own] = float('-inf')                 # only its chunk and modality
         m[a_:b_][:, pcols] = float('-inf'); m[a_:b_, a_:b_] = torch.triu(torch.full((b_ - a_, b_ - a_), float('-inf')), 1)
-        start = p0 if layout == 'shared' else int(lay.pos.cpu()[:, 0, (lay.v | lay.a) & (lay.chunk == t)].max()) + 1
+        if layout == 'shared':
+            start = p0
+        else:
+            # Prompts are ordered in time. The audio probe follows the visual
+            # probe in the same chunk; later chunks start after their own media
+            # and after any preceding prompt tokens.
+            media_end = int(lay.pos.cpu()[:, 0, (lay.v | lay.a) & (lay.chunk == t)].max()) + 1
+            start = max(media_end, prompt_cursor)
         pos[:, :, a_:b_] = (start + torch.arange(b_ - a_)).view(1, 1, -1).to(pos.dtype)
+        prompt_cursor = start + (b_ - a_)
         groups[g, a_:b_] = True; raw[g] = own; is_idx.append(b_ - 1)
-    pos[:, :, q_start:] = (p0 + maxlen + torch.arange(L - q_start)).view(1, 1, -1).to(pos.dtype)
+    if layout == 'shared':
+        q_pos = p0 + maxlen
+    else:
+        # Question and answer must follow every aligned prompt, including the
+        # prompt belonging to the last temporal chunk.
+        q_pos = max(prompt_cursor, int(pos.cpu()[:, 0, (lay.v | lay.a)].max()) + 1)
+    pos[:, :, q_start:] = (q_pos + torch.arange(L - q_start)).view(1, 1, -1).to(pos.dtype)
     rows = torch.arange(q_start, L)
-    CTX['cfg'] = dict(mode=mode, rows=rows, is_idx=torch.tensor(is_idx), groups=groups, raw=raw, record_layer=18)
+    CTX['cfg'] = dict(mode=mode, rows=rows, is_idx=torch.tensor(is_idx), groups=groups, raw=raw,
+                      record_layer=18, boost_layers=BOOST_LAYERS)
     if record: CTX['cfg']['record'] = None
     old = ALL_ATTENTION_FUNCTIONS['sdpa']; ALL_ATTENTION_FUNCTIONS['sdpa'] = cq_attention     # mask logic stays 'sdpa'
     kw = {k_: v_ for k_, v_ in inp.items() if k_ != 'attention_mask'}
@@ -90,7 +108,9 @@ def item(i, r):
     rec = dict(dur=round(dur, 2)); rec['base'] = score(media, stem, texts)
     inp0, _ = qwen_inputs(PROC, 'x', media, 'av'); inp0 = move_inputs(inp0, MODEL_)
     nc = Lay(inp0).nc; del inp0
-    pieces = [x for t in range(nc) for x in (P_V.format(t=t + 1), P_A.format(t=t + 1))]
+    pieces = [x for t in range(nc)
+              for x in (P_V.format(t0=2 * t, t1=min(2 * (t + 1), dur)),
+                        P_A.format(t0=2 * t, t1=min(2 * (t + 1), dur)))]
     prompt = ''.join(pieces) + globals().get('J12_SEP', '\n') + stem
     for mode, name, lo in CONDS:
         rec[name] = score(media, prompt, texts, fwd=lambda inp, mode=mode, lo=lo: cq_forward(inp, pieces, mode, layout=lo)[0])

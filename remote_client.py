@@ -15,7 +15,8 @@ TOKEN = os.environ.get('REMOTE_TOKEN') or cfg.get('token') or ''
 
 def call(method, path, body=None, raw=False, timeout=60):
     req = urllib.request.Request(URL + path, method=method, data=None if body is None else json.dumps(body).encode(),
-                                 headers={'X-Token': TOKEN, 'Content-Type': 'application/json', 'User-Agent': 'gpu-remote/1'})
+                                 headers={'X-Token': TOKEN, 'Content-Type': 'application/json',
+                                          'User-Agent': 'gpu-remote/1', 'ngrok-skip-browser-warning': '1'})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             data = r.read(); return data if raw else json.loads(data)

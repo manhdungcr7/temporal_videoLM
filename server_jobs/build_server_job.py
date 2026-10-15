@@ -26,6 +26,8 @@ PROMPTS = {
            "\\nThe essential audio content of chunk {t} in one short phrase is", "\\n"),
     'oneword': (" The essential visual content of chunk {t} in one word:",
                 " The essential audio content of chunk {t} in one word is:", " "),
+    'timestamp': (" Visual information from {t0}s to {t1}s, summarized in one short phrase: ",
+                  " Audio information from {t0}s to {t1}s, summarized in one short phrase: ", " "),
 }
 
 
@@ -46,7 +48,7 @@ def main():
     ap.add_argument('--job-file'); ap.add_argument('--per-label', type=int, default=4); ap.add_argument('--seed', type=int, default=2468)
     ap.add_argument('--max-dur', type=float, default=42.0)
     ap.add_argument('--shard', help='K/N: server này lấy item K, K+N, ... (chia việc cho nhiều server)')
-    ap.add_argument('--prompts', choices=list(PROMPTS), default='oneword')
+    ap.add_argument('--prompts', choices=list(PROMPTS), default='timestamp')
     ap.add_argument('--tasks', default='TA,TF,CMTB'); ap.add_argument('--out-name', default=None)
     ap.add_argument('--measure', default='is'); ap.add_argument('--decode', action='store_true')
     a = ap.parse_args()
@@ -54,7 +56,7 @@ def main():
     cfg = f"time_left = lambda: 10 ** 9\nPER_LABEL = {a.per_label}; SEED = {a.seed}; J8_MAX_DUR = {a.max_dur}\n"
     if a.job in ('j12', 'j13'):
         pv, pa, sep = PROMPTS[a.prompts]
-        cfg += f"J12_PV = '{pv}'\nJ12_PA = '{pa}'\nJ12_SEP = '{sep}'\nJ12_TASKS = {tuple(a.tasks.split(','))!r}\n"
+        cfg += f"J12_PV = '{pv}'\nJ12_PA = '{pa}'\nJ12_SEP = '{sep}'\nJ12_BOOST_LAYERS = {tuple(range(13, 28))!r}\nJ12_TASKS = {tuple(a.tasks.split(','))!r}\n"
         cfg += f"J12_OUT = '{a.out_name or 'j12_out.jsonl'}'\n"
         cfg += "J12_CONDS = (('none', 'cq', 'shared'), ('boost_p', 'cq_boost_p', 'shared'), ('boost_pr', 'cq_boost_pr', 'shared'))\n"
     body = cfg + rd(J / 'job_utils.py') + '\n'
