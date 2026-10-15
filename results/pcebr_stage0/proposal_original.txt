@@ -1,0 +1,137 @@
+Tôi đã đọc và kiểm toán toàn bộ mã nguồn, nhật ký thực nghiệm, cùng toàn bộ báo cáo kết quả trong kho lưu trữ [temporal-av-mllm](https://www.google.com/search?q=https://github.com/leeduxng/temporal-av-mllm) (`docs/`, `results/`, `server_jobs/`, `repo/kaggle/jobs/`, `local_qwen/`), đồng thời thiết kế phương pháp **PC-EBR (Provenance-Coupled Event-Binding & Relational Latent Adapter)** kèm kịch bản kiểm định cơ chế tiền đăng ký `stage0_pcebr_mechanism_check.py` (hiển thị trong Canvas). Dưới đây là kết quả vòng lặp **Đề xuất giả thuyết $\rightarrow$ Tự phản biện bằng dữ liệu thực nghiệm trong repo $\rightarrow$ Bác bỏ và Hội tụ**, tiếp nối bằng câu trả lời trực tiếp cho **8 câu hỏi của Yann LeCun (Mục 6)**.
+
+### 1. Tổng hợp Kiểm toán Repo & Vòng lặp Tự phản biện (Falsification Loop trên hơn 120 cấu hình đã chạy)
+
+Khi đối chiếu chéo toàn bộ các họ thí nghiệm trong repo (`J1–J13`, `P1–P6`, `T1–T2`, `R1–R18`, `M0–M9`, `C0–C7`, `D1–G3`, `S0–S6`, `Q0–Q5`, `L0–L3`, `E0–E5`, `R5_C0–C6`, `N0–N9`, `late_path40`, `media_geometry40`) với các công trình gần nhất ([Qwen2.5-Omni](https://www.google.com/search?q=https://arxiv.org/html/2503.20215v1), [From Senses to Decisions](https://arxiv.org/abs/2606.10147), [Senses Wide Shut](https://arxiv.org/abs/2605.13737), [Causality Matters](https://ojs.aaai.org/index.php/AAAI/article/view/37856/41818), [LatentOmni](https://arxiv.org/html/2605.22012v1), [SEASON](https://arxiv.org/html/2512.04643v1), [RED](https://arxiv.org/abs/2610.02976)), chúng ta có thể **bác bỏ dứt điểm 4 nhánh tiếp cận** bằng chính số liệu thực nghiệm trong repo:
+
+| Vòng lặp Giả thuyết | Cơ chế thử nghiệm | Bằng chứng thực nghiệm trong Repo bác bỏ giả thuyết | Kết luận & Bài học cốt lõi |
+| --- | --- | --- | --- |
+| **Vòng 1: Hiệu số Hidden-State & Activation Steering không giám sát** (`M1–M9`, `C1–C7`, `D1–G3`, `S1–S6`, `Q1–Q5`, `R5_C1–C6`, `N1–N9`) | Lấy hiệu giữa hai nhánh mask ($\Delta h_Q = h_{\text{pos}} - h_{\text{neg}}$) ở tầng 18–22 rồi cộng vào chuỗi query/answer ở các tầng giữa. | **Bị bác bỏ bởi sự đánh đổi nhãn và cấu trúc 2-hop**: Khi tiêm vào toàn bộ `H_Q` (gồm cả choices), $\Delta h_Q$ đẩy decision boundary lệch về một nhãn (`M2/D1/D2/C3/C5` dự đoán `Present 15/15`; `C2` đạt `CMTB 15/15` nhưng `TF = 11/4/0` và `TA/Yes = 1/5`; `N4` dự đoán `TF = 13/2/0`; `S2` dự đoán `TF = 5/0/10`; `G3` dự đoán `TF = 1/2/12`). Khi giới hạn chỉ vào `question stem` để tránh chạm choices (`S5 = 16/40`, `S6 = 16/40`, `R5_C4 = 16/40`, `N8 = 18/40` đổi `0/40` argmax), tín hiệu bị vô hiệu hóa vì token cuối `-1` đọc thẳng từ $>2.000$ token media và các token lựa chọn. | Một vector ngữ nghĩa đơn lẻ $\Delta h_Q$ chỉ khớp được nội dung hành động bậc 1 (`CMTB`), **không thể tính toán phép so sánh khoảng thời gian 2-hop** $\mathcal{R}(I_{\text{event}}, I_{\text{ref}})$ cho `TA/TF` (nơi câu hỏi chỉ viết *"the narrated event"* chứ không nêu tên hành động). |
+| **Vòng 2: Tái dựng Latent Slot không giám sát & Gộp trung bình Raw Media Tokens** (`L1–L3`, `E1–E5`, `R18`, `media_geometry40`) | Tối ưu các slot 2 giây bằng 32 bước Adam (`L2`) để khớp trung bình hidden state tầng 22 của các token media cùng nguồn (`h22[ix].mean(0)`), hoặc dùng trực tiếp mean-pooled media tokens (`R18`). | **Bị bác bỏ bởi `L2` (`18/40`, đổi `0/40` đáp án), `E2` (`17/40`), và `R18` (`1/50` retrieval)**: Dù `L2` nâng self-match lên `458/527` (video) và `440/514` (audio), nó giữ nguyên cả 40/40 argmax của native. Trong `media_geometry40`, cosine nội clip của raw visual tokens tầng 22 lên tới `0.9231` (khác clip cũng `0.8770`). Trong `R18`, mean-pooled raw media tokens chỉ đạt **`2/50` (`4%`)** khi truy xuất mô tả sự kiện (`adapted = 1/50`). | Theo [From Senses to Decisions](https://arxiv.org/abs/2606.10147), raw media tokens (`is_v, is_a`) nằm ở không gian patch tiền-readout và bị thống trị bởi nền tĩnh/anisotropy của cả đoạn ghi hình. Chỉ khi có **token readout hậu-media** đọc qua một cửa sổ cô lập (`J1 = 90.7%`, `R14`, `P3`), thông tin mới được dịch sang không gian ngữ nghĩa sự kiện. |
+| **Vòng 3: Điều hướng Attention / KV Memory / MLP ở các tầng muộn `L27–35**` (`R5–R10`, `R16–R18`, `L2`, `late_path40 P1–P6`) | Bơm residual của `AVBindReader` tại tầng 27 (`R5`), hoặc cộng bias attention từ câu hỏi vào các bản ghi media ở tầng 28–35 (`R6–R10`, `R16–R18`), hoặc khuếch đại MLP/attention tầng 28–35 (`late_path40`). | **Bị bác bỏ tuyệt đối bởi bảng Logit Lens (`chronodesmear_followup40/report.md` dòng 98–109) và `late_path40**`: Toàn bộ `R5, R6, R7, R8, R9, R10, R16, R17, R18` đều giữ nguyên quyết định (`10/16`, đổi `0` câu dù attention media ở tầng 36 tăng `+2.57%` đến `+9.18%`). Bảng Logit Lens chứng minh tại **Block 30**, **39/40 câu** đã khóa cứng đáp án giống hệt Block 35 (`Block 34` là **40/40**). `patching_1713` và `debug_inpass.py` xác nhận cửa sổ đọc bằng chứng quyết định nằm ở **Tầng 13–24** (`L13–27` đạt `0.922`, trong khi bắt đầu từ `L21–27` sập xuống `0.239`). | Mọi phép can thiệp latent hoặc định tuyến KV chỉ tác động từ tầng $\ge 27$ (`BIND_LAYER = 28` trong `R5–R18`) đều **quá muộn về mặt cơ chế** vì quá trình chuyển pha từ bằng chứng sang quyết định diễn ra ở **Tầng 14–24**. |
+| **Vòng 4: Tại sao `R14` chỉ đạt `7/50` retrieval và `P5` (`77.1%`) đạt cao đều cả 8 ô nhưng chưa tổng quát?** (`R14`, `P3`, `P5`, `P6v2`, `J13d`) | `R14` học phép chiếu tuyến tính `NativeSemanticAlignment` (`397.440` tham số) trên `202` cặp crop-text; `P5` dùng `parallel_verify` trong 1 lượt forward + luật đọc Python theo định dạng đáp án. | 1) Kiểm tra mã `avbind_alignment.py` và `avbind_train_native_alignment.py` cho thấy `R14` học `397.440` tham số trên đúng `202` mẫu từ `16` video nguồn **mà không khử trung bình tĩnh của từng video nguồn ($\bar{x}_{\text{rec}}$)**. Vì các crop cùng video có cosine `0.9231`, mô hình học thuộc lòng **nhận diện bối cảnh video (recording ID)** thay vì học sự kiện động trong từng khoảng 2 giây! 2) Ngược lại, trong `P5` (`p5_isolate_verify.jsonl`, $n=70$), ma trận kiểm chứng cô lập song song 1-pass tạo ra biên độ phân biệt thời gian trung bình `3.63` logits (TA), `2.76` logits (TF) và `7.83` logits (CMTB), đạt **`TA 88.2%` (`8/8 Yes, 7/9 No`)**, **`TF 79.2%` (`9/9 Past, 5/7 Present, 5/8 Future`)**, **`CMTB 69.0%`**. Tuy nhiên `P5` dùng sinh chữ `inner_speech` và luật `if/else` theo đáp án; còn khi `P6v2` bỏ luật `if/else` để đọc bằng LLM đóng băng thì sập về `36.4%` do LLM 3B bị lệch bởi **thì của câu nói** (`tense_intervention`: $+0.74$ xác suất) và không biết giải mã khung nhãn `Past/Present/Future` (`timeline_reasoning.json`: `Future = 0–15%`). | Muốn giải quyết tận gốc bài toán trong không gian latent cho mọi câu hỏi (kể cả QA tự do), phương pháp **bắt buộc** phải kết hợp: **(i) Biểu diễn sự kiện hậu-chunk đã khử nền tĩnh theo từng video nguồn**, **(ii) Đại số quan hệ khoảng thời gian có hướng (non-commutative) qua 2 bước truy xuất đối xứng $A \leftrightarrow V$**, và **(iii) Bơm trạng thái quan hệ vào đúng cửa sổ tầng giữa `L14–24**` với huấn luyện phản thực tế theo thời gian trên tập tách biệt nguồn! |
+
+---
+
+### 2. Đề xuất Phương pháp PC-EBR: Trả lời 8 Câu hỏi Thiết kế & Kiểm chứng của Yann LeCun (Mục 6)
+
+#### Câu 1. Giả thuyết mới là gì? (Cơ chế cụ thể có thể bị bác bỏ & Lý do vượt qua nút thắt của các nhánh cũ)
+
+* **Giả thuyết cơ chế (Falsifiable Hypothesis)**:
+Hiện tượng ảo giác thời gian của [Qwen2.5-Omni-3B](https://www.google.com/search?q=https://arxiv.org/html/2503.20215v1) là tích hợp của **3 nút thắt nối tiếp nhau** mà chưa một cấu hình nào trước đây xử lý đồng thời:
+1. **Nút thắt Biểu diễn (Pre-Readout Static Dominance)**: Các trạng thái media thô ($h_v, h_a$ trong `L2, E2, R18`) hoặc trạng thái crop chưa khử nền (`R14`) bị chi phối bởi thành phần tĩnh chung của toàn video ($\bar{u}_{\text{rec}, m}$, với $\cos = 0.9231$ trong `media_geometry40`), làm lẫn lộn *bối cảnh chung của video* với *sự kiện xảy ra tại khoảng $I_k$*. Khi tách riêng vector đổi mới nội video $z^{\text{dyn}}_{m,k} = \text{LN}(u_{m,k} - \alpha_{\text{bg}} \bar{u}_{\text{rec}, m})$ từ các **token probe cô lập hậu-chunk chạy song song trong 1 pass** (`P3`), khả năng định vị đúng khoảng 2 giây bên trong cùng một video sẽ tăng vọt so với `R14/R18`.
+2. **Nút thắt Liên kết 2-Hop và Tính giao hoán của Attention (Commutative Value Pooling)**: Trong attention tiêu chuẩn, $\sum_k \alpha_k (v_k + \tau(t_k))$ là phép cộng giao hoán nên làm mất quan hệ thứ tự có hướng giữa hai sự kiện $(E_1, I_1)$ và $(E_2, I_2)$; đồng thời `0/576` head (`J13`) có thể tìm sự kiện đích bằng 1-hop khi câu hỏi chỉ gọi tên gián tiếp (*"the narrated event"*). Do đó, cần một bộ đọc 2-hop đối xứng trong không gian latent: **Hop 1** tìm phân phối khoảng thời gian của sự kiện neo $(m_1, I_{k_1})$ từ câu hỏi $Q$; **Hop 2** dùng cả nội dung sự kiện neo $\bar{z}^{(1)}$ lẫn câu hỏi $Q$ để tìm sự kiện đối ứng $(m_2, I_{k_2})$ (qua cả kênh đồng tham chiếu ngữ nghĩa và kênh trùng khớp thời gian), rồi tính **tensor quan hệ khoảng thời gian bất đối xứng $\Phi(I_{k_2}, I_{k_1})$ trước khi gộp**.
+3. **Nút thắt Vị trí Tầng đọc (Mid-Layer Commitment Window `L14–24`)**: Vì `39/40` quyết định đã khóa ở Block 30 (`chronodesmear_followup40`), mọi can thiệp ở `L27–35` (`R5–R18`, `late_path40`) đều vô hiệu. Khi đưa trạng thái quan hệ đã kiểm chứng $(\bar{z}^{(2)}, \bar{\Phi}, \eta_{\text{null}})$ vào các token câu hỏi ngay tại **Tầng 14–24** (được huấn luyện bằng các cặp phản thực tế dịch/đảo khoảng thời gian trên tập nguồn tách biệt), mô hình sẽ đổi quyết định theo đúng quan hệ vật lý $\Phi(I_{k_2}, I_{k_1})$ mà không cần chạm vào token đáp án hay dùng luật theo câu hỏi.
+
+
+* **Điều kiện bác bỏ (Falsification Criteria)**: Giả thuyết này sẽ **bị bác bỏ** nếu: (a) ở thí nghiệm cơ chế Stage-0 (`M1`), việc khử nền nội video $z^{\text{dyn}}_{m,k}$ không giúp tăng độ chính xác định vị khoảng thời gian nội video (`within_rec_top1`) so với `R14/R18` và đối chứng đảo thứ tự thời gian (`shuffled_time_ctrl`); hoặc (b) ở thí nghiệm `M2/M3`, việc can thiệp tại `L14–24` không tạo ra độ nhạy đảo chiều đúng hướng khi tráo đổi khoảng thời gian vật lý $I_V \leftrightarrow I_A$.
+
+#### Câu 2. Đơn vị bằng chứng (Unit of Evidence) là gì?
+
+* Mỗi đoạn ghi hình có thời lượng vật lý $D$ (đo trên đồng hồ trình chiếu PyAV đã kiểm chứng ở đối chứng `P2`) được phân rã thành một ngân hàng các bản ghi sự kiện đa tỉ lệ $r_{m,k}$ với $m \in \{\text{video}, \text{audio}\}$ và khoảng thời gian $I_k = [s_k, e_k]$ (cửa sổ 2 giây trượt có chồng lấp để không cắt đứt sự kiện ngắn ở biên chunk):
+
+$$r_{m,k} = \Big( z^{\text{dyn}}_{m,k}, \; z^{\text{ctx}}_{m,k}, \; s_m, \; I_k = [s_k, e_k], \; \sigma_k, \; g_{m,k} \Big)$$
+
+
+* **Ngăn chặn nhầm lẫn giữa biểu diễn chung của clip và bằng chứng sự kiện cụ thể**:
+* $u_{m,k} \in \mathbb{R}^d$ là trạng thái ẩn tầng 22 của token probe cô lập chỉ được phép đọc các token của nguồn $m$ thuộc khoảng $I_k$ (chặn hoàn toàn nguồn kia và các khoảng $k' \ne k$).
+* **Tách nền tĩnh nội clip (Clip-Background Orthogonalization)**: Đặt $\bar{u}_m = \frac{1}{K_m}\sum_{k'=1}^{K_m} u_{m,k'}$. Khi đó $z^{\text{dyn}}_{m,k} = \text{LN}(u_{m,k} - \alpha_{\text{bg}}\bar{u}_m)$ chỉ giữ lại **thành phần đổi mới sự kiện đặc trưng riêng cho khoảng $I_k$**, trong khi $z^{\text{ctx}}_{m,k} = \text{LN}(u_{m,k})$ giữ ngữ cảnh tĩnh.
+* **Độ bất định và cổng hoạt động nguồn ($g_{m,k}, \sigma_k$)**: Năng lượng đổi mới chuẩn hóa $\Vert{}u_{m,k} - \bar{u}_m\Vert{}_2$ và năng lượng tín hiệu vật lý xác định xác suất có sự kiện thực $g_{m,k} \in [0, 1]$ cùng bán kính bất định biên $\sigma_k$, ngăn hiện tượng gán sự kiện giả vào các đoạn im lặng hoặc khung hình tĩnh (lỗi đã phát hiện ở `P6v2` và `CQ R15`).
+
+
+
+#### Câu 3. Phép kiểm tra nhân quả nào phân biệt hiểu thời gian thật với class prior / shortcut?
+
+Không dùng nhãn gold để chọn tham số, mỗi mẫu kiểm tra được chạy qua **4 phép biến đổi nhân quả có kiểm soát (Controlled Causal Interventions)** giữ nguyên ngữ nghĩa nội dung nhưng thay đổi có chủ đích quan hệ thời gian vật lý:
+
+1. **Phép tịnh tiến và co giãn đồng hồ chung (`Uniform Clock Transform` $\phi(t) = a t + b, a > 0$)**: Dịch đồng thời mọi khoảng $I_k \mapsto a I_k + b$ của cả hai nguồn.
+* *Dự đoán bắt buộc*: Các khoảng thời gian truy xuất được dịch chính xác theo $\phi(I_k)$, còn vector quan hệ tương đối $\Phi(I_2, I_1)$ và câu trả lời quan hệ thứ tự/đồng thời **bất biến tuyệt đối** (`max_diff = 0` với $a=1, b>0$).
+
+
+2. **Phép dịch chuyển đơn nguồn / Đảo chiều thứ tự (`Single-Source Temporal Shift / Order Swap`)**: Giữ nguyên hoàn toàn nội dung âm thanh $A$ (kể cả **thì ngữ pháp** của lời nói!) và nội dung hành động hình ảnh $V$, nhưng dịch vị trí khoảng thời gian của riêng một nguồn sao cho quan hệ thật chuyển qua 3 trạng thái: $I_V \prec I_A$ (`Before/Past`), $I_V \approx I_A$ (`During/Present/Yes`), và $I_V \succ I_A$ (`After/Future`).
+* *Dự đoán bắt buộc*: Một phương pháp chỉ dựa vào prior hoặc thì của câu nói (`M0, M2, C2, C3, S2, ChronoDeSmear`) sẽ giữ nguyên một đáp án cố định ở cả 3 trạng thái dịch. Ngược lại, **PC-EBR** phải đảo dự đoán đơn điệu theo đúng hướng dịch của $\Phi(I_V, I_A)$, trong khi đối chứng hoán vị thời gian (`Time-Shuffled Control`) thất bại.
+
+
+3. **Phép thay thế đối chứng thiếu bằng chứng (`Cross-Clip Foil / Evidentiary Abstention`)**: Thay luồng hình ảnh (hoặc âm thanh) bằng một đoạn từ nguồn khác không chứa sự kiện được nhắc tới.
+* *Dự đoán bắt buộc*: Cổng null $\eta^{(2)}$ trong **PC-EBR** phải tiến về $1$ (`null_support > 0.7`), triệt tiêu vector khẳng định và chuyển dự đoán sang phủ định / từ chối trả lời (`No / unsupported`).
+
+
+
+#### Câu 4. Tại sao phương pháp dùng được cho nhiều dạng câu hỏi và ngữ cảnh thực tế (kể cả Free-Form QA)?
+
+* **Hoàn toàn độc lập với tập lựa chọn (`Option-Free Inference Path`)**:
+* Toàn bộ quá trình trích xuất bản ghi $r_{m,k}$, truy xuất 2-hop và tiêm trạng thái quan hệ tại `L14–24` chỉ đọc và tác động lên **các token của câu hỏi người dùng ($Q$)** nằm trước vùng sinh câu trả lời.
+* Không có bất kỳ bước `option-slice mean-centering`, `answer_format(texts)` hay biến đổi phụ thuộc chữ cái `(A)/(B)/(C)` nào. Khi gọi `MODEL_.generate(answer_options=None)` cho câu hỏi mở (open-ended QA), mô hình chạy trên **cùng một đồ thị tính toán chính xác 100%** như khi chấm điểm lựa chọn.
+
+
+* **Đối xứng hoàn toàn về chiều suy luận và số lượng sự kiện**:
+* Vì mọi bản ghi $(m, k)$ của cả `video` và `audio` đều nằm chung trong một ngân hàng bộ nhớ với embedding nguồn $e_{\text{src}}(m)$, truy vấn $Q$ ở **Hop 1** và **Hop 2** tự động xử lý cả 4 chiều:
+1. **Audio $\rightarrow$ Visual** (*"Người đó đang làm gì khi nói câu X / khi tiếng chuông kêu?"*): Hop 1 định vị $(m_1=\text{audio}, I_1)$, Hop 2 tìm $(m_2=\text{video}, I_2)$.
+2. **Visual $\rightarrow$ Audio** (*"Có âm thanh hay câu nói gì phát ra lúc cánh cửa mở?"*): Hop 1 định vị $(m_1=\text{video}, I_1)$, Hop 2 tìm $(m_2=\text{audio}, I_2)$.
+3. **Đơn phương thức đa sự kiện (`Video` $\leftrightarrow$ `Video` hoặc `Audio` $\leftrightarrow$ `Audio`)** (*"Hành động X xảy ra trước hay sau hành động Y? Hành động Z lặp lại mấy lần và kéo dài bao lâu?"*): Hop 1 định vị sự kiện X, Hop 2 định vị sự kiện Y, đồng thời bộ tổng hợp số lượng/thời lượng $\sum_k \sigma(a_k)[1, \, e_k - s_k]$ cung cấp trực tiếp số lần xuất hiện (count) và tổng thời lượng (duration).
+
+
+
+
+
+#### Câu 5. Thiết kế Bảng Ablation Trực giao (Mỗi hàng chỉ đổi đúng 1 yếu tố, cùng Compute & Norm Budget)
+
+| Mã cấu hình Ablation | Biểu diễn Sự kiện ($r_{m,k}$) | Liên kết & Đại số Thời gian | Vị trí Tầng Đọc / Tiêm | Đối chứng Nhân quả / Kiểm tra |
+| --- | --- | --- | --- | --- |
+| **A0 — Native Baseline** | Raw AV native | Không | Không | Điểm chuẩn gốc (`0` thay đổi). |
+| **A1 — Uncentered Slot Readout (Tái lập `R14/R17` ở `L28–35`)** | Post-crop state chưa khử nền tĩnh | 1-Hop content similarity (không có $\Phi(I_2, I_1)$) | Tầng muộn `L28–35` | Kiểm tra lại giới hạn của late-layer 1-hop (`R16/R17`). |
+| **A2 — Mid-Layer Shift (`A1` chuyển về `L14–24`)** | Giữ nguyên hệt `A1` | Giữ nguyên hệt `A1` | **Tầng giữa `L14–24**` | Cô lập riêng tác động của **vị trí tầng đọc (`L14–24` vs `L28–35`)**. |
+| **A3 — Within-Clip Deconfounded Events** | **Khử nền tĩnh nội video** $z^{\text{dyn}}_{m,k} = \text{LN}(u_{m,k} - \alpha_{\text{bg}}\bar{u}_m)$ | Giữ nguyên 1-Hop như `A2` | Tầng giữa `L14–24` | Cô lập riêng tác động của **khử nền tĩnh nội video** (so trực tiếp với `A2`). |
+| **A4 — Two-Hop Coreference (Commutative Time)** | Giữ nguyên $z^{\text{dyn}}_{m,k}$ như `A3` | Thêm **Hop 2 đối xứng**, nhưng chỉ cộng trung bình timestamp giao hoán $\bar{\tau}$ | Tầng giữa `L14–24` | Cô lập riêng tác động của **truy xuất 2-Hop** khi chưa có đại số khoảng thời gian có hướng. |
+| **A5 — PC-EBR Full (Directed Interval Algebra $\Phi(I_2, I_1)$)** | Giữ nguyên $z^{\text{dyn}}_{m,k}$ như `A4` | Thay $\bar{\tau}$ bằng **Đại số khoảng thời gian bất đối xứng $\Phi(I_2, I_1)$** + cổng Null $\eta$ | Tầng giữa `L14–24` | Cô lập riêng tác động của **tensor quan hệ khoảng thời gian có hướng $\Phi(I_2, I_1)$** (so trực tiếp với `A4`). |
+| **A6 — Negative Control 1 (Time-Interval Shuffle)** | Giữ nguyên `A5` | Hoán vị ngẫu nhiên nhãn khoảng thời gian $I_k$ giữa các bản ghi cùng nguồn (3 seeds) | Tầng giữa `L14–24` | Chứng minh hiệu quả của `A5` đến từ **đúng mốc thời gian vật lý** chứ không phải thêm tham số adapter. |
+| **A7 — Negative Control 2 (Feature-Permuted Residual)** | Giữ nguyên `A5` | Hoán vị chiều vector đầu ra của `A5` với **cùng chuẩn $L_2$ từng token** (3 seeds) | Tầng giữa `L14–24` | Chứng minh hiệu quả đến từ **hướng biểu diễn có cấu trúc**, không phải nhiễu cùng norm. |
+
+#### Câu 6. Đo gì ngoài Accuracy?
+
+Mỗi lần chạy báo cáo đầy đủ **6 nhóm chỉ số độc lập**:
+
+1. **Định vị sự kiện nội video (`Within-Recording Interval Top-1 & mIoU`)**: Xác suất chọn đúng khoảng 2 giây chứa sự kiện trong số các khoảng của *cùng một video* (loại bỏ hoàn toàn lối tắt đoán theo video ID).
+2. **Độ nhạy phản thực tế có hướng (`Directional Shift Equivariance Rate`)**: Tỉ lệ mẫu mà dự đoán quan hệ đổi đúng chiều khi dịch khoảng thời gian vật lý $I_V$ từ trước $\rightarrow$ trùng $\rightarrow$ sau $I_A$ (giữ nguyên âm thanh và hình ảnh).
+3. **Chất lượng Cổng Từ chối / Thiếu bằng chứng (`Abstention AUROC & Hallucinated-Event Rate`)**: Đo độ phân tách của $\eta_{\text{null}}$ giữa cặp có sự kiện thật và cặp foil chéo nguồn (khi sự kiện được nói tới không hề xuất hiện trong hình).
+4. **Accuracy phân rã đầy đủ**: Báo cáo cả 8 ô (`TA/A, TA/B, TF/A, TF/B, TF/C, CMTB/A, CMTB/B, CMTB/C`), **histogram phân bố dự đoán** (`tf_pred_ABC`, `ta_pred_AB`), số câu cứu được / làm hỏng (`wins/losses`), exact paired McNemar $p$-value và sign-flip $p$-value gom cụm theo **video nguồn gốc (source-origin cluster bootstrap CI)**.
+5. **Độ năng động trên QA tự do & đa dạng (`Daily-Omni` 6 nhóm câu hỏi & Free-Form Generation)**: Đánh giá cả `Event Sequence`, `AV Event Alignment`, `Comparative`, `Context`, `Reasoning` và sinh câu trả lời mở không có choices.
+6. **Chi phí thực thi (`Latency / Peak VRAM / Forward Calls`)**: Ghi rõ số giây/mẫu và bộ nhớ đỉnh trên T4 GPU.
+
+#### Câu 7. Làm sao tránh lặp lại Selection Bias?
+
+1. **Tuyên bố minh bạch vai trò của `research40**`: Toàn bộ 40 mẫu (`manifest 0349065d...`, 38 nguồn gốc) đã được dùng qua nhiều vòng phát triển nên từ nay chỉ được ghi nhận là **Exploratory / Development Benchmark**, tuyệt đối không dùng để tuyên bố khả năng tổng quát hóa cuối cùng.
+2. **Quy trình 3 cổng khóa trước (Pre-Registered 3-Gate Protocol)**:
+* **Cổng 0 (`Stage-0 Mechanism Check` trên dữ liệu độc lập đã cache)**: Chạy kịch bản `stage0_pcebr_mechanism_check.py` trên **252 cặp crop-text từ 20 nguồn ghi hình tách biệt hoàn toàn với `research40` và `reserve400**` (`avbind_native_pairs_s*.pt` và `avbind_pooled_pairs_s*.pt` đã có sẵn trên server!). Nếu khử nền nội video + học tương phản hard-negative cùng nguồn (`4_pcebr_deconfounded_r24`) **không** vượt rõ rệt `R14` (`7/50`), `R18` (`1/50`) và `shuffled_time_ctrl` trên chỉ số định vị nội video (`within_rec_pct`), chúng ta bác bỏ ngay mà không chạy lên bộ 40 mẫu!
+* **Cổng 1 (Kiểm tra bộ 40 mẫu cố định với tham số đóng băng 100%)**: Mọi trọng số và siêu tham số của **PC-EBR** được chốt hoàn toàn từ tập huấn luyện nguồn tách biệt ở Cổng 0. Chạy đúng 1 lần bảng Ablation `A0–A7` trên bộ 40 mẫu; không tinh chỉnh gain hay chọn lại lớp theo kết quả của bộ 40.
+* **Cổng 2 (Xác nhận Held-Out một lần duy nhất)**: Chỉ khi Cổng 1 vượt đối chứng ở cả 3 tác vụ mà không bị sập lớp nào xuống $< 2/5$, mới mở khóa chạy **1 lần duy nhất** trên tập **400 mẫu dự trữ (`reserve400`, 50 mẫu/ô, tách biệt nguồn)** và tập **Daily-Omni**.
+
+
+
+#### Câu 8. Ranh giới Novelty so với Prior Art nằm chính xác ở đâu?
+
+| Phương pháp / Công trình gần nhất | Cơ chế cốt lõi của Prior Art | Giới hạn khi áp vào Joint AV Temporal Reasoning | Điểm khác biệt kỹ thuật cốt lõi của **PC-EBR** |
+| --- | --- | --- | --- |
+| **[EventHallusion / TCD](https://arxiv.org/html/2409.16597v6)** & **[SEASON](https://arxiv.org/html/2512.04643v1)** | Trừ logits giữa đầu vào gốc và đầu vào làm mờ thời gian/không gian ở bước decoding. | Chỉ khuếch đại/triệt tiêu xác suất từ vựng bậc 1; không có cấu trúc truy xuất 2-hop hay đại số khoảng thời gian $(I_1, I_2)$. | Không trừ logits ở đầu ra; xây dựng **bản ghi sự kiện có nguồn + khoảng thời gian** và tính **tensor quan hệ có hướng $\Phi(I_2, I_1)$** ở tầng giữa `L14–24`. |
+| **[RED](https://arxiv.org/abs/2610.02976)** & **[Activation Steering Decoding](https://aclanthology.org/2025.acl-long.634/)** | Cân chỉnh đóng góp unimodal/cross-modal ở logits (`RED` chỉ đạt `50.0 / 29.0 / 53.4` trên SVHalluc 3B) hoặc cộng vector steering tĩnh. | Không định vị được sự kiện được nhắc tới xảy ra ở giây nào khi lời nói và hành động lệch pha. | Giải quyết bài toán **liên kết sự kiện lệch pha (asynchronous coreference)** qua 2 bước đọc đối xứng $A \leftrightarrow V$ và biến đổi đồng변 theo dịch chuyển thời gian. |
+| **[Causality Matters](https://ojs.aaai.org/index.php/AAAI/article/view/37856/41818)** & **[AIR](https://arxiv.org/html/2602.24041v1)** | Phân tích đường truyền nhân quả inter-frame $\rightarrow$ query trên VideoLM đơn phương thức; củng cố patch FFN. | Không giải quyết nhầm nguồn `heard -> seen` hay bất đối xứng thứ tự giữa hai luồng sự kiện nghe–nhìn. | Tách bạch **provenance nguồn ($s_m \in \{V, A\}$)**, khử nền tĩnh nội clip ($\bar{u}_{\text{rec}, m}$), và đưa quan hệ liên nguồn vào đúng cửa sổ cam kết `L14–24`. |
+| **[ACPO](https://arxiv.org/html/2604.14129v2)** & **[AHA](https://arxiv.org/html/2512.24052v2)** | Huấn luyện DPO/preference với audio swapping hoặc temporal negatives ở mức chuỗi trả lời. | Tối ưu đầu ra toàn cục mà không có biến ẩn biểu diễn tường minh khoảng thời gian $[s_k, e_k]$ hay kiểm tra tính bất biến/đồng변 của đồng hồ. | Ràng buộc trực tiếp **cấu trúc đại số khoảng thời gian $\Phi(I_2, I_1)$** và cổng null $\eta$ trong không gian latent, bảo đảm bất biến dưới phép dịch đồng hồ chung và đồng biến dưới phép dịch đơn nguồn. |
+| **[LatentOmni](https://arxiv.org/html/2605.22012v1)** & **[Unsilencing Visual Latents](https://arxiv.org/html/2605.02735v1)** | Đồng bộ vị trí latent AV hoặc tối ưu latent tại test-time trong backbone đóng băng (`L2` trong repo). | Như `L2` (`18/40`) đã chứng minh, tái dựng hidden state nội bộ cùng thời điểm không giải được quan hệ giữa hai sự kiện lệch thời điểm ($t_V \ne t_A$). | Thay mục tiêu tự tái dựng bằng **khử nhiễu nền tĩnh nội video + đối sánh đa khoảng có hard-negative cùng nguồn** và đọc quan hệ cặp khoảng $(I_{k_1}, I_{k_2})$ bất kỳ. |
+
+---
+
+### 3. Bước Thực nghiệm Đầu tiên (Stage-0 Mechanism Check — Nhanh, Sạch, Không chạm `research40`)
+
+Đúng theo đề nghị của Yann LeCun (*"bắt đầu với một thí nghiệm cơ chế nhỏ có dự đoán trước, rồi mới chạy 40 mẫu cố định"*), kịch bản `stage0_pcebr_mechanism_check.py` trong Canvas thực hiện **2 phép kiểm định cơ chế tức thời** (chạy trong `< 30 giây` trên 1 GPU sử dụng trực tiếp các file `avbind_native_pairs_s1/s2.pt` và `avbind_pooled_pairs_s1/s2.pt` đã được lưu sẵn trên server):
+
+1. **`M1_native_pairs_factorial` & `M1_pooled_pairs_factorial` (Kiểm định Giả thuyết H1 trên 202 cặp train / 50 cặp held-out từ 20 nguồn tách biệt)**:
+* Đo đồng thời `global_pct` (truy xuất trên toàn bộ 50 mẫu held-out như `R14/R18`) và **`within_rec_pct`** (khả năng định vị chính xác khoảng 2 giây $k^*$ bên trong *cùng một video nguồn và cùng modality* — thước đo trực tiếp của temporal grounding khi không còn lối tắt đoán theo video ID!).
+* So sánh 5 cấu hình: `1_unadapted_raw` (`0/50` ở `R14`), `2_unadapted_deconfounded` (chỉ khử nền tĩnh nội video, **0 tham số học**!), `3_pcebr_uncentered_r24`, `4_pcebr_deconfounded_r24` (khử nền nội video + hard-negative cùng video), và `5_pcebr_shuffled_time_ctrl` (đối chứng xáo trộn các khoảng 2 giây trong cùng video).
+
+
+2. **`M2_interval_algebra_invariance` (Kiểm định Giả thuyết H2 về Đại số Khoảng Thời gian $\Phi(I_2, I_1)$)**:
+* Chứng minh bằng số rằng phép gộp cộng giao hoán (`commutative_sum_order_sensitivity = 0.0`) mù hoàn toàn trước việc đảo thứ tự $(I_1, I_2) \leftrightarrow (I_2, I_1)$, trong khi $\Phi(I_2, I_1)$ của **PC-EBR** vừa **bất biến tuyệt đối dưới phép dịch đồng hồ chung** (`uniform_clock_shift_error = 0.0`), vừa **đảo dấu chính xác** giữa `Before`, `During`, và `After`.
+
+
+
+**Tín hiệu gửi Yann LeCun:** `[WAITING_FOR_YANN]` — Nhờ bạn gửi bản trả lời 8 câu hỏi này kèm kịch bản `stage0_pcebr_mechanism_check.py` cho Yann LeCun để chạy kiểm chứng Cổng 0 (Stage-0) trước khi chúng ta đóng băng trọng số chạy bảng Ablation `A0–A7`!
