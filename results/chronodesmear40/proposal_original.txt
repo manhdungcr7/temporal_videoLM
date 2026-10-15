@@ -1,0 +1,82 @@
+Tôi đã thiết kế phương pháp mới **ChronoDeSmear (Causal Media De-Smearing & Temporally-Stratified Counterfactual Deliberation)** và đóng gói sẵn kịch bản thực nghiệm `round5_chronograph_ablation.py` (gồm 7 cấu hình `R5_C0`–`R5_C6`) để giải quyết trực tiếp hiện tượng lệch nhãn `Present 15/15` ở `D1/D2/M2/C3/C5` cũng như sự đánh đổi giữa binding (`CMTB`) và thứ tự thời gian (`TF`) ở `C2`, hoàn toàn **không dùng `speech_window` VAD, không dùng từ nhãn (`Past/Present/Future`), và không dùng bộ phân loại dạng câu hỏi**.
+
+### 1. Giải phẫu toán học từ 50 cấu hình Round 4: Vì sao mọi phương pháp trước đều rơi vào bẫy đánh đổi?
+
+Khi đặt 50 cấu hình của bạn và Yann LeCun cạnh nhau trên cùng 40 mẫu (2.000 dự đoán), chúng ta thấy toàn bộ các hiện tượng tưởng như rời rạc thực chất xuất phát từ **3 nguyên nhân đại số và vật lý trong cơ chế Causal Self-Attention** của [Qwen2.5-Omni-3B](https://github.com/leeduxng/temporal-av-mllm):
+
+1. **Vì sao Native (`M0 = 18/40`) đoán `TF/Past = 0/5` và thiên lệch mạnh về `Future` (`4/5`)?**
+* Trong kiến trúc Causal Transformer ($\text{mask}[i, j] = 0$ với mọi $j \le i$), mỗi token hình ảnh $h_v(t)$ và âm thanh $h_a(t)$ tại thời điểm $t$ là một **bộ tích phân nhân quả (causal low-pass integrator)** cộng dồn toàn bộ các sự kiện ở thời điểm trước đó $t' < t$ cùng với nền tĩnh $\bar{h}_v$ ($\cos > 0.92$).
+* Hệ quả là một hành động xảy ra ở đầu video (**Past**, $t_1$) sẽ để lại "tiếng vang nhân quả" (causal forward echo) tồn lưu trong các token ở giữa (**Present**, $t_2$) và cuối video (**Future**, $t_3$). Ngược lại, một sự kiện xảy ra ở cuối video (**Future**) không thể rò rỉ ngược về đầu video. Do đó, khi truy vấn thời điểm diễn ra sự kiện, mô hình gốc luôn nhìn thấy dấu vết sự kiện tích tụ mạnh nhất ở vùng **Future** (`TF/A = 0/5`, `TF/C = 4/5`).
+
+
+2. **Vì sao `M2`, `D1`, `D2` (`26–27/40`) và `C3`, `C5` (`21/40`) đều sụp đổ về `Present 15/15` trên `TF`?**
+* Ở `M2/D1/D2`, việc cắt bỏ hoàn toàn thông tin ngoài cửa sổ (`hard gate`) xóa sạch bằng chứng đối chiếu trước và sau, ép mô hình chỉ thấy một khoảnh khắc duy nhất nên mặc định kết luận hai sự kiện xảy ra đồng thời (`Present`).
+* Ở `C3` ($\Delta = h_{\text{base}} - h_{A\text{-only}}$), nhánh $h_{A\text{-only}}$ khóa toàn bộ token hình ảnh nên **không chứa nền tĩnh hình ảnh $\bar{V}$**. Do đó, hiệu số $h_{\text{base}} - h_{A\text{-only}}$ vẫn bị thống trị bởi $>90\%$ nền cảnh tĩnh $\bar{V}$ trải đều mọi thời điểm, khiến `CMTB` chỉ đạt `8/15` và chênh lệch thời gian giữa $V$ và $A$ bị san phẳng về `Present 15/15`.
+
+
+3. **Vì sao `C2` (`26/40`) đạt tuyệt đối `CMTB = 15/15 (100%)` và cứu `TF/Past` lên `4/5`, nhưng lại làm sập `TF/Future` về `0/5` và `TA/Yes` về `1/5`?**
+* Hãy khai triển bậc nhất biểu thức phản thực tế của `C2` với $h_{\text{base}} = f(V_{\text{in}}, V_{\text{out}}, A)$, $h_{\text{sync}} = f(V_{\text{in}})$ và $h_{\text{anti}} = f(V_{\text{out}}, A)$:
+
+$$\Delta_{\text{C2}} = 0.5 \, h_{\text{base}}(V_{\text{in}}, V_{\text{out}}, A) + 0.5 \, h_{\text{sync}}(V_{\text{in}}) - 1.0 \, h_{\text{anti}}(V_{\text{out}}, A) \approx \mathbf{+1.0 \, V_{\text{in}} - 0.5 \, V_{\text{out}} - 0.5 \, A}$$
+
+
+* Biểu thức này giải thích chính xác cả thành công lẫn thất bại của `C2`:
+* **Lý do `CMTB` đạt `15/15**`: Vì cả $0.5(h_{\text{base}} + h_{\text{sync}})$ và $h_{\text{anti}}$ đều chứa các frame từ cùng một cảnh quay, phép trừ này **triệt tiêu hoàn toàn nền cảnh tĩnh $\bar{V}$** ($1.0\bar{V} - 1.0\bar{V} = 0$) và triệt tiêu đường tắt âm thanh đơn phương!
+* **Lý do `TF/Future` sập về `0/5` và `TA/Yes` sập về `1/5**`: Để triệt tiêu nền tĩnh $\bar{V}$, `C2` đã lấy $V_{\text{out}}$ (toàn bộ các frame ở **Past** và **Future**) làm mẫu âm để trừ đi! Hệ số **$-0.5 \, V_{\text{out}}$** đã trực tiếp **trừ mất sự kiện hình ảnh thực sự nằm ở vùng Future**, còn hệ số **$-0.5 \, A$** đã trừ mất bằng chứng âm thanh cần thiết để xác nhận `TA/Yes`. Hơn nữa, như nhận xét số 2 của Yann LeCun đã chỉ ra, việc cộng thẳng $\Delta_{\text{C2}}$ với hệ số lớn ($\sum \beta = 1.26$) vào cả vùng token đáp án `(A)/(B)/(C)` đã làm đảo chiều prior của các token lựa chọn từ `Future/Yes` sang `Past/No`.
+
+
+
+
+
+### 2. Kiến trúc ChronoDeSmear (Round 5): Tổng quát cho mọi ngữ cảnh và chiều suy luận
+
+Để một phương pháp đạt chuẩn CVPR và chạy được trong thực tế (khi người dùng có thể hỏi từ Audio $\rightarrow$ Visual, Visual $\rightarrow$ Audio, so sánh thứ tự hai sự kiện bất kỳ, hoặc hỏi chi tiết âm thanh/hình ảnh mà không hề có lời thoại), **ChronoDeSmear** can thiệp bằng 3 cơ chế đối xứng, hoàn toàn độc lập với cấu trúc benchmark:
+
+* **Khử độ nhòe nhân quả trực tiếp trên luồng token đa phương thức (`CausalDeSmear` — 1 Pass, không cần cửa sổ)**:
+* Thay vì chỉ sửa các token câu hỏi (như `S5/S6` bị giảm về `16/40` do 2.000 token media vẫn bị nhòe), tại các tầng giữa ($l \in \{8, 10, 12, 14, 16\}$), mỗi token hình ảnh $h_v(t_i)$ và âm thanh $h_a(t_i)$ được lọc bỏ phần "tiếng vang nhân quả" rò rỉ từ các thời điểm trước đó $t_j \in [t_i - 12\text{s}, t_i - 1.8\text{s}]$:
+
+$$\tilde{h}_m(t_i) = \text{NormMatch}\Big(h_m(t_i) - \lambda_m \frac{1}{\vert{}P(i)\vert{}}\sum_{j \in P(i)} h_m(t_j)\Big), \quad m \in \{V, A\}$$
+
+
+* Khi một sự kiện diễn ra ở **Past** rồi kết thúc, tiếng vang của nó ở **Present** và **Future** bị xóa bỏ; khi một sự kiện mới bùng phát ở **Present** hoặc **Future**, phần nền tĩnh từ các giây trước đó bị trừ đi giúp sự kiện mới nổi bật đúng tại timestamp thực của nó.
+
+
+* **Phản thực tế nền tĩnh phân tầng theo thời gian (`Temporally-Stratified Static-Background Counterfactual` — Thay thế hoàn toàn `speech_window`)**:
+* Làm sao để triệt tiêu nền cảnh tĩnh $\bar{V}$ ($1.0\bar{V} - 1.0\bar{V} = 0$) như `C2` để giữ mức `CMTB` cao mà **không cần `speech_window**` và **không trừ mất sự kiện ở Past hay Future**?
+* Chúng ta chia trục thời gian video $[0, D]$ thành $B = 5$ khoảng đều nhau. Trong **mỗi khoảng**, thuật toán tính độ biến thiên động (dynamic innovation) của từng token hình ảnh dựa trên độ lệch so với trung bình toàn cục và khoảng thời gian liền trước:
+
+$$I(v_i) = 0.55\big(1 - \cos(h_v(i), \bar{h}_v)\big) + 0.45\big(1 - \cos(h_v(i), h_v^{\text{prev}}(i))\big)$$
+
+
+* Trong từng khoảng thời gian, $45\%$ token ít biến đổi nhất được gom vào tập nền tĩnh $V_{\text{static}}$, và $55\%$ token có chuyển động/sự kiện mạnh nhất thuộc về tập sự kiện động $V_{\text{dyn}}$.
+* Nhánh phản thực tế $h_{\text{static}+A}$ chỉ cho phép mô hình nhìn thấy **nền tĩnh $V_{\text{static}}$ (trải đều cả Past, Present, Future)** cùng với âm thanh $A$. Khi đó:
+
+$$\Delta_{\text{strat}} = h_{\text{base}}(V_{\text{dyn}} \cup V_{\text{static}}, A) - h_{\text{static}+A}(V_{\text{static}}, A)$$
+
+
+
+triệt tiêu sạch nền cảnh tĩnh $\bar{V}$ và đường tắt âm thanh đơn phương $A$, nhưng **bảo toàn $+1.0 \, V_{\text{dyn}}$ ở cả Past, Present lẫn Future** với độ lệch thời gian bằng $0$.
+
+
+* **Tách biệt vùng Câu hỏi (`Stem`) và Khử lệch trung bình trên vùng Đáp án (`Option-Slice Mean-Centering`)**:
+* Trên đoạn token đáp án `[opt_start : L]`, $\Delta$ được trừ đi kỳ vọng trung bình giữa các vị trí token lựa chọn ($\Delta_{\text{opt}} \leftarrow \Delta_{\text{opt}} - \overline{\Delta}_{\text{opt}}$). Nhờ đó, $\Delta$ chỉ truyền thông tin phân biệt nội dung hành động (giữ hiệu quả cho `CMTB`) mà không tạo độ dịch đồng nhất làm lật nhãn `Yes` $\rightarrow$ `No` hay `Future` $\rightarrow$ `Past`.
+
+
+
+### 3. Bảng thiết kế Ablation trực giao cho Round 5 (`R5_C0` – `R5_C6`)
+
+Mọi cấu hình dưới đây giữ nguyên cùng prompt, quy mô và thời lượng; mỗi bước chỉ thay đổi đúng một yếu tố để kiểm định độc lập từng giả thuyết của Yann LeCun:
+
+| Mã cấu hình | Cơ chế kiểm định | Dùng `speech_window`? | Dùng từ nhãn? | Câu hỏi khoa học cần trả lời |
+| --- | --- | --- | --- | --- |
+| **R5_C0_baseline** | Native [Qwen2.5-Omni-3B](https://github.com/leeduxng/temporal-av-mllm) (`18/40`) | Không | Không | Điểm chuẩn đối chiếu từng mẫu và từng ô. |
+| **R5_C1_causal_desmear_1p** | Chỉ lọc tiếng vang nhân quả `CausalDeSmear` trực tiếp trên token $V$ và $A$ ở tầng `8,10,12,14,16` (**chỉ 1 forward pass**) | **Không** | **Không** | Khử causal echo ngay trên luồng media trong 1 pass có giảm hiện tượng đoán nhầm sang `Future` và cải thiện `TF/CMTB` không? |
+| **R5_C2_stratified_dyn_cd** | Phản thực tế nền tĩnh phân tầng $\Delta_{\text{strat}} = h_{\text{base}} - h_{\text{static}+A}$ + khử lệch trung bình vùng đáp án | **Không** | **Không** | Thay `speech_window` bằng nền tĩnh phân tầng $V_{\text{static}}$ có giữ được đỉnh `CMTB` của `C2` mà không làm mất `TF/Future` và `TA/Yes` không? |
+| **R5_C3_balanced_modal_cd** | Bù trực tiếp nhánh $h_{V\text{-all}}$ (full visual timeline) vào công thức `C2` + `CausalDeSmear` | Có (đối chứng `C2`) | **Không** | Kiểm chứng trực tiếp giả thuyết đại số: khi bù lại $+0.5\,V_{\text{out}}$ từ $h_{V\text{-all}}$ vào `C2`, các câu `TF/Future` và `TA/Yes` bị `C2` làm sai có hồi phục không? |
+| **R5_C4_stem_plus_media** | Chỉ tiêm $\Delta$ vào **Question Stem** (`last_media+1 : opt_start`, không chạm vào `(A)/(B)/(C)`) + `CausalDeSmear` trên token media | **Không** | **Không** | Khắc phục điểm yếu của `S5/S6`: khi vừa làm sạch token media vừa chỉ tiêm vào thân câu hỏi, hiệu quả có vượt `S5/S6` (`16/40`) không? |
+| **R5_C5_chronodesmear_full** | **ChronoDeSmear đầy đủ**: `CausalDeSmear` trên media + $\Delta_{\text{strat}}$ phân tầng + Thought cộng hưởng đối xứng $V \leftrightarrow A$ tại `L0..2` | **Không** | **Không** | Ứng viên chính cho CVPR 2027: hoàn toàn không cửa sổ lời nói, không từ nhãn, cân bằng cả `TA`, `TF` (`Past/Present/Future`) và `CMTB`. |
+| **R5_C6_multiseed_shuffled** | Negative control: trung bình cộng của **3 seed hoán vị chiều độc lập** (`42, 1337, 2027`) trên cùng chuẩn $L_2$ và lịch tầng | **Không** | **Không** | Đáp ứng yêu cầu số 5 của Yann LeCun: chứng minh gain đến từ cấu trúc biểu diễn chứ không phải nhiễu ngẫu nhiên có cùng norm. |
+
+Ngoài điểm số từng ô và phân bố dự đoán `tf_pred_ABC`, script cũng xuất kèm chỉ số kiểm chứng định vị `av_resonance_EML` (độ tương hợp ngữ nghĩa $V \leftrightarrow A$ ở 3 phân đoạn Đầu / Giữa / Cuối của từng video) để đối chiếu trực tiếp khả năng grounding với đáp án cuối theo đúng góp ý số 6 của Yann LeCun.
+
+**Tín hiệu gửi Yann LeCun:** `[WAITING_FOR_YANN]` — Nhờ bạn chuyển script `round5_chronograph_ablation.py` trong khung bên cạnh cho Yann LeCun chạy trên 2 server Kaggle (`SHARD=0` và `SHARD=1`) và gửi lại bảng tổng hợp cùng file dự đoán từng mẫu để chúng ta đối chiếu!
