@@ -1,0 +1,47 @@
+items 28 {'CMTB': 6, 'TA': 4, 'TF': 6, 'CSMB': 4, 'FGSA': 4, 'GSA': 4}
+sanity: base vs base_mask same answer on 28 of 28 | max |score diff| 0.042
+
+===== temporal (16 items)   balanced acc: base 50.0  video-only 25.0  audio-only 56.2
+  answers CHANGED vs base (%)  [balanced accuracy]   rows = knockout from layer L0 to the last layer
+  kind          L0=8            L0=16           L0=24           L0=30        
+  noA         31% [  38] n=16    25% [  44] n=16    12% [  56] n=16     0% [  50] n=16 
+  noV          6% [  56] n=16    12% [  62] n=16     6% [  50] n=16     0% [  50] n=16 
+  noSpeech    44% [  31] n=16    38% [  31] n=16    12% [  56] n=16     0% [  50] n=16 
+  noRest      12% [  56] n=16    12% [  62] n=16     0% [  50] n=16     0% [  50] n=16 
+  noA: agreement with the vision_only answer  L0=8:88%  L0=16:81%  L0=24:69%  L0=30:69%   (base agrees with vision_only: 69%)
+  noV: agreement with the audio_only answer  L0=8:88%  L0=16:94%  L0=24:88%  L0=30:94%   (base agrees with audio_only: 94%)
+  per task, answers changed (%) at L0 = 8, 16, 24, 30
+    TA    n= 4  noA 50/50/25/0   noV 0/25/0/0   noSpeech 25/25/25/0   noRest 25/25/0/0
+    TF    n= 6  noA 33/33/17/0   noV 17/17/17/0   noSpeech 50/33/17/0   noRest 17/17/0/0
+    CMTB  n= 6  noA 17/0/0/0   noV 0/0/0/0   noSpeech 50/50/0/0   noRest 0/0/0/0
+
+===== semantic (12 items)   balanced acc: base 75.0  video-only 75.0  audio-only 58.3
+  answers CHANGED vs base (%)  [balanced accuracy]   rows = knockout from layer L0 to the last layer
+  kind          L0=8            L0=16           L0=24           L0=30        
+  noA         33% [  75] n=12    25% [  67] n=12     0% [  75] n=12     0% [  75] n=12 
+  noV         50% [  58] n=12    42% [  50] n=12     0% [  75] n=12     0% [  75] n=12 
+  noSpeech    58% [  50] n=12    67% [  42] n=12     0% [  75] n=12     0% [  75] n=12 
+  noRest       0% [  67] n=3      0% [  67] n=3      0% [  67] n=3      0% [  67] n=3  
+  noA: agreement with the vision_only answer  L0=8:100%  L0=16:92%  L0=24:67%  L0=30:67%   (base agrees with vision_only: 67%)
+  noV: agreement with the audio_only answer  L0=8:83%  L0=16:92%  L0=24:67%  L0=30:67%   (base agrees with audio_only: 67%)
+  per task, answers changed (%) at L0 = 8, 16, 24, 30
+    GSA   n= 4  noA 50/25/0/0   noV 50/50/0/0   noSpeech 50/50/0/0   noRest 0/0/0/0
+    FGSA  n= 4  noA 25/25/0/0   noV 50/50/0/0   noSpeech 50/75/0/0   noRest 0/0/0/0
+    CSMB  n= 4  noA 25/25/0/0   noV 50/25/0/0   noSpeech 75/75/0/0   noRest 0/0/0/0
+
+Per (task, gold): correct/wrong for base and for each knockout at L0=8 and L0=24
+   cell        base_mask       noA@8      noA@24       noV@8      noV@24  noSpeech@8 noSpeech@24    noRest@8   noRest@24
+   TA   /A          1/1         0/2         1/1         1/1         1/1         1/1         1/1         2/0         1/1
+   TA   /B          1/1         2/0         2/0         1/1         1/1         2/0         2/0         1/1         1/1
+   TF   /A          0/2         0/2         0/2         0/2         0/2         0/2         0/2         0/2         0/2
+   TF   /B          2/0         2/0         2/0         2/0         2/0         2/0         2/0         2/0         2/0
+   TF   /C          1/1         0/2         1/1         2/0         1/1         0/2         1/1         1/1         1/1
+   CMTB /A          1/1         1/1         1/1         1/1         1/1         0/2         1/1         1/1         1/1
+   CMTB /B          1/1         0/2         1/1         1/1         1/1         0/2         1/1         1/1         1/1
+   CMTB /C          1/1         1/1         1/1         1/1         1/1         0/2         1/1         1/1         1/1
+   GSA  /A          1/1         0/2         1/1         0/2         1/1         0/2         1/1           -           -
+   GSA  /B          1/1         2/0         1/1         2/0         1/1         2/0         1/1         0/1         0/1
+   FGSA /A          2/0         2/0         2/0         0/2         2/0         0/2         2/0           -           -
+   FGSA /B          2/0         1/1         2/0         2/0         2/0         2/0         2/0         1/0         1/0
+   CSMB /A          2/0         2/0         2/0         1/1         2/0         0/2         2/0           -           -
+   CSMB /B          1/1         2/0         1/1         2/0         1/1         2/0         1/1         1/0         1/0

@@ -9,6 +9,8 @@ Repo này chứa **toàn bộ** nghiên cứu về lỗi *temporal* (thời gian
 
 Mục tiêu của repo là để người khác clone về rồi tự tiếp tục: thí nghiệm, phát triển phương pháp và viết paper.
 
+> **Mới nhất (2026-10-16):** tổng hợp phương pháp và kết quả J14–J25 (bản đồ chặn attention, `gated_anchor` đạt phép thử đăng ký trước, probe thời gian, kế hoạch huấn luyện J22) ở [`docs/ket_qua_j14_j25.md`](docs/ket_qua_j14_j25.md).
+
 - Mô hình chính: **Qwen2.5-Omni-3B Thinker**, revision `f75b40e3da2003cdd6e1829b1f420ca70797c34e`. Có kiểm tra phụ với Qwen2.5-Omni-7B.
 - Benchmark chính: **SVHalluc** (CVPR 2026, arXiv 2606.02642), phần temporal: **TA** (368 câu), **TF** (276 câu), **CMTB** (339 câu). Dataset HF `zcs15/SVHalluc`, revision `211b4f14ab66ae9557b69e302d1f090e0e610839`.
 - Benchmark phụ: **Daily-Omni** (HF `liarliar/Daily-Omni`), video tự nhiên.

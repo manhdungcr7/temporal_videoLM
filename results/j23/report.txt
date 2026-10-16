@@ -1,0 +1,8 @@
+items ok 143 | errors 0 | parity null==base 143 of 143
+gate open: {'TA': '0/20', 'TF': '0/30', 'CMTB': '33/45', 'GSA': '0/16', 'FGSA': '0/16', 'CSMB': '4/16'}
+   method        TA/A    TA/B    TF/A    TF/B    TF/C    CMTB/A    CMTB/B    CMTB/C    GSA/A    GSA/B    FGSA/A    FGSA/B    CSMB/A    CSMB/B     bal-temp bal-sem  rescued/damaged (p)
+   base          2/8      6/4      0/10     5/5      3/7      8/7      8/7      6/9      6/2      4/4      6/2      2/6      8/0      3/5          38.3    60.4  0/0 (p=1.000)
+   anchor_video  1/9      10/0     4/6      9/1      0/10     14/1     13/2     12/3     0/8      8/0      6/2      3/5      8/0      7/1          62.5    66.7  39/11 (p=0.000)
+   gated_anchor  2/8      6/4      0/10     5/5      3/7      13/2     11/4     9/6      6/2      4/4      6/2      2/6      8/0      4/4          47.5    62.5  12/0 (p=0.000)
+
+PRIMARY: gated_anchor rescued 12 / damaged 0, p = 0.0005 -> PASS | semantic drop -2.1 -> PASS

@@ -98,6 +98,38 @@ NOTEBOOKS += [
          decide="""cot ≥ 90% ở cả TA, TF, CMTB → phương pháp đạt mục tiêu trên pilot, chuyển sang held-out một lần. Nếu không: phân tích từng câu sai theo bước (mốc sai / nói thầm sai / nhìn sai / suy luận sai) để sửa đúng bước."""),
 ]
 
+PROBE_WHY = """Phương pháp token dò (chunk probes) của nhóm: mỗi đoạn 2 s có một câu dò CHỈ nhìn hình và một câu dò CHỈ nghe tiếng của đúng đoạn đó (mask cô lập, cùng position), token cuối của câu dò là "tờ ghi chú" của đoạn; câu hỏi đọc các tờ ghi chú và được tăng attention vào tờ liên quan. Đã biết (J12d/J13d): tờ ghi chú hình "…in one word:" mang đúng nội dung (Stir / Wrap / Cooking); câu hỏi tìm đúng tờ ghi chú TIẾNG của đoạn có lời nói (≈100%) nhưng KHÔNG tìm được tờ ghi chú HÌNH của đoạn có sự kiện (≈50%), vì câu hỏi SVHalluc chỉ nói "the narrated event"; và có câu dò thì mô hình dồn đáp án về Yes (TA) / Present (TF)."""
+
+NOTEBOOKS += [
+    dict(n=14, job='j14_hop2_gate.py', extra=['j8_acar.py', 'j12_chunk_prompts.py'], zip='j14_hop2_gate',
+         params={'PER_LABEL': 8, 'SEED': 2468, 'J8_MAX_DUR': 42.0, 'HOURS': 10.5}, hours='≈ 1–1,5 giờ',
+         title='J14 — Token dò, bước 2: từ tờ ghi chú TIẾNG của đoạn có lời nói, có tìm được tờ ghi chú HÌNH của đoạn có sự kiện không?',
+         why=PROBE_WHY + """ Muốn tìm sự kiện phải đi HAI BƯỚC: câu hỏi → tờ ghi chú tiếng (đoạn có lời nói) → tờ ghi chú hình có cùng nội dung. Các tờ ghi chú không phụ thuộc câu hỏi, nên phép khớp tiếng ↔ hình là tính chất riêng của video (tính một lần). Đây là cổng đi / không đi cho bản không huấn luyện.""",
+         what="""Cùng 35 câu TA/TF như J13d (seed 2468, 8 câu mỗi nhãn, clip ≤ 42 s). Ba biến thể câu dò: plain; quote (câu dò tiếng kết thúc bằng dấu mở ngoặc kép để buộc ra từ nội dung); nonum_quote (bỏ chữ số "chunk t" để kiểm soát việc hai câu dò cùng đoạn giống nhau chỉ vì cùng con số). Với mỗi câu dò ghi: hidden state ở token cuối tại 8 layer; phân phối từ nội dung dự đoán (bỏ dấu câu, stop word) và top từ. Tính sẵn các ma trận độ giống S[tiếng t, hình t']: cosine, cosine trừ trung bình mỗi modality, tích phân phối từ, Bhattacharyya, Jensen-Shannon. Thêm cho bước 1: attention của câu hỏi THẬT và của câu hỏi TRUNG TÍNH tới từng câu dò, theo layer × head (để tính PMI như J9). Kèm năng lượng audio từng đoạn.""",
+         decide="""Phân tích offline bằng remote_tests/analyze_j14.py. Chọn cấu hình (cách đo, layer, biến thể) trên 35 câu này; đi tiếp bản KHÔNG huấn luyện nếu đích chọn ra rơi đúng nửa video có sự kiện ≥ 75% (ngẫu nhiên 50%; ma trận ngẫu nhiên chọn cấu hình tốt nhất cũng đạt ~68%, nên phải xác nhận lại trên seed mới). Dưới ~65% ở mọi cách đo → chuyển sang huấn luyện nhẹ phép chiếu khớp tiếng ↔ hình. Độ giống đường chéo cao ở các đoạn IM LẶNG → con số "chunk t" gây nhiễu, dùng biến thể nonum."""),
+    dict(n=15, job='j15_bias_source.py', extra=['j8_acar.py', 'j12_chunk_prompts.py'], zip='j15_bias_source',
+         params={'PER_LABEL': 5, 'SEED': 777, 'J8_MAX_DUR': 42.0, 'HOURS': 10.5}, hours='≈ 2–2,5 giờ',
+         title='J15 — Token dò: vì sao có câu dò thì mô hình dồn đáp án về "Yes" / "Present"?',
+         why=PROBE_WHY + """ Trước khi phát triển tiếp phải tìm ra nguồn gốc hiện tượng dồn đáp án và một giao diện câu hỏi ↔ câu dò không gây lệch.""",
+         what="""Bộ câu MỚI (seed 777, 5 câu mỗi (task, đáp án), TA/TF/CMTB, clip ≤ 42 s), không tăng attention. Điều kiện: base; cq (câu hỏi thấy toàn bộ câu dò, tái tạo hiện tượng); cq_lastonly (câu hỏi chỉ thấy TOKEN CUỐI của mỗi câu dò); cq_past (câu dò thì quá khứ "was"); cq_blind (câu dò không nhìn media); cq_hidden (câu hỏi không thấy câu dò nào, câu dò chỉ nằm trong chuỗi); cq_lastonly_vc (chỉ token cuối + trừ trung bình vector Value của câu dò theo modality). Kết quả in theo từng (task, đáp án đúng).""",
+         decide="""Biến thể nào làm đáp án hết dồn (đúng đều ở mọi đáp án, không chỉ Yes/Present) thì dùng làm giao diện cho phương pháp. cq_hidden vẫn dồn → do câu dò làm dịch vị trí / có mặt trong chuỗi; cq_blind vẫn dồn → do khối chữ, không do nội dung; cq_past đảo hướng lệch → do thì của câu; cq_lastonly hết dồn → do phần chữ lặp lại; cq_lastonly_vc hết dồn → do một thành phần chung trong Value."""),
+]
+
+NOTEBOOKS += [
+    dict(n=16, job='j17_question_first.py', extra=['j8_acar.py'], zip='j17_question_first',
+         params={'PER_LABEL': 5, 'SEED': 4242, 'J8_MAX_DUR': 42.0, 'HOURS': 10.5}, hours='≈ 1,5–2 giờ',
+         title='J17 — Mô hình có hiểu thời gian tốt hơn nếu ĐỌC CÂU HỎI (và tự lập kế hoạch) TRƯỚC khi xem video không?',
+         why="""Trong mô hình (mask nhân quả, video đặt trước câu hỏi), toàn bộ hình và tiếng được mã hoá khi CHƯA biết câu hỏi; theo "Causality Matters" (2508.11576), thông tin thời gian của video lại được dựng lên chính trong lúc xử lý các token hình. Câu chuyện của paper: con người nhận câu hỏi rồi mới xem. Thí nghiệm này kiểm tra trực tiếp điều đó bên trong mô hình, không huấn luyện, không công cụ ngoài.""",
+         what="""Bộ câu mới (seed 4242, 5 câu mỗi (task, đáp án), TA/TF/CMTB, clip ≤ 42 s). Điều kiện: base ([video] [câu hỏi]); qpre ([câu hỏi] [video] [câu hỏi]); qpre_blind (như qpre nhưng token video/tiếng KHÔNG được nhìn phần câu hỏi đặt trước — đối chứng: câu hỏi chỉ được lặp lại); plan_after ([video] [kế hoạch + câu hỏi]: kế hoạch chỉ được đọc sau); qpre_plan ([câu hỏi + kế hoạch] [video] [câu hỏi]: nghĩ rồi mới xem). Kế hoạch do chính mô hình viết từ câu hỏi (không nhìn video): cần thấy/nghe gì, theo thứ tự nào.""",
+         decide="""qpre > qpre_blind (theo từng (task, đáp án đúng), không dồn đáp án) → việc video được mã hoá khi đã biết câu hỏi có tác dụng: câu chuyện "hỏi trước rồi xem" có cơ chế trong mô hình. qpre_plan > plan_after và > qpre → "nghĩ rồi xem" thêm giá trị. Không điều kiện nào hơn base → hướng này không có tác dụng khi không huấn luyện."""),
+    dict(n=17, job='j18_tmrope_time.py', extra=['j8_acar.py'], zip='j18_tmrope_time',
+         params={'PER_LABEL': 5, 'SEED': 4242, 'J8_MAX_DUR': 42.0, 'HOURS': 10.5}, hours='≈ 1 giờ',
+         title='J18 — TMRoPE có thật sự mang thông tin thời gian cho mô hình omni không? (hình và tiếng riêng)',
+         why="""Từ mã nguồn Qwen2.5-Omni (mrope_section [16,24,24], head_dim 128, theta 1e6, 25 id/giây): với token HÌNH, id thời gian chỉ đi vào 16 cặp tần số cao nhất (chu kỳ 0,25–6,4 s), 48 cặp còn lại mang hàng/cột + hằng số; với token TIẾNG, id thời gian đi vào cả 64 cặp. "Causality Matters" cho thấy với Qwen-VL, sửa positional encoding của video gần như không ảnh hưởng. Cần biết điều này đúng với mô hình omni không, trước khi đầu tư vào bất kỳ phương pháp sửa RoPE nào.""",
+         what="""Cùng bộ câu với J17 (seed 4242). Không đổi thứ tự token, chỉ đổi position id: base; v_tconst (mọi token hình cùng một id thời gian); v_tshuffle (xáo id thời gian của các chunk 2 s của hình); a_tconst (mọi token tiếng cùng một id); av_tconst (cả hai). In độ chính xác theo (task, đáp án đúng) và tỉ lệ đáp án đổi so với base.""",
+         decide="""v_tconst / v_tshuffle gần như không đổi đáp án → mô hình không dùng id thời gian của HÌNH: mọi phương pháp sửa RoPE không huấn luyện cho hình gần như vô ích, thời gian phải đến từ thứ tự xử lý (nhân quả). a_tconst đổi nhiều hơn v_tconst → bất đối xứng hình–tiếng là có thật về mặt nhân quả (đưa vào phần chẩn đoán của paper)."""),
+]
+
 net_cell = '''# CELL 0 — kiểm tra Internet
 import socket
 for host in ('pypi.org', 'huggingface.co'):
@@ -139,16 +171,75 @@ export_cell = '''# CELL 6 — nén kết quả (jsonl + npz + log; không kèm v
 ZIP = Path(f'/kaggle/working/{ZIPNAME}.zip')
 with zipfile.ZipFile(ZIP, 'w', zipfile.ZIP_DEFLATED) as z:
     for f in (OUT/'full').rglob('*'):
-        if f.is_file() and f.suffix in ('.jsonl', '.json', '.npz', '.log') and 'clips' not in f.parts:
+        if f.is_file() and f.suffix in ('.jsonl', '.json', '.npz', '.log', '.pt') and 'clips' not in f.parts:
             z.write(f, str(f.relative_to(OUT/'full')))
     for f in (OUT/'smoke').glob('*.jsonl'): z.write(f, 'smoke/' + f.name)
 print(ZIP, round(ZIP.stat().st_size / 1e6, 1), 'MB')
 display(FileLink(str(ZIP)))
 '''
 
+SEM_FILES = [('chronodesmear_cache40.py', 'server_jobs/chronodesmear_cache40.py'), ('chronodesmear40.py', 'server_jobs/chronodesmear40.py'),
+             ('chronodesmear_math.py', 'server_jobs/chronodesmear_math.py'), ('avbind_sdpa_compat.py', 'server_jobs/avbind_sdpa_compat.py'),
+             ('chronodesmear_proposal_original.py', 'results/chronodesmear40/proposal_original.py'),
+             ('semantic_manifest_job.py', 'server_jobs/semantic_manifest_job.py')]
+SEM_WHY = """Phương pháp bạn của nhóm đang thử: **ChronoDeSmear (Round 5)** — trừ "tiếng vang nhân quả" và "nền tĩnh" khỏi các token hình/tiếng ở các tầng giữa, lấy phần chênh lệch với các lượt giả định (chỉ nền tĩnh + tiếng; chỉ hình) rồi bơm ngược vào token câu hỏi/đáp án. Trên bộ temporal 40 mẫu, bản tốt nhất (R5_C2) đạt 21/40 so với native 18/40 (p = 0,63): chưa có gain ổn định. Câu hỏi semantic (GSA, FGSA, CSMB) phụ thuộc chủ yếu vào việc tách điều THẤY khỏi điều NGHE, đúng phần mà phương pháp này có tín hiệu (CMTB). Notebook chạy **đúng mã của bạn bạn, không sửa phương pháp**, chỉ đổi đường dẫn manifest/cache/kết quả."""
+SEM_WHAT = """Bộ semantic cân bằng, seed 31337: 6 ô (GSA, FGSA, CSMB) x (A = Yes, B = No), 10 mẫu mỗi ô = 60 mẫu, clip <= 40 s; notebook này chạy một nửa (30 mẫu, nửa còn lại ở notebook kia; cùng bộ chọn tất định). Mọi phép xoay đáp án. Bảy cấu hình: R5_C0 (native cùng phiên), C1..C5 (các ứng viên), C6 (đối chứng ngẫu nhiên cùng norm, 3 seed). Mỗi phép xoay mất khoảng 13 lượt forward, nên chạy lâu."""
+SEM_DECIDE = """Sau khi cả hai notebook xong: `python server_jobs/semantic_manage.py summary --files <zip1>/sem_chrono_s1.jsonl <zip2>/sem_chrono_s2.jsonl`. Tiêu chí viết trước (results/semantic_chrono/protocol.md): độ chính xác cân bằng cao hơn native >= 5 điểm; McNemar ghép cặp Holm p < 0,05; hơn đối chứng C6 >= 5 điểm; không task nào giảm quá 3 điểm; không dồn quá 75% dự đoán vào một chữ. Chưa đạt đủ thì không kết luận; đạt thì xác nhận trên bộ mới trước khi nói tới paper."""
+NOTEBOOKS += [
+    dict(n=18, job='sem_chrono.py', extra=SEM_FILES, zip='semchrono_s1', params={'SEM_SHARD': 0, 'SEM_PER_CELL': 10, 'SEM_SEED': 31337, 'HOURS': 10.5}, hours='≈ 2–4 giờ (chưa đo)',
+         title='SEM-CHRONO (nửa 1/2) — ChronoDeSmear Round 5 trên SVHalluc semantic (GSA / FGSA / CSMB)', why=SEM_WHY, what=SEM_WHAT, decide=SEM_DECIDE),
+    dict(n=19, job='sem_chrono.py', extra=SEM_FILES, zip='semchrono_s2', params={'SEM_SHARD': 1, 'SEM_PER_CELL': 10, 'SEM_SEED': 31337, 'HOURS': 10.5}, hours='≈ 2–4 giờ (chưa đo)',
+         title='SEM-CHRONO (nửa 2/2) — ChronoDeSmear Round 5 trên SVHalluc semantic (GSA / FGSA / CSMB)', why=SEM_WHY, what=SEM_WHAT, decide=SEM_DECIDE),
+]
+
+
+J20_WHY = """Phương pháp của paper phải là suy luận/can thiệp BÊN TRONG video LM. Để biết can thiệp ở đâu, cần bản đồ nhân quả: câu trả lời đọc TIẾNG, đọc HÌNH, đọc KHOẢNH KHẮC CÓ LỜI NÓI và PHẦN CÒN LẠI của video ở những layer nào. Các bài 2026 (From Senses to Decisions trên Qwen2.5-Omni-3B; Do AV-LLMs Really See and Hear?, CVPR 2026; Map the Flow, ICLR 2026) đã đo theo NGUỒN và theo LAYER, nhưng chưa đo theo THỜI ĐIỂM trong video cho câu hỏi gắn kết thời gian giữa tiếng và hình. J19 (logit lens) cho thấy quyết định chỉ hình thành ở 4 layer cuối và layer sâu nghiêng về hình."""
+J20_WHAT = """Từ layer L0 trở đi (L0 = 8, 16, 24, 30), chặn các hàng câu hỏi/đáp án không cho đọc: toàn bộ tiếng (noA); toàn bộ hình (noV); hình + tiếng của các chunk 2 s chứa lời nói (noSpeech); hình + tiếng của các chunk còn lại (noRest). Thêm base, base cùng đường mask 4-D (đối chứng kỹ thuật), chỉ hình, chỉ tiếng. Mọi cách xoay phương án. Temporal TA/TF/CMTB 2 câu mỗi (task, đáp án) + semantic GSA/FGSA/CSMB 2 câu mỗi ô (seed 2028; Kaggle đọc được clip đáp án No). Notebook này chạy một nửa số câu."""
+J20_DECIDE = """Ghép hai nửa rồi chạy remote_tests/analyze_j20.py. Đọc: chặn từ layer nào thì đáp án đổi (layer mà thông tin còn đang được đọc); chặn khoảnh khắc lời nói hay phần còn lại làm đổi đáp án TA/TF/CMTB; chặn tiếng có làm đáp án tiến về đáp án 'chỉ hình' không. Nếu thời điểm lấy từ tiếng ở layer giữa nhưng nội dung hình được đọc từ chunk khác ở layer sâu, đó là cơ chế cho phương pháp định tuyến nội tại."""
+NOTEBOOKS += [
+    dict(n=20, job='j20_knockout_map.py', extra=['j8_acar.py'], zip='j20_knockout_s1', params={'J12_SHARD': [0, 2], 'J8_MAX_DUR': 40.0, 'HOURS': 10.5}, hours='≈ 1–1,5 giờ (ước chừng)',
+         title='J20 (nửa 1/2) — Bản đồ chặn attention: độ sâu × nguồn × thời điểm', why=J20_WHY, what=J20_WHAT, decide=J20_DECIDE),
+    dict(n=21, job='j20_knockout_map.py', extra=['j8_acar.py'], zip='j20_knockout_s2', params={'J12_SHARD': [1, 2], 'J8_MAX_DUR': 40.0, 'HOURS': 10.5}, hours='≈ 1–1,5 giờ (ước chừng)',
+         title='J20 (nửa 2/2) — Bản đồ chặn attention: độ sâu × nguồn × thời điểm', why=J20_WHY, what=J20_WHAT, decide=J20_DECIDE),
+]
+
+
+J21_WHY = """Phương pháp nội tại (không VAD/ASR/cắt clip). J20 cho thấy: với câu hỏi thời gian, mô hình đọc TIẾNG tại KHOẢNH KHẮC LỜI NÓI và bỏ qua hình cũng như phần còn lại của video; bằng chứng được đọc trước layer 24. J21 kiểm tra: (1) chặn tiếng cho hàng câu hỏi ở layer 13-24 (chỉ kiểm soát nguồn); (2) thêm định tuyến hình theo mốc mà CHÍNH mô hình tìm ra (PMI trên attention vào tiếng, so với câu hỏi trung tính); (3) chia 16 head thành 3 nhóm đọc hình TRƯỚC / TRONG / SAU mốc (đề xuất CTLR); (4) đối chứng: chia head quanh một mốc ngẫu nhiên."""
+J21_WHAT = """Câu hỏi TA/TF/CMTB và GSA/FGSA/CSMB, 2 câu mỗi (task, đáp án), seed 2028 (cùng câu với J20) + seed 2029 (câu mới). Điều kiện: base; null (cùng đường tính lại, không đổi gì: phải bằng base); block_audio; anchor_video; split; split_random. Ghi phân phối mốc, cửa sổ mốc, entropy (cho cổng), cửa sổ VAD (chỉ để phân tích). Mọi cách xoay phương án. Notebook này chạy một nửa số câu."""
+J21_DECIDE = """Ghép hai nửa, chạy remote_tests/analyze_j21.py. Báo theo từng (task, đáp án đúng), độ chính xác cân bằng, phân phối đáp án, cứu/làm sai so với base, và riêng seed 2029 (câu mới). Kỳ vọng nêu trước: CMTB tăng; TA có thể tăng; TF khó tăng nếu mô hình đóng băng không đọc được thứ tự từ các nhóm head. split phải hơn split_random mới có nghĩa là mốc có tác dụng. Cổng entropy đánh giá offline với ngưỡng cố định trước (0,8)."""
+NOTEBOOKS += [
+    dict(n=22, job='j21_temporal_split.py', extra=['j8_acar.py'], zip='j21_split_s1', params={'J12_SHARD': [0, 2], 'J8_MAX_DUR': 40.0, 'HOURS': 10.5}, hours='≈ 1–1,5 giờ (ước chừng)',
+         title='J21 (nửa 1/2) — Định tuyến nội tại theo mốc tiếng: chặn tiếng, đọc hình theo mốc, chia head trước/trong/sau', why=J21_WHY, what=J21_WHAT, decide=J21_DECIDE),
+    dict(n=23, job='j21_temporal_split.py', extra=['j8_acar.py'], zip='j21_split_s2', params={'J12_SHARD': [1, 2], 'J8_MAX_DUR': 40.0, 'HOURS': 10.5}, hours='≈ 1–1,5 giờ (ước chừng)',
+         title='J21 (nửa 2/2) — Định tuyến nội tại theo mốc tiếng: chặn tiếng, đọc hình theo mốc, chia head trước/trong/sau', why=J21_WHY, what=J21_WHAT, decide=J21_DECIDE),
+]
+
+J21_IDS = [149, 150, 179, 183, 258, 267, 390, 405, 444, 489, 515, 638, 771, 782, 797, 822, 897, 903, 1023, 1131, 1187, 1213, 1278, 1292, 1447, 1501, 1544, 1555,
+           1653, 1678, 1750, 1830, 1831, 1840, 1881, 1919, 1947, 1959, 1967, 1979, 2007, 2089, 2100, 2153, 2158, 2200, 2229, 2231, 2246, 2258, 2336, 2342, 2351, 2354, 2377]
+J23_WHY = """Kiểm chứng ĐĂNG KÝ TRƯỚC cho gated_anchor (J21: 4 cứu / 0 làm sai trên 55 câu, nhưng n nhỏ và việc ghép cổng với anchor_video là chọn sau khi nhìn số). Quy tắc cố định, không chỉnh: mốc lấy từ attention của chính mô hình; cổng mở khi entropy mốc < 0,8; cổng mở -> định tuyến hàng câu hỏi sang hình tại mốc ở layer 13-24; cổng đóng -> mô hình giữ nguyên."""
+J23_WHAT = """Câu hỏi CHƯA TỪNG dùng (loại toàn bộ 55 câu của J20/J21), seed 2030: TA 10, TF 10, CMTB 15, GSA/FGSA/CSMB 8 câu mỗi (task, đáp án) ≈ 143 câu. Điều kiện: base, null (phải bằng base), anchor_video (không cổng, để thấy cổng tránh được hại ở đâu); gated_anchor suy ra từ quy tắc. Notebook này chạy một nửa số câu."""
+J23_DECIDE = """Ghép hai nửa, chạy remote_tests/analyze_j23.py. Kết quả chính (đăng ký trước, results/j23/protocol.md): số cứu/làm sai của gated_anchor so với base trên toàn bộ câu, sign test hai phía p < 0,05, và độ chính xác cân bằng semantic không giảm quá 2 điểm. Báo theo từng (task, đáp án đúng)."""
+NOTEBOOKS += [
+    dict(n=24 + s, job='j23_gated_confirm.py', extra=['j8_acar.py', 'j21_temporal_split.py'], zip=f'j23_gated_s{s + 1}',
+         params={'J12_SHARD': [s, 2], 'J8_MAX_DUR': 40.0, 'J23_EXCLUDE': J21_IDS, 'J21_SEEDS': [], 'HOURS': 10.5}, hours='≈ 1,5–2 giờ (ước chừng)',
+         title=f'J23 (nửa {s + 1}/2) — Kiểm chứng đăng ký trước: định tuyến nội tại có cổng entropy (gated_anchor) trên câu mới',
+         why=J23_WHY, what=J23_WHAT, decide=J23_DECIDE)
+    for s in (0, 1)
+]
+
+J25_WHY = """Trước khi huấn luyện, cần biết huấn luyện phải tác động vào đâu. Kiểm tra 1 (chỉ dùng chữ, không video): đưa mốc thời gian bằng chữ rồi hỏi đúng câu TA/TF của SVHalluc và câu thứ tự giữa hai hành động; nếu mô hình trả lời tốt thì phần suy luận trước/sau đã có, chỉ thiếu nhận biết thời gian từ video. Kiểm tra 2 (probe tuyến tính): từ trạng thái ẩn của token hình (và token tiếng làm đối chứng) ở từng chunk 2 giây, ridge có đoán được chunk đó nằm ở giây thứ mấy không, ở các layer 0, 1, 6, 13, 20, 28, 36."""
+J25_WHAT = """Kiểm tra 1: khoảng 90 câu TA + 90 câu TF + 60 câu thứ tự hình-hình, 3 cách diễn đạt mốc thời gian, mọi cách xoay phương án, cộng mẫu không có mốc. Kiểm tra 2: 48 clip SVHalluc tự nhiên (mỗi bản ghi một clip khác nhau), lưu trung bình trạng thái ẩn của token hình và token tiếng cho từng chunk 2 giây ở 7 mốc layer. Không có nhãn đáp án nào được đưa cho mô hình."""
+J25_DECIDE = """Gửi j25b_checks.zip. Chạy remote_tests/analyze_j25.py <j25_reason.jsonl> <thư mục j25_probe>. Kiểm tra 1: độ chính xác cân bằng theo từng (task, kiểu diễn đạt, đáp án) và phân bố đáp án; nếu cao thì LoRA ở layer 13-24 là đủ, nếu thấp thì LoRA phải phủ tới layer 35. Kiểm tra 2: so r của token hình giữa các layer với mức xáo trộn; r gần mức xáo trộn nghĩa là hình không mang thời gian và cần đồng hồ f(t)."""
+NOTEBOOKS += [
+    dict(n=26, job='j25_pretrain_checks.py', extra=['j8_acar.py'], zip='j25b_checks', params={'J25_PART': 'both', 'J25_PER_CELL': 30, 'J25_CLIPS': 48, 'J8_MAX_DUR': 40.0, 'HOURS': 10.5}, hours='≈ 1 giờ (ước chừng)',
+         title='J25b — Hai kiểm tra trước khi huấn luyện: trần suy luận (chữ) và probe tuyến tính thời gian', why=J25_WHY, what=J25_WHAT, decide=J25_DECIDE),
+]
+
 for spec in NOTEBOOKS:
     files = dict(common); files[spec['job']] = (JOBS / spec['job']).read_text(encoding='utf-8')
-    for x in spec.get('extra', []): files[x] = (JOBS / x).read_text(encoding='utf-8')
+    for x in spec.get('extra', []):
+        if isinstance(x, tuple): files[x[0]] = (PROJ / x[1]).read_text(encoding='utf-8')     # (published name, path relative to the repo root)
+        else: files[x] = (JOBS / x).read_text(encoding='utf-8')
     for s in files.values(): ast.parse(s)
     intro = f"""# {spec['title']}
 
@@ -178,3 +269,4 @@ Không có nhãn nào được đưa vào mô hình; nhãn chỉ dùng để ch�
     target = HERE / f"nb{spec['n']}_{spec['zip']}.ipynb"
     target.write_text(json.dumps(nb, ensure_ascii=False, indent=1), encoding='utf-8')
     print(target.name, round(target.stat().st_size / 1e3), 'KB')
+

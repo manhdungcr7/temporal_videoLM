@@ -11,7 +11,9 @@ theo đúng thứ tự:
 Cách dùng (chạy từ thư mục gốc của repo):
     python server_jobs/build_server_job.py j12  OUT.py [--shard K/N] [--prompts oneword|is] [--per-label 4] [--seed 2468]
     python server_jobs/build_server_job.py j13  OUT.py [--measure is|full] [--decode]
-    python server_jobs/build_server_job.py plain  OUT.py --job repo/kaggle/jobs/t2_order_blindness.py   # job không cần helper j8
+    python server_jobs/build_server_job.py j14  OUT.py --per-label 8 --tasks TA,TF           # cổng Hop 2 (khớp câu dò tiếng -> câu dò hình)
+    python server_jobs/build_server_job.py j15  OUT.py --per-label 4 --seed 777 [--shard K/N] # nguồn gốc hiện tượng dồn đáp án
+    python server_jobs/build_server_job.py plain  OUT.py --job-file repo/kaggle/jobs/t2_order_blindness.py   # job không cần helper j8
 Rồi:  REMOTE_CFG=remote_config5.json python remote_client.py run OUT.py --name ten --nowait
 """
 import argparse, ast
@@ -54,6 +56,8 @@ def main():
     a = ap.parse_args()
 
     cfg = f"time_left = lambda: 10 ** 9\nPER_LABEL = {a.per_label}; SEED = {a.seed}; J8_MAX_DUR = {a.max_dur}\n"
+    if a.job == 'j13' and a.prompts == 'timestamp':          # j13 formats its prompts with {t}; the time-range prompts need j12
+        a.prompts = 'oneword'
     if a.job in ('j12', 'j13'):
         pv, pa, sep = PROMPTS[a.prompts]
         cfg += f"J12_PV = '{pv}'\nJ12_PA = '{pa}'\nJ12_SEP = '{sep}'\nJ12_BOOST_LAYERS = {tuple(range(13, 28))!r}\nJ12_TASKS = {tuple(a.tasks.split(','))!r}\n"
@@ -68,6 +72,17 @@ def main():
         if a.job == 'j12':
             if a.shard: k, n = a.shard.split('/'); body += f"J12_SHARD = ({k}, {n})\n"
             body += j12
+        elif a.job in ('j14', 'j15', 'j16'):                                            # probe jobs that reuse j12's definitions
+            if a.shard: k, n = a.shard.split('/'); body += f"J12_SHARD = ({k}, {n})\n"
+            name = {'j14': 'j14_hop2_gate.py', 'j15': 'j15_bias_source.py', 'j16': 'j16_token_relevance.py'}[a.job]
+            body += j12.split('\nTASKS = ')[0] + '\n'
+            if a.out_name: body += f"{a.job.upper()}_OUT = '{a.out_name}'\n"
+            body += rd(J / name)
+        elif a.job in ('j17', 'j18', 'j19', 'j25'):                                            # jobs that need only the J8 helpers
+            if a.shard: k, n = a.shard.split('/'); body += f"J12_SHARD = ({k}, {n})\n"
+            name = {'j17': 'j17_question_first.py', 'j18': 'j18_tmrope_time.py', 'j19': 'j19_layer_lens.py', 'j25': 'j25_pretrain_checks.py'}[a.job]
+            if a.out_name: body += f"{a.job.upper()}_OUT = '{a.out_name}'\n"
+            body += rd(J / name)
         elif a.job == 'j13':
             body += j12.split('\nTASKS = ')[0]                                   # chỉ định nghĩa (cq_attention, cq_forward, ...), không chạy
             body += (f"\nPER_LABEL = 8; J13_OUT = '{a.out_name or 'j13_out.jsonl'}'; J13_MEASURE = '{a.measure}'; J13_DECODE = {a.decode}\n"

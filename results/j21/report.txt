@@ -1,0 +1,63 @@
+items 55 | dev (J20 items) 28 | fresh 27
+sanity null == base answers: 55 of 55 | max |diff| 0.031
+anchor window overlaps the VAD speech: 100% of 55 | gate open (entropy < 0.8): {'TA': '0/8', 'TF': '1/12', 'CMTB': '8/11', 'GSA': '0/8', 'FGSA': '1/8', 'CSMB': '0/8'}
+
+===== ALL: 55 items
+   method        TA/A   TA/B   TF/A   TF/B   TF/C   CMTB/A   CMTB/B   CMTB/C   GSA/A   GSA/B   FGSA/A   FGSA/B   CSMB/A   CSMB/B    bal-temporal bal-semantic  rescued/damaged (p)
+   base          2/2     3/1     0/4     4/0     3/1     3/1     1/3     1/2     3/1     3/1     4/0     3/1     4/0     3/1            54.2        83.3  0/0 (p=1.00)
+   null          2/2     3/1     0/4     4/0     3/1     3/1     1/3     1/2     3/1     3/1     4/0     3/1     4/0     3/1            54.2        83.3  0/0 (p=1.00)
+   block_audio   0/4     4/0     0/4     4/0     0/4     2/2     2/2     1/2     0/4     3/1     4/0     2/2     4/0     4/0            41.7        70.8  4/11 (p=0.12)
+   anchor_video  0/4     4/0     1/3     2/2     0/4     3/1     4/0     3/0     0/4     4/0     3/1     3/1     4/0     4/0            56.2        75.0  10/12 (p=0.83)
+   split         0/4     3/1     0/4     3/1     0/4     2/2     2/2     2/1     1/3     4/0     4/0     2/2     4/0     3/1            39.6        75.0  4/11 (p=0.12)
+   split_random  0/4     2/2     0/4     4/0     0/4     1/3     1/3     1/2     1/3     4/0     4/0     2/2     4/0     3/1            29.2        75.0  2/12 (p=0.01)
+   gated_split   2/2     3/1     0/4     4/0     3/1     3/1     2/2     2/1     3/1     3/1     4/0     2/2     4/0     3/1            61.5        79.2  2/1 (p=1.00)
+   gated_anchor  2/2     3/1     1/3     4/0     3/1     3/1     3/1     2/1     3/1     3/1     4/0     3/1     4/0     3/1            67.7        83.3  4/0 (p=0.12)
+   predictions per task (A/B/C):
+     base          TA:3/5  TF:0/8/4  CMTB:6/3/2  GSA:4/4  FGSA:5/3  CSMB:5/3
+     null          TA:3/5  TF:0/8/4  CMTB:6/3/2  GSA:4/4  FGSA:5/3  CSMB:5/3
+     block_audio   TA:0/8  TF:1/11/0  CMTB:4/4/3  GSA:1/7  FGSA:6/2  CSMB:4/4
+     anchor_video  TA:0/8  TF:5/7/0  CMTB:3/5/3  GSA:0/8  FGSA:4/4  CSMB:4/4
+     split         TA:1/7  TF:3/9/0  CMTB:4/3/4  GSA:1/7  FGSA:6/2  CSMB:5/3
+     split_random  TA:2/6  TF:1/11/0  CMTB:4/3/4  GSA:1/7  FGSA:6/2  CSMB:5/3
+     gated_split   TA:3/5  TF:0/9/3  CMTB:5/3/3  GSA:4/4  FGSA:6/2  CSMB:5/3
+     gated_anchor  TA:3/5  TF:1/8/3  CMTB:5/4/2  GSA:4/4  FGSA:5/3  CSMB:5/3
+
+===== DEVELOPMENT (J20 items): 28 items
+   method        TA/A   TA/B   TF/A   TF/B   TF/C   CMTB/A   CMTB/B   CMTB/C   GSA/A   GSA/B   FGSA/A   FGSA/B   CSMB/A   CSMB/B    bal-temporal bal-semantic  rescued/damaged (p)
+   base          1/1     1/1     0/2     2/0     1/1     1/1     1/1     1/1     1/1     1/1     2/0     2/0     2/0     1/1            50.0        75.0  0/0 (p=1.00)
+   null          1/1     1/1     0/2     2/0     1/1     1/1     1/1     1/1     1/1     1/1     2/0     2/0     2/0     1/1            50.0        75.0  0/0 (p=1.00)
+   block_audio   0/2     2/0     0/2     2/0     0/2     1/1     1/1     1/1     0/2     1/1     2/0     1/1     2/0     2/0            43.8        66.7  2/4 (p=0.69)
+   anchor_video  0/2     2/0     1/1     1/1     0/2     1/1     2/0     2/0     0/2     2/0     2/0     1/1     2/0     2/0            56.2        75.0  6/5 (p=1.00)
+   split         0/2     1/1     0/2     2/0     0/2     0/2     2/0     1/1     0/2     2/0     2/0     1/1     2/0     1/1            37.5        66.7  2/5 (p=0.45)
+   split_random  0/2     1/1     0/2     2/0     0/2     0/2     1/1     1/1     0/2     2/0     2/0     1/1     2/0     1/1            31.2        66.7  1/5 (p=0.22)
+   gated_split   1/1     1/1     0/2     2/0     1/1     1/1     2/0     1/1     1/1     1/1     2/0     2/0     2/0     1/1            56.2        75.0  1/0 (p=1.00)
+   gated_anchor  1/1     1/1     1/1     2/0     1/1     1/1     2/0     1/1     1/1     1/1     2/0     2/0     2/0     1/1            62.5        75.0  2/0 (p=0.50)
+   predictions per task (A/B/C):
+     base          TA:2/2  TF:0/4/2  CMTB:3/2/1  GSA:2/2  FGSA:2/2  CSMB:3/1
+     null          TA:2/2  TF:0/4/2  CMTB:3/2/1  GSA:2/2  FGSA:2/2  CSMB:3/1
+     block_audio   TA:0/4  TF:0/6/0  CMTB:3/2/1  GSA:1/3  FGSA:3/1  CSMB:2/2
+     anchor_video  TA:0/4  TF:3/3/0  CMTB:1/3/2  GSA:0/4  FGSA:3/1  CSMB:2/2
+     split         TA:1/3  TF:1/5/0  CMTB:1/3/2  GSA:0/4  FGSA:3/1  CSMB:3/1
+     split_random  TA:1/3  TF:1/5/0  CMTB:2/2/2  GSA:0/4  FGSA:3/1  CSMB:3/1
+     gated_split   TA:2/2  TF:0/5/1  CMTB:2/3/1  GSA:2/2  FGSA:2/2  CSMB:3/1
+     gated_anchor  TA:2/2  TF:1/4/1  CMTB:2/3/1  GSA:2/2  FGSA:2/2  CSMB:3/1
+
+===== FRESH (seed 2029): 27 items
+   method        TA/A   TA/B   TF/A   TF/B   TF/C   CMTB/A   CMTB/B   CMTB/C   GSA/A   GSA/B   FGSA/A   FGSA/B   CSMB/A   CSMB/B    bal-temporal bal-semantic  rescued/damaged (p)
+   base          1/1     2/0     0/2     2/0     2/0     2/0     0/2     0/1     2/0     2/0     2/0     1/1     2/0     2/0            56.2        91.7  0/0 (p=1.00)
+   null          1/1     2/0     0/2     2/0     2/0     2/0     0/2     0/1     2/0     2/0     2/0     1/1     2/0     2/0            56.2        91.7  0/0 (p=1.00)
+   block_audio   0/2     2/0     0/2     2/0     0/2     1/1     1/1     0/1     0/2     2/0     2/0     1/1     2/0     2/0            37.5        75.0  2/7 (p=0.18)
+   anchor_video  0/2     2/0     0/2     1/1     0/2     2/0     2/0     1/0     0/2     2/0     1/1     2/0     2/0     2/0            56.2        75.0  4/7 (p=0.55)
+   split         0/2     2/0     0/2     1/1     0/2     2/0     0/2     1/0     1/1     2/0     2/0     1/1     2/0     2/0            43.8        83.3  2/6 (p=0.29)
+   split_random  0/2     1/1     0/2     2/0     0/2     1/1     0/2     0/1     1/1     2/0     2/0     1/1     2/0     2/0            25.0        83.3  1/7 (p=0.07)
+   gated_split   1/1     2/0     0/2     2/0     2/0     2/0     0/2     1/0     2/0     2/0     2/0     0/2     2/0     2/0            68.8        83.3  1/1 (p=1.00)
+   gated_anchor  1/1     2/0     0/2     2/0     2/0     2/0     1/1     1/0     2/0     2/0     2/0     1/1     2/0     2/0            75.0        91.7  2/0 (p=0.50)
+   predictions per task (A/B/C):
+     base          TA:1/3  TF:0/4/2  CMTB:3/1/1  GSA:2/2  FGSA:3/1  CSMB:2/2
+     null          TA:1/3  TF:0/4/2  CMTB:3/1/1  GSA:2/2  FGSA:3/1  CSMB:2/2
+     block_audio   TA:0/4  TF:1/5/0  CMTB:1/2/2  GSA:0/4  FGSA:3/1  CSMB:2/2
+     anchor_video  TA:0/4  TF:2/4/0  CMTB:2/2/1  GSA:0/4  FGSA:1/3  CSMB:2/2
+     split         TA:0/4  TF:2/4/0  CMTB:3/0/2  GSA:1/3  FGSA:3/1  CSMB:2/2
+     split_random  TA:1/3  TF:0/6/0  CMTB:2/1/2  GSA:1/3  FGSA:3/1  CSMB:2/2
+     gated_split   TA:1/3  TF:0/4/2  CMTB:3/0/2  GSA:2/2  FGSA:4/0  CSMB:2/2
+     gated_anchor  TA:1/3  TF:0/4/2  CMTB:3/1/1  GSA:2/2  FGSA:3/1  CSMB:2/2

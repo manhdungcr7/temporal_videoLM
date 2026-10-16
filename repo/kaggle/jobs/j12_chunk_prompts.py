@@ -16,11 +16,27 @@ import json, numpy as np, torch
 from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS
 from transformers.integrations.sdpa_attention import sdpa_attention_forward
 
+if 'Lay' not in globals():                       # notebook run: load the J8 helpers (server jobs prepend them instead)
+    exec((ROOT / 'j8_acar.py').read_text(encoding='utf-8').split('\nitems = sample_items')[0], globals())
 PER_LABEL = int(globals().get('PER_LABEL', 2)); SEED = int(globals().get('SEED', 2468)); LAMBDA = float(globals().get('LAMBDA', 2.0))
 TOK = PROC.tokenizer
 P_V = globals().get('J12_PV', ' Visual information from {t0}s to {t1}s, summarized in one short phrase: ')
 P_A = globals().get('J12_PA', ' Audio information from {t0}s to {t1}s, summarized in one short phrase: ')
 BOOST_LAYERS = tuple(globals().get('J12_BOOST_LAYERS', tuple(range(13, 28))))
+
+
+if 'locate' not in globals():
+    def locate(input_ids, text, pieces, after):
+        """token spans [start, end) of each piece of `text`, searched after position `after` (the last media token)."""
+        seq = input_ids[0].tolist()[after + 1:]
+        strs = [TOK.decode([t]) for t in seq]; starts = np.cumsum([0] + [len(s) for s in strs[:-1]]); full = ''.join(strs)
+        p0 = full.find(text)
+        if p0 < 0: raise RuntimeError('probe text not found')
+        bounds = np.cumsum([p0] + [len(p) for p in pieces]); spans = []
+        for k in range(len(pieces)):
+            toks = [t for t, c in enumerate(starts) if bounds[k] <= c < bounds[k + 1]]
+            spans.append((after + 1 + toks[0], after + 1 + toks[-1] + 1))
+        return spans
 CTX = {}                              # per-forward context for the custom attention
 
 
@@ -38,6 +54,12 @@ def cq_attention(module, query, key, value, attention_mask, scaling=None, dropou
     s = s + attention_mask[:, :, rows, :].float().to(s.device)
     p = torch.softmax(s, -1)
     is_idx = c['is_idx'].to(s.device)                                       # [G] last token of each prompt
+    if c['mode'] == 'vcenter':                                              # no boost; probe values centred per modality
+        vv = v.float().clone()
+        for par in (0, 1):                                                  # 0 = visual probes, 1 = audio probes
+            sel = is_idx[par::2]; vv[..., sel, :] -= vv[..., sel, :].mean(-2, keepdim=True)
+        out = out.clone(); out[:, rows] = (p @ vv).to(out.dtype).transpose(1, 2)
+        return out, None
     r = p[..., is_idx]                                                      # [1,H,R,G] relevance per prompt
     bias_g = LAMBDA * torch.log(r / r.amax(-1, keepdim=True).clamp(min=1e-9) + 1e-9)   # <= 0
     G = c['groups'].to(s.device)                                            # [G, L] bool: columns to boost per prompt
@@ -53,10 +75,12 @@ def cq_attention(module, query, key, value, attention_mask, scaling=None, dropou
 for li, layer in enumerate(MODEL_.model.layers): layer.self_attn._cq_layer = li   # only the LLM layers are modified
 
 
-def cq_forward(inp, pieces, mode, record=False, layout='shared'):
+def cq_forward(inp, pieces, mode, record=False, layout='shared', variant=None):
     """layout 'shared': every prompt at p0 (right after all media).
     layout 'aligned': prompt (t, v|a) starts right after the last position of chunk t, so every prompt is equally far
-    from its own media; the question/answer still start at p0 + maxlen."""
+    from its own media; the question/answer still start at p0 + maxlen.
+    variant (bias-source controls, J15): 'blind' = probes see no media at all; 'lastonly' = question/answer see only the
+    last token of each probe; 'hidden' = question/answer see no probe token (probes still occupy the sequence)."""
     lay = Lay(inp); text = ''.join(pieces)
     spans = locate(inp['input_ids'].cpu(), text, pieces, lay.last_media)
     L = lay.L; m = lay.m.clone(); pos = lay.pos.clone()
@@ -68,7 +92,7 @@ def cq_forward(inp, pieces, mode, record=False, layout='shared'):
     for g, ((a_, b_), piece) in enumerate(zip(spans, pieces)):
         t = g // 2; src = 'v' if g % 2 == 0 else 'a'
         own = (lay.v if src == 'v' else lay.a) & (lay.chunk == t)
-        m[a_:b_][:, (lay.v | lay.a) & ~own] = float('-inf')                 # only its chunk and modality
+        m[a_:b_][:, (lay.v | lay.a) & (~own if variant != 'blind' else torch.ones_like(own))] = float('-inf')   # only its chunk and modality
         m[a_:b_][:, pcols] = float('-inf'); m[a_:b_, a_:b_] = torch.triu(torch.full((b_ - a_, b_ - a_), float('-inf')), 1)
         if layout == 'shared':
             start = p0
@@ -88,6 +112,11 @@ def cq_forward(inp, pieces, mode, record=False, layout='shared'):
         # prompt belonging to the last temporal chunk.
         q_pos = max(prompt_cursor, int(pos.cpu()[:, 0, (lay.v | lay.a)].max()) + 1)
     pos[:, :, q_start:] = (q_pos + torch.arange(L - q_start)).view(1, 1, -1).to(pos.dtype)
+    if variant == 'lastonly':                                   # (J15 controls) question/answer see only each probe's last token
+        keep = torch.zeros(L, dtype=torch.bool); keep[torch.tensor(is_idx)] = True
+        m[q_start:][:, pcols & ~keep] = float('-inf')
+    elif variant == 'hidden':                                   # question/answer see no probe token
+        m[q_start:][:, pcols] = float('-inf')
     rows = torch.arange(q_start, L)
     CTX['cfg'] = dict(mode=mode, rows=rows, is_idx=torch.tensor(is_idx), groups=groups, raw=raw,
                       record_layer=18, boost_layers=BOOST_LAYERS)

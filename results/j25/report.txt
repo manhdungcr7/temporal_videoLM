@@ -1,0 +1,36 @@
+===== CHECK 1: reasoning ceiling (text only)
+  TA mmss                 bal  80.0%   gold A: 10/10 (pred 10/0)   gold B: 6/10 (pred 4/6)
+  TA sec_event_first      bal  85.0%   gold A: 7/10 (pred 7/3)   gold B: 10/10 (pred 0/10)
+  TA sec_speech_first     bal  70.0%   gold A: 4/10 (pred 4/6)   gold B: 10/10 (pred 0/10)
+  TA ALL styles balanced accuracy 78.3%  (chance 50%)
+  TA no timeline given: prediction B  (log-probs [-2.391, -1.524])
+  TF mmss                 bal  33.3%   gold A: 10/10 (pred 10/0/0)   gold B: 0/10 (pred 10/0/0)   gold C: 0/10 (pred 10/0/0)
+  TF sec_event_first      bal  33.3%   gold A: 10/10 (pred 10/0/0)   gold B: 0/10 (pred 10/0/0)   gold C: 0/10 (pred 10/0/0)
+  TF sec_speech_first     bal  33.3%   gold A: 10/10 (pred 10/0/0)   gold B: 0/10 (pred 10/0/0)   gold C: 0/10 (pred 10/0/0)
+  TF ALL styles balanced accuracy 33.3%  (chance 33%)
+  TF wording Before/During/After  gold A: 30/30 (pred 30/0/0)
+  TF wording Before/During/After  gold B: 5/30 (pred 10/5/15)
+  TF wording Before/During/After  gold C: 30/30 (pred 0/0/30)
+  TF wording Before/During/After  balanced 72.2%
+  TF no timeline given: prediction A  (log-probs [-1.869, -4.26, -5.76])
+  VV sec_first_mentioned  bal 100.0%   gold A: 15/15 (pred 15/0)   gold B: 15/15 (pred 0/15)
+  VV sec_second_mentioned bal 100.0%   gold A: 15/15 (pred 15/0)   gold B: 15/15 (pred 0/15)
+  VV ALL styles balanced accuracy 100.0%  (chance 50%)
+
+===== CHECK 2: linear time probe, 38 clips, chunks per clip median 13
+  VIDEO tokens: held-out Pearson r of predicted vs true (centred) chunk index   [shuffled-label null in brackets]
+    after layer  0: r = +0.084 (alpha 10000)   [-0.033]   n = 462
+    after layer  1: r = +0.633 (alpha 100)   [+0.009]   n = 462
+    after layer  6: r = +0.859 (alpha 100)   [+0.007]   n = 462
+    after layer 13: r = +0.859 (alpha 100)   [-0.032]   n = 462
+    after layer 20: r = +0.910 (alpha 10000)   [-0.019]   n = 462
+    after layer 28: r = +0.905 (alpha 10000)   [-0.012]   n = 462
+    after layer 36: r = +0.897 (alpha 1000)   [-0.006]   n = 462
+  AUDIO tokens: held-out Pearson r of predicted vs true (centred) chunk index   [shuffled-label null in brackets]
+    after layer  0: r = +0.391 (alpha 10000)   [+0.011]   n = 480
+    after layer  1: r = +0.774 (alpha 100)   [-0.002]   n = 480
+    after layer  6: r = +0.870 (alpha 100)   [-0.018]   n = 480
+    after layer 13: r = +0.881 (alpha 1000)   [+0.021]   n = 480
+    after layer 20: r = +0.897 (alpha 1000)   [+0.075]   n = 480
+    after layer 28: r = +0.877 (alpha 1000)   [+0.093]   n = 480
+    after layer 36: r = +0.870 (alpha 100)   [-0.001]   n = 480
