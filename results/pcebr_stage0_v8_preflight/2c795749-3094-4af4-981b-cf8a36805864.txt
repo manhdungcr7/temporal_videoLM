@@ -1,0 +1,37 @@
+Tôi đã rà soát toàn bộ 5 điểm phản biện trong `review_20261017.md` của bạn và sửa trực tiếp trong code `stage0_pcebr_v8_clrv_latent_reasoning.py` (cùng bản đồng bộ `stage0_pcebr_v7_joint_sinkhorn_clc.py`) và văn bản `proposal_stage0_v8_clrv_to_yann_lecun.md` để mọi tuyên bố trong proposal khớp 100% với từng dòng code thực thi:
+
+* **Mã băm SHA-256 mới (khớp chính xác cả bản đầy đủ lẫn sau khi cắt/chuẩn hóa LF cuối file):** `47a69542388aaec66b909deea09dd3bc945bc92c8c6f0343d3111a6bc6aaf8d6`
+
+### Đối chiếu 5 điểm phản biện trong `review_20261017.md` và bản sửa trong `v8`
+
+| Điểm phản biện trong `review_20261017.md` | Nguyên nhân trong bản `04304aad…` trước đó | Cơ chế đã sửa trong code `v8` mới (`47a69542…`) |
+| --- | --- | --- |
+| **1. Chưa hỗ trợ thực chất cả 4 hướng `A->V`, `V->A`, `A->A`, `V->V` & gán trùng token khi thiếu từ nối** | `pair_omega` luôn tính trên $Z_A \times Z_V$ (dòng `1411–1413` cũ); khi không gặp từ nối tiếng Anh trong danh sách thì `role1_rows` và `role2_rows` nhận cùng một nhóm token. | **Phân hoạch rời nhau không phụ thuộc từ nối (`split_query_into_endpoint_roles`, dòng `1013–1114`):** Khi không có từ nối (`connector_found == False`), code phân hoạch $\mathcal{T}_{\text{spec}}$ thành hai cụm rời nhau cực tiểu hóa tương đồng ngữ nghĩa ($\mathcal{R}_1 \cap \mathcal{R}_2 = \emptyset$, `disjoint_endpoint_roles == True`).<br>
+
+<br>**Định tuyến 4 chế độ (`extract_query_conditioned_salient_slots`, dòng `1356–1447`, `1515–1530`):** Tính trọng số phương thức liên tục $(\rho_{e,A}, \rho_{e,V})$ cho từng đầu mút $e \in \{1, 2\}$, dựng ngân hàng riêng $(Z_{\text{ep1}}, Z_{\text{ep2}})$, $(B_{18,\text{ep1}}, B_{18,\text{ep2}})$ và ma trận tương thích $\Omega_{\text{M3}}$ giữa Đầu mút 1 và Đầu mút 2 cho cả 4 chế độ `A->V`, `V->A`, `A->A`, `V->V` (kèm khử tự khớp đường chéo $-0.65\,I_K$ khi cùng phương thức). |
+| **2. Cổng câu hỏi không liên quan bị chặn dưới ở `0.65` (`max(0.65, gate)`)** | Dòng `1405` cũ đặt `excess_gate = max(0.65, ...)` ở nhánh câu hỏi quy chiếu (`deictic`), khiến gate không thể về `0.0`. | **Xóa hoàn toàn `max(0.65, ...)` (dòng `1493–1515`):** Nhánh quy chiếu nhân ma trận đồng thuận khái niệm 2 đầu mút với cổng biến thiên tiền cảnh nội tại `fg_mod_gate` (dòng `1495–1499`) rồi lấy trực tiếp `excess_gate = gate_factorial['role_content_conjunctive_v8']` với mức sàn thực sự bằng **`0.0`** (`gate_has_zero_floor: True`). |
+| **3. `pair_omega` chỉ trừ trung bình toàn ma trận nên nhạy với độ nổi bật đơn lẻ $\Omega_{ij} = a_i + b_j$** | Phép trừ `omega - omega.mean()` không triệt tiêu thành phần cộng tính theo hàng hoặc cột khi phân phối biên $\hat{p}_1, \hat{p}_2$ không đều. | **Khử trung bình kép (`double_center_interaction_matrix`, dòng `532–536`, `275–281`, `1530`):** Áp dụng $\Omega_{\text{int}}(i,j) = \Omega_{ij} - \bar{\Omega}_{i\cdot} - \bar{\Omega}_{\cdot j} + \bar{\Omega}_{\cdot\cdot}$ trước khi tính $\hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2$ và Sinkhorn. Mọi dịch chuyển $\Omega_{ij} \mapsto \Omega_{ij} + a_i + b_j$ đều cho $\Delta(\hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2) = 0$ tuyệt đối. Đồng thời gọi rõ $P_{\text{null}}$ là **điểm null/xung đột heuristic**, không phải xác suất vắng mặt đã hiệu chuẩn. |
+| **4. Đồng hồ lưới nội suy & việc dựng lại `position_ids` ở prepass không lựa chọn** | Dòng `1698–1709` cũ ghi đè `freeform_pos` sau media bằng chuỗi tăng đều, làm mất khoảng cách vị trí TMRoPE gốc ([Qwen2.5-Omni Technical Report](https://arxiv.org/abs/2503.20215)). | **Bảo toàn tuyệt đối TMRoPE 3 trục trên prefix + câu hỏi (dòng `1829–1851`):** Giữ nguyên 100% `kw['position_ids']` gốc của processor trên toàn bộ `0 .. last_m` và `stem_rows` (`tmrope_stem_pos_max_diff == 0`), chỉ dịch phần `assistant_rows` ở cuối đúng bằng độ rộng khối lựa chọn `opt_pos_gap` đã cắt bỏ. Ghi rõ các lag dùng **đồng hồ lưới nội suy (`uniform grid interpolation`)**. |
+| **5. Cần đối chứng đảo quan hệ, đảo thứ tự đáp án và không có media cho cầu nối rollout** | Bản trước mới xuất `p_bridge` thuận, chưa tách bạch đóng góp của nội dung suy luận so với cấu trúc lựa chọn ([Raman et al., PMLR 2026](https://proceedings.mlr.press/v306/raman26a.html)). | **Bổ sung 3 đối chứng cầu nối trong `M3` (`score_bridge_turn`, dòng `2417–2505`, `2600–2609`):**<br>
+
+<br>1. `mc_pred_bridge_order_rev_ctrl` (`tv_bridge_order_swap`): cầu nối chạy trên chuỗi rollout đã đảo dấu thứ tự thời gian.<br>
+
+<br>2. `mc_pred_bridge_opt_perm_unpermuted_ctrl` (`tv_bridge_option_perm`): hoán vị vòng quanh các đáp án `(A,B,C) -> (B,C,A)` rồi ánh xạ ngược về nhãn gốc.<br>
+
+<br>3. `mc_pred_bridge_trace_only_no_media_ctrl` (`tv_bridge_media_vs_trace_only`): chấm cầu nối chỉ với văn bản (bỏ media prefix). |
+
+### Kết quả chạy kiểm chứng tự động `M0` trên bản code mới (`47a69542…`)
+
+Toàn bộ 9 bài kiểm tra đại số và đối chứng trong `run_algebraic_unit_checks()` đã chạy thông suốt (`STAGE0_V8_DONE`, `1.05s`):
+
+* **Bất biến dịch hàng/cột đơn lẻ $\Omega_{ij} \mapsto \Omega_{ij} + a_i + b_j$:** `pure_row_col_additive_expected_compat_abs = 2.2e-8` (`< 1e-6`), `row_col_additive_shift_jcond_max_err = 3.1e-8` (`< 1e-6`), `row_col_additive_shift_pnull_max_err = 2.38e-7` (`< 1e-6`).
+* **Độ nhạy tương tác chéo của điểm null heuristic $P_{\text{null}}$:** Tăng đơn điệu chặt từ tương thích (`0.5207`) $\to$ độc lập (`0.6125`) $\to$ xung đột (`0.7007`), với $\Delta = +0.1801 > 0.08$.
+* **Cổng hiện diện không sàn (`0.0` floor) & tách biệt sự kiện vắng mặt:**
+* Câu hỏi quy chiếu (`TA`) trên luồng phẳng/vắng mặt sự kiện: **`0.0000`** (`deictic_flat_absent_stream_gate_zero_floor == 0.0`).
+* Câu hỏi quy chiếu (`TA`) và câu hỏi cụ thể (`TF`) có sự kiện thật: **`1.0000`** và **`1.0000`**.
+* 4 câu hỏi sự kiện vắng mặt (`Welder, Guitarist, Carpenter, Scuba`): **`[0.0, 0.0, 0.1534, 0.0]`** (trung bình **`0.0384 <= 0.10`**).
+
+
+* **Bao phủ cả 4 chế độ cặp phương thức & câu hỏi không từ nối:** `four_modality_regimes_detected = ['A->V', 'V->A', 'A->A', 'V->V']` và `connector_free_disjoint_endpoint_roles = True`.
+
+Bạn có thể lưu trực tiếp bản code `stage0_pcebr_v8_clrv_latent_reasoning.py` (`SHA-256: 47a69542388aaec66b909deea09dd3bc945bc92c8c6f0343d3111a6bc6aaf8d6`) đè lên `stage0_pcebr_v8_candidate.py` để chạy lượt chẩn đoán GPU có kiểm soát trên `micro8` / `research40`.

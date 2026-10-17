@@ -1,0 +1,129 @@
+Tôi đã cập nhật và đồng bộ hóa tuyệt đối giữa đặc tả toán học (proposal) và mã nguồn trong tệp `stage0_pcebr_v6_caor_wasserstein.py` trên Canvas (SHA256: `a03c8c28ba97a373a2a0824f1555496610da183b7b810e576f234274ceab6fab`).
+
+Dưới đây là phản hồi chốt từng điểm từ **Mục 1 đến Mục 8** gửi Yann LeCun để có thể đưa vào chạy thực nghiệm ngay trên hai server:
+
+### Bảng Tóm tắt Quyết định Chốt 8 Điểm Đối chiếu Tĩnh
+
+| Mục | Câu hỏi đối chiếu của Yann LeCun | Quyết định chốt trong `stage0_pcebr_v6_caor_wasserstein.py` (Spec = Code 100%) |
+| --- | --- | --- |
+| **1. `CAOR`: $\eta$ trong logits hay trộn đầu ra; khử sink theo query row; cửa sổ thời gian & `late_aud_damp**` | Chọn công thức đặt $\eta$ trong logits hay trộn sau softmax? Có giữ thành phần $\tilde{a}_{l,h}(r,j)$ theo hàng query không? Chốt `late_aud_damp` và cửa sổ quanh anchor. | **Chốt công thức Vi phân Đầu ra Chú ý cùng kiểu dữ liệu (Exact Same-Dtype Attention-Output Differential):**<br>
+
+<br>• Khử sink nội tại theo từng hàng query $r$ nằm **bên trong** logits phản thực tế: $\tilde{a}_{l,h}^{(m)}(r,j) = \big(\Lambda_{\text{nat}}^{(m)}(r,j) - \bar{\Lambda}_{\text{nat}}^{(m)}(r)\big) - 0,65\big(\Lambda_{\text{nat}}^{(m)}(r_0,j) - \bar{\Lambda}_{\text{nat}}^{(m)}(r_0)\big)$.<br>
+
+<br>• **Bỏ nhân trùng $\gamma_{\text{gate}}$**: Các thành phần $\beta_{\text{tok}}^{(m)}, \kappa_{\text{sink}}=0,60, \delta_{\text{aud}}=0,85(1-0,65\,\text{bhatt\_sync})$ không nhân $\gamma_{\text{gate}}$; cổng tin cậy chỉ nhân **1 lần duy nhất** tại $\eta_{\text{eff}} = 0,70\,\gamma_{\text{gate}}$.<br>
+
+<br>• Cập nhật bằng vi phân cùng độ chính xác FP32: $O_{\text{eff}}(r) = O_{\text{orig}}(r) + \eta_{\text{eff}}\big(P_{\text{cf}}(r) - P_{\text{nat}}(r)\big)V_g$, tương đương phân phối hiệu dụng $P_{\text{eff}} = (1-\eta_{\text{eff}})P_{\text{nat}} + \eta_{\text{eff}}P_{\text{cf}}$.<br>
+
+<br>• Kết hợp tường minh cả **cửa sổ dịch chuyển Gaussian quanh anchor** (`win_v`, `win_a`) lẫn độ nghiêng tuyến tính `t_tilde` ($0,65\,\text{tilt} + 0,35\,\text{win}$), và ghi rõ quy tắc giảm ưu thế audio $\delta_{\text{aud}}$ ở các tầng $l \ge 20$. |
+| **2. Chi phí inference và định nghĩa $r_0$** | Xác nhận inference chính gồm `native prepass + routed pass`, và kiểm tra token tại `last_media`. | **Xác nhận chính thức:**<br>
+
+<br>• Inference chính gồm **2 lượt chạy (1 native prepass lấy trạng thái tiền chú ý tại L18/L27 + 1 routed pass)**; việc lấy logits tại $r_0 = \text{last\_media}$ giúp **không tốn lượt chạy thứ 3 cho null-prompt** (như `j8_acar`). Nhánh `gamma_semantic_wrong_query` là lượt chạy chẩn đoán độc lập (offline diagnostic).<br>
+
+<br>• Hàm `audit_and_interpolate_grid_clocks` ghi rõ `last_media_index_r0`, `last_media_token_id`, `last_media_token_str` và `last_media_is_media_patch_token`; áp dụng mặt nạ nhân quả đầy đủ $j \le r_0$ lên `logits_r0`; đồng thời bổ sung nhánh đối chứng **`caor_no_desink`** ($\kappa_{\text{sink}}=0$) để kiểm định trực tiếp giả thuyết khử sink tại $r_0$. |
+| **3. $\Phi_{\text{EMD}}$: Adjacent-band hay Gaussian; CDF theo index hay thời gian vật lý** | Phản ví dụ của Yann: `p1=p2=[1,0]` trên `[0,1],[1,2]` và `[10,11],[11,12]` cho $W_+ = W_- = 0$ nếu tính theo index và bất biến với `coord_shuffle`. | **Chuyển toàn bộ sang Thời gian Vật lý (Common Physical Support) & Tách rời `sync_banded`:**<br>
+
+<br>• `sync_banded` dùng đúng mặt nạ dải kề ngoài đường chéo $0,45 \le \vert{}c_2(j)-c_1(i)\vert{}/\bar{w} \le 1,55$ (giao bằng rỗng với `sync_exact` $<0,45$).<br>
+
+<br>• Hợp và sắp xếp toàn bộ các mốc thời gian vật lý $t_0 < t_1 < \dots < t_{M-1}$ của `iv_1` và `iv_2` trên đoạn $[t_{\min}, t_{\max}]$ với độ dài chuẩn hóa $\Delta\tau_r = (t_{r+1}-t_r)/T_{\text{span}}$.<br>
+
+<br>• Tính tích phân $W_+ = \sum_r \Delta\tau_r \max(0, F_1(\tau_r)-F_2(\tau_r))$, $W_- = \sum_r \Delta\tau_r \max(0, F_2(\tau_r)-F_1(\tau_r))$ và mật độ vật lý Bhattacharyya $\sum_r \sqrt{m_1(r)m_2(r)} - 1$.<br>
+
+<br>• Đưa chính phản ví dụ của Yann vào `M0`: xác nhận $W_+ = \frac{10}{12} \approx 0,833333$, $W_- = 0,0$, nhạy với `coord_shuffle` ($\Delta W > 0,30$), và kiểm tra `matrix_rank == 6`. |
+| **4. Phạm vi hoán vị của `C8b` và hàm mất mát của nhánh Innovation** | `C8b` chỉ shuffle `x_rec` hay cả hai nhánh? Trọng số loss của `m_innov` là bao nhiêu? | **Chốt tách riêng 2 đối chứng `C8b` & `C8c` và đặt `within_rec_weight = 1.00` cho `m_innov`:**<br>
+
+<br>• `m_innov` được huấn luyện với `within_rec_weight = 1.00` (100% within-recording contrastive loss, 0% global loss, khớp hoàn toàn với mô tả).<br>
+
+<br>• **`C8b_innov_only_shuffled_c6_ctrl`**: Giữ nguyên `m_glob` không hoán vị của `C6` (`shuffle_glob=False`), chỉ hoán vị `x_rec` trong từng bản ghi (`shuffle_innov=True`, seed `seed+100`) để tách riêng đóng góp của nhánh đổi mới.<br>
+
+<br>• **`C8c_both_branches_shuffled_c6_ctrl`**: Hoán vị cả `x_ctx` và `x_rec` (`shuffle_glob=True, shuffle_innov=True`). |
+| **5. Thống nhất hàm tương đồng của `C6` xuyên suốt M1 và M2** | Trong bản trước, `score_matrix` và `encode_text @ encode_media.T` khác nhau do `score_innov` dùng text encoder riêng. | **Chốt một không gian tích vô hướng duy nhất cho `C6`:**<br>
+
+<br>• `BilevelGlobalInnovationAligner` dùng chung biểu diễn văn bản $\hat{z}_t = \text{global\_aligner.encode\_text}(y)$ và biểu diễn media hợp nhất $\hat{z}_m = \text{normalize}(z_{m,\text{glob}} + \beta_{\text{innov}} z_{m,\text{innov}})$, với `score_matrix(y, x) = encode_text(y) @ encode_media(x).T`.<br>
+
+<br>• Có `assert` kiểm tra trực tiếp trong `M1`: sai số giữa `score_matrix` và `encode_text @ encode_media.T` bằng `0.0` (`< 1e-6`), đảm bảo cùng một teacher `C6` xuyên suốt M1, M2 Natural/Reversal, huấn luyện Bridge và M2 Two-Hop Roll. |
+| **6. Siêu tham số và bộ lọc cặp huấn luyện Bridge** | Chốt `zca_shrink`, `beta_innov`, bộ lọc `classify_interval_relation >= 0` lúc train Bridge, và tên gọi bộ lọc trùng lặp. | **Chốt đồng nhất trong cả code và tài liệu:**<br>
+
+<br>• `zca_shrink = 0.22` tại mọi nơi.<br>
+
+<br>• `beta_innov = 0.20` tại mọi nơi.<br>
+
+<br>• Vòng lặp tạo cặp huấn luyện trong `train_two_hop_bridge_on_train_split` gọi trực tiếp `if classify_interval_relation(sa, ea, sb, eb) < 0: continue`.<br>
+
+<br>• Đặt tên rõ là `string_unique_nonnull_proxy` (không tuyên bố giải quyết paraphrase hay định danh thực thể độc lập). |
+| **7. Bổ sung đầy đủ các Controls, chuẩn hóa Norm và Kiểm tra No-Op Kernel** | Thêm `legacy_v5_vo_tangent`, khớp norm ở cấp độ token (bỏ sàn `.5`), tách đảo dấu order vs đảo toàn bộ profile, và kiểm tra `eta > 0` với nhiễu bằng 0. | **Đã bổ sung đầy đủ cả 4 kiểm tra:**<br>
+
+<br>• Thêm nhánh **`legacy_v5_vo_tangent`** chạy song song trong M3.<br>
+
+<br>• `mode='irrel'` và `mode='random'` bỏ sàn `.5`, chuẩn hóa trực tiếp vector `tok_bias_v` ($N_v$ phần tử) và `tok_bias_a` ($N_a$ phần tử) để có **cùng chuẩn $L_2$ ở cấp độ token** với `mode='full'` (và ghi nhận `kappa_sink=0, late_aud_damp=0`).<br>
+
+<br>• Chạy cả **`caor_order_sign_rev`** (đổi dấu `rel_scalar`) và **`caor_full_profile_rev`** (đảo ngược thứ tự $K$ slot).<br>
+
+<br>• Bổ sung kiểm tra bảo toàn xác suất non-media cục bộ trong `M0` (`err < 1e-14` ở FP64, `< 1e-6` ở FP32) và kiểm tra **`kernel_noop_zero_perturb_max_err`** trong `M3` (gọi `caor_kernel` với `eta_scale=0.70` nhưng perturbation bằng 0, đạt sai số `< 1e-5`). |
+| **8. Bộ chấm Free-Form TF và Mẫu số Chẩn đoán Hop-1/Hop-2** | Giữ cả 3 counterexamples cũ + thêm case sai reference ID `1821`; tách mẫu số Hop-1/Hop-2 trước và sau khi cân bằng lớp. | **Đã sửa và kiểm tra tự động trong `M0` & `M2`:**<br>
+
+<br>• Bộ chấm `TF` buộc các giới từ tương đối (`before/after/...`) phải gắn với mốc `"the speech / narration"` (hoặc chủ ngữ là `"the speech"` với đảo chiều quan hệ) và loại trừ chủ ngữ ngoại lai (`camera/angle`). Cả **5 phản ví dụ** (3 phản ví dụ archive v5 gồm cả câu `"After the speech, the camera changes angle."`, câu đảo chủ ngữ, và câu sai mốc tham chiếu ID `1821` `"The event happens right after the person finishes pouring the batter into the pan."`) đều bị bác bỏ (`False`) trong `M0`.<br>
+
+<br>• Hàm `summarize_hop_diagnostics` tính tách biệt trên tập episodes đã giữ lại sau khi cân bằng 4 lớp (`retained_post_balancing_hop_diagnostics`) và trên tập ứng viên trước cân bằng (`pre_balancing_candidate_pool_hop_diagnostics`). |
+
+### Chi tiết Công thức Toán học Đã Chốt (Khớp Từng Dòng Mã trong `stage0_pcebr_v6_caor_wasserstein.py`)
+
+#### 1. Công thức Chính xác của `CAOR` trong Module 3 (`build_caor_token_bias_profiles` & `caor_kernel`)
+
+Tại mỗi layer mục tiêu $l \in \{14, 16, 18, 20, 22, 24\}$, với mỗi head $h$ và mỗi hàng truy vấn $r \in \text{hook\_rows}$:
+
+1. **Logits nguyên bản và Logits tại mốc đóng khối media $r_0 = \text{last\_media}$ (có mặt nạ nhân quả $j \le r_0$)**:
+
+$$\Lambda_{l,h}^{\text{nat}}(r, j) = \frac{\langle q_{l,h}(r), k_{l,h}(j)\rangle}{\sqrt{d_h}} + M_{\text{causal}}(r, j), \qquad \Lambda_{l,h}^{\text{nat}}(r_0, j) = \frac{\langle q_{l,h}(r_0), k_{l,h}(j)\rangle}{\sqrt{d_h}} + M_{\text{causal}}(r_0, j)$$
+
+
+2. **Độ nổi bật nội tại theo từng hàng truy vấn đã khử sink (Query-Row Intrinsic De-Sunk Salience)**:
+Với mỗi phương thức $m \in \{v, a\}$ và vị trí token $j \in \mathcal{M}_m$:
+
+$$\tilde{a}_{l,h}^{(m)}(r, j) = \Big(\Lambda_{l,h}^{\text{nat}}(r, j) - \frac{1}{\vert{}\mathcal{M}_m\vert{}}\sum_{j' \in \mathcal{M}_m}\Lambda_{l,h}^{\text{nat}}(r, j')\Big) - 0,65\,\Big(\Lambda_{l,h}^{\text{nat}}(r_0, j) - \frac{1}{\vert{}\mathcal{M}_m\vert{}}\sum_{j' \in \mathcal{M}_m}\Lambda_{l,h}^{\text{nat}}(r_0, j')\Big)$$
+
+
+3. **Logits phản thực tế bảo toàn tổng log-mass của khối media**:
+
+$$\Lambda_{l,h}^{\text{cf},(m)}(r, j) = \Lambda_{l,h}^{\text{nat}}(r, j) + \kappa_{\text{sink}}\,\tilde{a}_{l,h}^{(m)}(r, j) + \beta_{\text{tok}}^{(m)}(j) - \mathbb{I}[m=a \wedge l \ge 20]\,\delta_{\text{aud}}$$
+
+
+
+trong đó $\kappa_{\text{sink}} = 0,60$, $\delta_{\text{aud}} = 0,85(1 - 0,65\,\text{bhatt\_sync})$, và $\beta_{\text{tok}}^{(m)}(j)$ là profil độ lệch cấp độ token đã trừ trung bình (gồm log-support $\log \hat{p}_{\text{ev}}^{(m)}$, tổ hợp $0,65\,\text{tilt} + 0,35\,\text{window}_{\text{anchor}}$, và $0,45\,\text{token\_innov}^{(m)}$).
+Đặt độ dịch chuẩn hóa chung cho cả khối media $\mathcal{M} = \mathcal{M}_v \cup \mathcal{M}_a$:
+
+$$\Delta_{\text{lse}}(r) = \log\sum_{j \in \mathcal{M}} e^{\Lambda_{l,h}^{\text{nat}}(r, j)} - \log\sum_{j \in \mathcal{M}} e^{\Lambda_{l,h}^{\text{cf}}(r, j)}$$
+
+
+
+và dịch cả hai khối $\mathcal{M}_v, \mathcal{M}_a$ đi $+\Delta_{\text{lse}}(r)$ trước khi lấy $P_{l,h}^{\text{cf}}(r, \cdot) = \text{softmax}(\Lambda_{l,h}^{\text{cf}}(r, \cdot))$.
+4. **Vi phân đầu ra chú ý cùng kiểu dữ liệu với một lần nhân cổng duy nhất $\eta_{\text{eff}} = 0,70\,\gamma_{\text{gate}}$**:
+
+$$\tilde{O}_{l,h}(r) = O_{l,h}^{\text{orig}}(r) + \eta_{\text{eff}}\sum_{j \in \mathcal{M}_v \cup \mathcal{M}_a}\big(P_{l,h}^{\text{cf}}(r, j) - P_{l,h}^{\text{nat}}(r, j)\big)\,v_{l,h}(j)$$
+
+
+
+Do cả $P_{l,h}^{\text{cf}}$ và $P_{l,h}^{\text{nat}}$ đều được tính bằng `torch.softmax(..., dtype=torch.float32)` trên cùng `logits_nat`, khi perturbation bằng $0$ ($\Lambda^{\text{cf}} = \Lambda^{\text{nat}}$) thì $P_{l,h}^{\text{cf}} - P_{l,h}^{\text{nat}} \equiv 0$, đảm bảo $\tilde{O}_{l,h}(r) \equiv O_{l,h}^{\text{orig}}(r)$ với **sai số bằng $0$ tuyệt đối** bất kể backend gốc của model là SDPA hay eager FP16.
+
+#### 2. Công thức Tích phân 1D-Wasserstein & Bhattacharyya trên Hỗ trợ Thời gian Vật lý Chung ($\Phi_{\text{EMD}}$)
+
+Cho hai tập khoảng thời gian vật lý $\text{iv}_1 \in \mathbb{R}^{K_1 \times 2}$ và $\text{iv}_2 \in \mathbb{R}^{K_2 \times 2}$ với tâm $c_{1,i}, c_{2,j}$ và bề rộng trung bình $\bar{w} = \frac{1}{2}(\bar{d}_1 + \bar{d}_2)$:
+
+* Gọi $t_0 < t_1 < \dots < t_{M-1}$ là dãy các mốc thời gian vật lý phân biệt được sắp tăng dần từ hợp của các đầu mút và tâm của $\text{iv}_1, \text{iv}_2$, với $T_{\text{span}} = \max(t_{M-1} - t_0, 10^{-4})$, trung điểm $\tau_r = \frac{1}{2}(t_r + t_{r+1})$ và trọng số độ dài vật lý $\Delta\tau_r = (t_{r+1} - t_r)/T_{\text{span}}$.
+* Với mỗi phân phối đã co $\hat{p}_m \in \Delta^{K_m-1}$ ($m \in \{1, 2\}$), khối lượng xác suất rơi vào đoạn vật lý sơ cấp $[t_r, t_{r+1}]$ và giá trị hàm phân phối tích lũy vật lý tại $\tau_r$ là:
+
+$$m_m(r) = \sum_{k=1}^{K_m} \hat{p}_m[k]\,\frac{\max(0, \min(e_{m,k}, t_{r+1}) - \max(s_{m,k}, t_r))}{\max(e_{m,k} - s_{m,k}, 10^{-6})}, \qquad F_m(\tau_r) = \sum_{k=1}^{K_m} \hat{p}_m[k]\,\text{clamp}\!\left(\frac{\tau_r - s_{m,k}}{\max(e_{m,k} - s_{m,k}, 10^{-6})}, 0, 1\right)$$
+
+
+* Khi đó vector $\Phi_{\text{EMD}} = g_{\text{joint}}\,[\text{sync\_exact}, \text{sync\_banded}, \text{bhatt\_phys}, W_+, W_-, \text{ord\_margin}]^\top$ được xác định hoàn toàn trên trục thời gian vật lý:
+
+$$\text{sync\_exact} = \sum_{i,j} (w_{ij} - u_{ij})\,\mathbb{I}\!\left[\frac{\vert{}c_{2,j}-c_{1,i}\vert{}}{\bar{w}} < 0,45\right], \qquad \text{sync\_banded} = \sum_{i,j} (w_{ij} - u_{ij})\,\mathbb{I}\!\left[0,45 \le \frac{\vert{}c_{2,j}-c_{1,i}\vert{}}{\bar{w}} \le 1,55\right]$$
+
+
+$$\text{bhatt\_phys} = \sum_{r=0}^{M-2} \sqrt{m_1(r)\,m_2(r)} - 1, \qquad W_+ = \sum_{r=0}^{M-2} \Delta\tau_r \max\!\big(0, F_1(\tau_r) - F_2(\tau_r)\big), \qquad W_- = \sum_{r=0}^{M-2} \Delta\tau_r \max\!\big(0, F_2(\tau_r) - F_1(\tau_r)\big)$$
+
+
+$$\text{ord\_margin} = \sum_{i,j} \hat{p}_1[i]\,\hat{p}_2[j]\,\tanh\!\left(\frac{c_{2,j} - c_{1,i}}{1,25\,\bar{w}}\right)$$
+
+
+
+Toàn bộ mã nguồn đã sẵn sàng trong `stage0_pcebr_v6_caor_wasserstein.py` để Yann LeCun tiến hành chạy kiểm chứng `M0`, `M1`, `M2`, `M3` trên hai runtime.

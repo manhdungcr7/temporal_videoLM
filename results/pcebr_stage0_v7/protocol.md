@@ -1,0 +1,25 @@
+# Stage-0 v7 JEP-CLC — execution protocol, 2026-10-16
+
+Run the final supplied source unchanged. Attachment db19607a-d248-4f1e-9c14-805b2eebca78 is preserved byte-for-byte as stage0_pcebr_v7_final_original.py. LF-normalized SHA256 d27eb87a7014e941bd7a7a920dbe3ce074338cf616757608cc476712d7c8ee80.
+
+Two freshly supplied 2xT4 runtimes run M0/M1/M2 on identical cached data as replicas, not independent datasets. M1: 252 pseudo-description/media pairs, 202 train from 16 recording origins, 50 held-out from four origins already examined in earlier rounds. Three fixed M1 seeds and all original budgets retained. Source M2 returns a probe and six-scalar bridge; those original models are passed into M3 as specified. No parameter selection by QA outcomes.
+
+M3 uses fixed rotation0 micro8: shard1 IDs1449/2150/1929/2054; shard2 IDs1956/1513/2264/1821. Runtime server numbers use the user's latest endpoints, without changing logical shard membership. The manifest already filters both video/audio duration <=45s. FullQA40, A0-A7 and reserve400 are outside this Stage-0 run.
+
+Observation wrapper saves model checkpoints, score matrices, M2 episodes/probe logits, per-sample probabilities and intermediate latent/profile tensors. It removes only automatic RESULT execution, instruments observations, and invokes the original functions in the original order. Additional validation/controls, if run, are labeled separately. Original legacyv5 source is replayed on the same runtime/input to verify the reimplementation; historical bytewise parity is not assumed.
+
+Known interpretation limits: pseudo captions and foil proxies are not independent event/absence ground truth; four held-out origins and eight micro samples do not establish generalization. Source gate audit is confounded with excess-cap changes and is not a clean 2x2 factorial. Foil-Suppressed changes kappa_sink as well as bias, so its hidden contrast is not an isolated event effect. These limits do not require altering mainrun formulas. Freeform heuristic scores are reported alongside actual text.
+
+Credentials remain only in ignored remote configs. No backbone training, benchmark-label tuning, sample replacement or new test split.
+
+Observed execution deviation: the unchanged original source fails M0 line827 on both runtimes. Its assertion expects centered lag-std feature>0.3, but actual value0.0 equals std_J0.4−std_uniform0.4. Separate diagnostic observes every assertion without raising; it does not mark M0 passed. Original M1/M2/M3 phase functions then run through a continuation with this failure retained in results. No feature/loss/seed/step threshold is changed.
+
+Additional post-mainrun controls are fixed before observing M3 outcomes: three random CLC directions (seeds101/202/303) under the original full attention profile and original strength; foil contrast with kappa_sink matched to support; and CLC prepasses recomputed without MC options. They are labeled exploratory, not proposer mainrun results. Original random/irrelevant attention-only controls are also replayed to record accuracy as the original source emits only their TV.
+
+CPU-only algebra checks and primary-source bibliography checks run while remote training proceeds. Their outputs are separate from QA evaluation. Actual-input coupling audits later check prescribed marginals and the analytic P_null=1−a² consequence of the dual-calibrated augmented construction.
+
+Source control interpretation: CAOR-only vs full isolates the extra CLC stage. Other original no-desink/rel-only/order-only/slot-reversal/random/irrelevant branches do not include CLC, so they are not single-factor ablations of the entire full method. Mid order-swap TV includes CLC whereas late swap TV is attention-only. Bias L2 matching does not guarantee equal attention-output correction norm. Layer numbers in source are zero-based block indices; the CLC loop intersects (12,14,16,18,20) with target mid blocks, so actual mainrun CLC injections occur only at indices14/16/18/20.
+
+Cache metadata audit: held-out banks have sizes8/3/5/9 per modality. M2 requires each target bank>=4 slots, so p-gN4cbmunQ (three slots each) cannot contribute a target bank; eligible target contexts are only three recordings. It can remain in the foil-query pool. Saying50 held-out pairs/four origins describes M1/cache provenance, not four independent target contexts in M2.
+
+Completion: M1/M2 continuation and M3 finished on both servers, followed by the separately labeled controls. Both raw archives were downloaded locally and SHA-verified, including every archived entry. Per server:215 PT artifacts,3000 retrieval query rows,32 M2 probe outputs. Native replay, zero-scale/no-op and same-runtime legacy-v5 parity errors are0; hooks were removed and both CUDA devices passed health checks. Deep tensor audit found audio salience and joint_gate0 on all8 micro samples, all14D Psi0, and low-mass J_cond normalization failure (sum≈.01). These findings are recorded without changing the evaluated source. Report and detailed feedback are complete; no fullQA40/reserve400 job was launched.

@@ -1,0 +1,8 @@
+--- stage0_pcebr_v7_final_original.py (unchanged experiment source)
++++ suggested assertion correction only (not used for mainrun)
+@@
+-    assert bimod_l1_w > 0.15 and bimod_std > 0.30 and psi_l1_diff > 0.40
++    # Feature13 is excess std relative to uniform, not raw std.
++    # The bimodal toy has std_J=std_U=.4, so its excess std is zero;
++    # the synchronous toy has excess std approximately-.4.
++    assert bimod_l1_w > 0.15 and abs(bimod_std - float(psi_sync[13].item())) > 0.30 and psi_l1_diff > 0.40

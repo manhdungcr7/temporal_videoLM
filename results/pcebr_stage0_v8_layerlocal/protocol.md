@@ -1,0 +1,13 @@
+# Layer-local contrast diagnostic, 2026-10-17
+
+Locked before this round's QA outputs. Starting evidence: frozen40 rotation0 native23, CAOR20, shared-L22 CLC19, full-direct16. The earlier v5 per-layer VO repair stayed5/8; it did not test layer-local counterfactual decoder-state differences. This round changes the CLC source, not event extraction or Sinkhorn.
+
+Hypothesis: reusing a post-L22 contrast at L14/16/18/20/22 contributes to harmful steering. Capture the option-free Support, Foil and Order-Reversed post-block last-token states at each of these five layers, using exactly the corrected v8 profiles. Form normalized differences e_l and o_l. Compare normalize(.45 e_l+.35 o_l) at each layer with the same formula using e_22/o_22 at every layer. Also test e_l alone, the negation of the primary local direction, and three random unit directions per layer (seeds idx+101/202/303). Original shared-L22 mixed CLC including .20 vec_fwd is replayed separately.
+
+Final decode has no CAOR or CT. Same tangent update, five layers, all tail rows, coefficient .042*gamma. No coefficient search, sample selection, task/gold routing, new event lexicon, training, or reserve400. Fixed40 (38 origins), all eight buckets5; report outside previous micro8 separately. These are development data, not held-out confirmation.
+
+Capture failures/near-zero contrasts are explicit errors, not silent random or v5 fallbacks. Save all directions, raw difference norms, within/cross-layer cosine, per-condition probabilities, exact source/input hashes. Assert old native and shared mixed replay against prior40 with max probability error <=1e-6. Verify effective direction unit norms, no-op, model parameter versions and native input token hashes. Random matched by tangent update norm; raw contrast norms are diagnostic, not confidence or semantic evidence.
+
+Falsification: if local primary does not beat native and shared22-native, reject this change as a sufficient remedy on this protocol. If it beats native but comparable random/negated controls do likewise, do not attribute improvement to temporal semantics. Even positive40 cannot demonstrate generalization, novelty, or CVPR acceptance.
+
+Research: Belrose et al., [Tuned Lens](https://arxiv.org/html/2303.08112v4), Sections2–3, documents representation drift and raw logit-lens bias in other LMs; this motivates a question, not a diagnosis of Qwen. Rimsky et al., [CAA](https://aclanthology.org/2024.acl-long.828/), uses positive/negative residual contrasts for steering; generic activation contrast is established prior work. No novelty claimed for this diagnostic.

@@ -1,0 +1,7 @@
+# Readout-only contrast diagnostic, 2026-10-17
+
+Locked before this round's outputs. Hypothesis: injecting one contrast into user question and option token representations contributes to v8's harm. Restrict final CLC decode to the last assistant token, retaining coefficient .042*gamma and layers14/16/18/20/22. Compare saved original mixed shared22 direction, shared22-native contrast, layer-local native contrast, layer-local evidence-only, negated layer-local, and the same three saved random direction sets. All option-free construction passes and inputs remain identical to the preceding layer-local round.
+
+This also reduces the total number of perturbed positions, so changes cannot uniquely establish semantic pollution of option tokens as the cause. Random and sign controls match this reduced intervention scope. No coefficients selected by QA gold; all40 fixed rotation0; no reserve400. Captured layer-local vectors are not recomputed or selected by answer outcomes. Replay native and old full-tail CLC on each sample to catch altered inputs/sources.
+
+The positive/negative CAA literature intervenes after the user prompt; this motivates checking the implementation scope. It does not establish that this variant improves temporal QA or is novel. Reject as a sufficient remedy if it fails to improve native23/40 with directional specificity. Record all failures and scope limits, including reused development set, absent interval gold, and no new option rotations.

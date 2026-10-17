@@ -1,0 +1,192 @@
+# Stage-0 v8 (CLRV — Revised Preflight Locked): 100% Training-Free Four-Regime Counterfactual Latent Rollout, Zero-Floored Presence Gate & Doubly-Centered Sinkhorn Verification
+
+**Gửi:** Yann LeCun
+
+**Từ:** Yoshua Bengio
+
+**Ngày:** 2026-10-17
+
+**Files đính kèm (khớp 100% từng byte):**
+
+* `stage0_pcebr_v8_clrv_latent_reasoning.py` (và bản đồng bộ `stage0_pcebr_v7_joint_sinkhorn_clc.py`)
+
+* **SHA-256 (khớp chính xác cả bản đầy đủ và sau khi chuẩn hóa/cắt LF cuối file):** `47a69542388aaec66b909deea09dd3bc945bc92c8c6f0343d3111a6bc6aaf8d6`
+
+## 1. Tóm tắt điều hành & Phản hồi trực tiếp 5 điểm phản biện trong `review_20261017.md`
+
+Cảm ơn anh đã kiểm tra kỹ source `v8` (`04304aade3bc…f1696c84`) và chỉ ra 5 điểm mà tuyên bố của proposal trước đó chưa khớp hoàn toàn với code hoặc cần siết chặt về mặt toán học và thực nghiệm. Chúng tôi hoàn toàn đồng ý với cả 5 nhận xét của anh và đã sửa trực tiếp trong code `stage0_pcebr_v8_clrv_latent_reasoning.py` (kèm kiểm tra tự động `assert` trong `M0`) cũng như đồng bộ 100% với bản proposal này:
+
+1. **Hỗ trợ thực chất cả 4 chế độ cặp phương thức (`A->V`, `V->A`, `A->A`, `V->V`) và Phân hoạch Rời nhau Không Phụ thuộc Từ nối (dòng `1013–1114`, `1356–1447`, `1515–1530`):**
+
+   * Thay vì luôn tính `pair_omega` trên $Z_A \times Z_V$ như bản trước (dòng `1411–1413` cũ) hoặc gán trùng một tập token cho cả hai đầu mút khi câu hỏi không có từ nối trong danh sách, code mới:
+
+     * Thực hiện **Phân hoạch 2 Đầu mút Rời nhau (`disjoint_endpoint_roles == True`)** ngay cả khi câu hỏi không chứa bất kỳ từ nối tiếng Anh nào trong danh sách (`split_query_into_endpoint_roles`, dòng `1068–1091`).
+
+     * Tính **trọng số phương thức liên tục** $(\rho_{1,A}, \rho_{1,V})$ và $(\rho_{2,A}, \rho_{2,V})$ cho từng đầu mút $e \in \{1, 2\}$ từ cả dấu hiệu từ vựng lẫn độ tương hợp trên đa tạp từ vựng $\mathcal{M}_{\text{emb}}$ (`extract_query_conditioned_salient_slots`, dòng `1356–1385`), từ đó dựng **ngân hàng đặc trưng theo đầu mút** $(Z_{\text{ep1}}, Z_{\text{ep2}})$, $(B_{18,\text{ep1}}, B_{18,\text{ep2}})$, logit $( \ell_{\text{ep1}}, \ell_{\text{ep2}} )$ và ma trận tương thích cặp $\Omega_{\text{M3}} \in \mathbb{R}^{K \times K}$ giữa **Đầu mút 1 và Đầu mút 2** cho cả 4 chế độ `A->V`, `V->A`, `A->A`, `V->V` (được kiểm chứng tự động ở Mục 9 của `M0`, dòng `2978–2991`).
+
+2. **Bỏ hoàn toàn mức sàn `0.65` ở Cổng Hiện diện (`excess_gate` có sàn thực sự bằng `0.0`, dòng `1493–1515`):**
+
+   * Đã xóa bỏ hoàn toàn lệnh `excess_gate = max(0.65, ...)` ở nhánh câu hỏi quy chiếu (`deictic`).
+
+   * Ở nhánh quy chiếu thuần túy ($\mathcal{T}_{\text{spec}} = \emptyset$), ma trận đồng thuận khái niệm 2 đầu mút được điều biến bởi cổng biến thiên tiền cảnh nội tại `fg_mod_gate` (dòng `1495–1499`). Khi luồng media phẳng hoặc không có sự kiện nổi bật, `excess_gate` trả về đúng **`0.0`** (`deictic_flat_absent_stream_gate_zero_floor == 0.0` trong `M0`), trong khi câu hỏi quy chiếu có sự kiện thật đạt **`1.0`**, câu hỏi cụ thể có sự kiện thật đạt **`1.0`**, và 4 câu hỏi sự kiện vắng mặt đạt trung bình **`0.0384`** (`[0.0, 0.0, 0.1534, 0.0]`).
+
+3. **Khử Trung bình Kép (Double-Centering) trên `pair_omega` & Định danh chuẩn xác Điểm Null Heuristic** $P_{\text{null}}$ **(dòng `275–281`, `532–542`, `1530`):**
+
+   * Áp dụng phép chiếu khử trung bình hàng và cột (`double_center_interaction_matrix`, dòng `532–536`):
+     
+
+     $$
+     \Omega_{\text{int}}(i, j) = \Omega_{ij} - \bar{\Omega}_{i\cdot} - \bar{\Omega}_{\cdot j} + \bar{\Omega}_{\cdot\cdot}
+     $$
+
+     
+     trước khi tính kỳ vọng tương thích cặp $\hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2$ và khớp nối Sinkhorn.
+
+   * Nhờ $\sum_i \Omega_{\text{int}}(i, j) = 0$ và $\sum_j \Omega_{\text{int}}(i, j) = 0$, mọi thành phần cộng đơn lẻ chỉ phụ thuộc một đầu mút $\Omega_{ij} = a_i + b_j$ đều bị triệt tiêu hoàn toàn ($\Omega_{\text{int}} \equiv 0 \implies \hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2 = 0$ với mọi phân phối $\hat{p}_1, \hat{p}_2$ không đều!). `M0` kiểm chứng trực tiếp bất biến này (`pure_row_col_additive_expected_compat_abs = 2.2e-8 < 1e-6`, `row_col_additive_shift_jcond_max_err = 3.1e-8 < 1e-6`, `row_col_additive_shift_pnull_max_err = 2.38e-7 < 1e-6`).
+
+   * Đồng thời, chúng tôi ghi nhận rõ trong tài liệu và báo cáo: $P_{\text{null}}$ là **điểm null/xung đột heuristic (heuristic null/conflict score)**, không tuyên bố là xác suất vắng mặt đã hiệu chuẩn (calibrated probability).
+
+4. **Mô tả trung thực Đồng hồ Lưới Nội suy (Interpolated Grid Clock) & Bảo toàn tuyệt đối Bố trí 3 Trục TMRoPE trên Câu hỏi Không Lựa chọn (dòng `821–884`, `1829–1851`):**
+
+   * Ghi nhận rõ thời gian của slot hình ảnh dùng **nội suy lưới đều (`uniform grid interpolation`)** từ các chỉ số lưới thời gian của bộ xử lý (`is_uniform_grid_interpolation_not_frame_pts_oracle == True`), nên các độ trễ (`lag`) được tính trên đồng hồ lưới nội suy chứ không phải timestamp frame vật lý chuẩn.
+
+   * Trong `freeform_kw` (dòng `1829–1851`), thay vì dựng lại `position_ids` bằng chuỗi tăng đều, code **giữ nguyên 100% `position_ids` 3 trục gốc của Qwen2.5-Omni TMRoPE** ([Qwen2.5-Omni Technical Report](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2503.20215)) trên toàn bộ prefix media `0 .. last_m` **và toàn bộ câu hỏi `stem_rows`**, chỉ dịch phần `assistant_rows` ở cuối đúng bằng độ rộng khoảng trống `opt_pos_gap` của khối phương án `(A)..(D)` đã cắt bỏ trên cả 3 trục M-RoPE (`tmrope_stem_pos_max_diff == 0`).
+
+5. **Bổ sung 3 Đối chứng Kiểm định Cầu nối Suy luận (`Rollout-Bridge Verification Controls`, dòng `2417–2505`, `2600–2609`):**
+
+   * Để kiểm tra xem cầu nối rollout sử dụng nội dung quan hệ thực sự hay chỉ khai thác cấu trúc bài test ([Raman et al., PMLR 2026](https://www.google.com/search?q=https%3A%2F%2Fproceedings.mlr.press%2Fv306%2Framan26a.html)), code `M3` bổ sung và xuất đầy đủ 3 phép đối chứng cho `p_bridge` trên từng mẫu:
+
+     * `mc_pred_bridge_order_rev_ctrl` (`tv_bridge_order_swap`): chạy cầu nối trên chuỗi rollout sinh từ cấu hình **đảo dấu thứ tự thời gian** (`prof_ord_sign_rev`, `clc_dir_rev`).
+
+     * `mc_pred_bridge_opt_perm_unpermuted_ctrl` (`tv_bridge_option_perm`): **hoán vị vòng quanh thứ tự các đáp án** `(A, B, C) -> (B, C, A)` trong prompt cầu nối rồi ánh xạ ngược xác suất về nhãn gốc.
+
+     * `mc_pred_bridge_trace_only_no_media_ctrl` (`tv_bridge_media_vs_trace_only`): chấm cầu nối **chỉ với phần văn bản (câu hỏi + chuỗi phân tích + lựa chọn), bỏ hoàn toàn media prefix** (`include_media_prefix=False`).
+
+## 2. Chi tiết Toán học & Đối chiếu Dòng Code của 5 Cập nhật trong `v8`
+
+### 2.1. Phân hoạch 2 Đầu mút Không Phụ thuộc Từ nối & Định tuyến 4 Chế độ (`A->V`, `V->A`, `A->A`, `V->V`)
+
+1. **Phân hoạch câu hỏi (`split_query_into_endpoint_roles`, dòng `1013–1114`):**
+
+   * Các token trong `stem_rows` được chia thành `specific_rows` ($\mathcal{T}_{\text{spec}}$), `deictic_rows` ($\mathcal{T}_{\text{deic}}$), và `scaffold_rows` ($\mathcal{T}_{\text{scaf}}$).
+
+   * **Trường hợp 1 (`connector_found == True`, dòng `1047–1067`):** Nếu câu hỏi có từ nối quan hệ/thời gian (`relative, compared, before, after, while, during, until, followed, precedes, prior, simultaneously, alongside, between, then, when, and, versus, vs`), hoặc có mệnh đề phụ mở đầu bằng `when/while/before/after/during` chuyển sang mệnh đề nghi vấn chính (`what, which, who, where, how, does, did`), hoặc có dấu tách mệnh đề `,` / `;`, câu hỏi được tách tại vị trí đó thành hai mệnh đề $\mathcal{R}_1, \mathcal{R}_2$.
+
+   * **Trường hợp 2 (`connector_found == False`, dòng `1068–1091` — Phân hoạch Rời nhau Không Cần Từ nối):**
+
+     * Nếu câu hỏi có $\ge 2$ từ cụ thể ($\vert{}\mathcal{T}_{\text{spec}}\vert{} \ge 2$) và có trạng thái ẩn tham chiếu `h_ref_t` (tầng 22), code tìm điểm cắt hai nửa trên $\mathcal{T}_{\text{spec}}$ cực tiểu hóa cosine trung bình giữa hai cụm (hoặc chia đôi tại điểm giữa `mid_sp` nếu không truyền `h_ref_t`), đảm bảo:
+       
+
+       $$
+       \mathcal{R}_1 \cap \mathcal{R}_2 = \emptyset, \qquad \text{disjoint\_endpoint\_roles} = \text{True}
+       $$
+
+       
+       Tuyệt đối không còn trường hợp gán cùng một tập token cho cả hai đầu mút khi thiếu từ nối!
+
+2. **Trọng số phương thức liên tục và Ngân hàng theo Đầu mút (`extract_query_conditioned_salient_slots`, dòng `1356–1447`):**
+
+   * Với mỗi đầu mút $e \in \{1, 2\}$, gọi $z_{\text{probe}, e} = \mathrm{Normalize}(0.60\,\bar{e}_{\text{spec}, e} + 0.40\,z_{Q, e})$ (hoặc $z_{Q, e}$ nếu vế $e$ không có từ cụ thể). Độ lệch ưu thế âm thanh so với hình ảnh của đầu mút $e$ được tính từ cả số từ gợi ý phương thức ($\text{cue}_e = \vert{}\mathcal{W}_e \cap \mathcal{C}_A\vert{} - \vert{}\mathcal{W}_e \cap \mathcal{C}_V\vert{}$) và độ tương hợp cực đại trên đa tạp từ vựng tầng 22:
+     
+
+     $$
+     d_{m, e} = 1.40\,\text{cue}_e + 3.50\left(\max_k \langle Z_A(k), z_{\text{probe}, e}\rangle - \max_k \langle Z_V(k), z_{\text{probe}, e}\rangle\right)
+     $$
+
+     $$
+     \rho_{e, A} = \sigma(2.2\,d_{m, e}) \in (0, 1), \qquad \rho_{e, V} = 1 - \rho_{e, A}
+     $$
+
+   * Chế độ cặp phương thức được xác định tự động:
+     
+
+     $$
+     \text{detected\_pair\_regime} = \text{mod}(1) \to \text{mod}(2) \in \{\texttt{A->V},\; \texttt{V->A},\; \texttt{A->A},\; \texttt{V->V}\}
+     $$
+
+     
+     với $\text{mod}(e) = \texttt{A}$ nếu $\rho_{e, A} \ge 0.5$ và $\texttt{V}$ nếu ngược lại.
+
+   * Ngân hàng đa tạp và ngân hàng VO tầng 18 của từng đầu mút $e \in \{1, 2\}$ được tạo bởi:
+     
+
+     $$
+     Z_{\text{ep}, e}(k) = \mathrm{Normalize}\!\left(\rho_{e, A} Z_A(k) + \rho_{e, V} Z_V(k)\right), \qquad B_{18, \text{ep}, e}(k) = \mathrm{Normalize}\!\left(\rho_{e, A} A_{18}(k) + \rho_{e, V} V_{18}(k)\right)
+     $$
+
+   * Khi rơi vào chế độ cùng phương thức (`A->A` hoặc `V->V`, dòng `1432–1441`), Đầu mút 1 và Đầu mút 2 được chấm điểm riêng biệt bằng vector truy vấn mệnh đề của chính nó ($z_{\text{probe}, 1}$ và $z_{\text{probe}, 2}$) trên ngân hàng tương ứng, kết hợp khử đường chéo tự khớp ($\Omega_{\text{raw}} - 0.65\,I_K$, dòng `1521–1525`) để tách hai sự kiện khác nhau trong cùng một phương thức.
+
+### 2.2. Cổng Hiện diện Có Sàn Bằng `0.0` Tuyệt Đối (Dòng `1448–1515`)
+
+* Trong `extract_query_conditioned_salient_slots` (dòng `1493–1515`), nhánh câu hỏi quy chiếu (`else:`) tính độ biến thiên tiền cảnh chuẩn hóa trên chuỗi media tầng 22:
+  
+
+  $$
+  \text{rel\_dev}_V = \frac{\max_t \Vert{}v_{22}(t) - \bar{v}_{22}\Vert{}_2 - \mathrm{mean}_t \Vert{}v_{22}(t) - \bar{v}_{22}\Vert{}_2}{\Vert{}\bar{v}_{22}\Vert{}_2}, \qquad \text{rel\_dev}_A = \frac{\max_t \Vert{}a_{22}(t) - \bar{a}_{22}\Vert{}_2 - \mathrm{mean}_t \Vert{}a_{22}(t) - \bar{a}_{22}\Vert{}_2}{\Vert{}\bar{a}_{22}\Vert{}_2}
+  $$
+
+  $$
+  \text{fg\_mod\_gate} = \tanh\!\left(\frac{\max(0, \text{rel\_dev}_V - 0.065)}{0.05}\right) \cdot \tanh\!\left(\frac{\max(0, \text{rel\_dev}_A - 0.065)}{0.05}\right) \in [0, 1)
+  $$
+
+* Ma trận quy chiếu 2 cột $M_{\text{deic}}(k, \cdot) = \text{fg\_mod\_gate} \cdot [\langle Z_{\text{ep1}}(k), z_{\text{ep1,anc}}\rangle,\; \langle Z_{\text{ep2}}(k), z_{\text{ep1,anc}}\rangle]$ được đưa qua đúng hàm chung `compute_unified_gate_from_token_matrix` và gán trực tiếp:
+  
+
+  $$
+  \texttt{excess\_gate = gate\_factorial['role\_content\_conjunctive\_v8']} \in [0.0, 1.0]
+  $$
+
+  
+  **Không có bất kỳ hàm `max(0.65, ...)` nào.** Khi luồng media phẳng hoặc không có sự kiện nổi bật, `fg_mod_gate = 0.0` và `excess_gate = 0.0` tuyệt đối.
+
+### 2.3. Khử Trung bình Kép (Double-Centering) trên `pair_omega` (Dòng `275–281`, `532–542`, `1530`)
+
+* Mọi ma trận tương thích cặp $\Omega \in \mathbb{R}^{K_1 \times K_2}$ đều đi qua toán tử chiếu trực giao vào không gian con tương tác thuần túy (`double_center_interaction_matrix`, dòng `532–536`):
+  
+
+  $$
+  \Omega_{\text{int}}(i, j) = \Omega_{ij} - \frac{1}{K_2}\sum_{j'=1}^{K_2} \Omega_{ij'} - \frac{1}{K_1}\sum_{i'=1}^{K_1} \Omega_{i'j} + \frac{1}{K_1 K_2}\sum_{i'=1}^{K_1}\sum_{j'=1}^{K_2} \Omega_{i'j'}
+  $$
+
+* **Định lý Bất biến với Thành phần Cộng theo Hàng/Cột:** Với mọi vector hiệu ứng đơn lẻ $a \in \mathbb{R}^{K_1}, b \in \mathbb{R}^{K_2}$, nếu $\tilde{\Omega}_{ij} = \Omega_{ij} + a_i + b_j$, thì:
+  
+
+  $$
+  \tilde{\Omega}_{\text{int}}(i, j) = \Omega_{\text{int}}(i, j) \quad \forall i, j
+  $$
+
+  
+  Do đó, kỳ vọng tương thích cặp $\hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2$, thế năng hiệu dụng $z_{\text{eff}} = z_{\text{dust}} - 3.50\,\text{jg}\cdot (\hat{p}_1^\top \Omega_{\text{int}} \hat{p}_2)$, phân phối khớp nối có điều kiện $J_{\text{cond}}$, và điểm null heuristic $P_{\text{null}}$ **hoàn toàn bất biến** trước độ nổi bật cộng tính của từng sự kiện đơn lẻ, chỉ phản ánh tương tác chéo thực sự giữa hai đầu mút!
+
+### 2.4. Kết quả Kiểm chứng Đơn vị Tự động (`M0` — Chạy Thực tế trên Code `v8` Đính kèm)
+
+Khi thực thi `stage0_pcebr_v8_clrv_latent_reasoning.py`, toàn bộ 9 nhóm kiểm tra đại số và đối chứng trong `run_algebraic_unit_checks` đều vượt qua 100% (`elapsed_sec: 1.05s`):
+
+| **Hạng mục Kiểm tra trong M0** | **Chỉ số Kiểm định** | **Giá trị Thực tế** | **Ngưỡng Yêu cầu** | 
+| **1. Bất biến Dịch Hàng/Cột Đơn lẻ trên** $\Omega$ | `pure_row_col_additive_expected_compat_abs` | **`2.2e-8`** | `< 1e-6` | 
+| **2. Bất biến** $J_{\text{cond}}, P_{\text{null}}$ **khi** $\Omega \mapsto \Omega + a_i + b_j$ | `row_col_additive_shift_jcond_max_err` / `pnull_max_err` | **`3.1e-8` / `2.38e-7`** | `< 1e-6` | 
+| **3. Độ nhạy Tương tác Chéo của Điểm Null Heuristic** $P_{\text{null}}$ | `pnull_compat` $\to$ `pnull_zero` $\to$ `pnull_incompat` | **`0.5207`** $\to$ **`0.6125`** $\to$ **`0.7007`** | Đơn điệu chặt, $\Delta = 0.1801 > 0.08$ | 
+| **4. Chuẩn hóa Log-Space ở `joint_gate = 0` & `1e-9`** | `zero_gate_jcond_row_err` / `tiny_gate_1e9_jcond_row_err` | **`3.0e-8` / `3.0e-8`** | `< 1e-6` | 
+| **5. Cổng Hiện diện Không Sàn (`0.0` Floor)** | `deictic_flat_absent_stream_gate_zero_floor` | **`0.0000`** | `== 0.0` (Không có sàn `0.65`) | 
+| **6. Tách Biệt Cổng Câu hỏi Thật vs. Vắng mặt** | `deictic_ta_true` / `specific_tf_true` vs. `absent_wrong_mean` | **`1.0000` / `1.0000` vs. `0.0384`** | `>= 0.85` vs. `<= 0.10` | 
+| **7. Bao phủ Cả 4 Chế độ Cặp Phương thức** | `four_modality_regimes_detected` | **`['A->V', 'V->A', 'A->A', 'V->V']`** | Đủ 4 chế độ | 
+| **8. Phân hoạch Câu hỏi Không Từ nối** | `connector_free_disjoint_endpoint_roles` | **`True`** | `True` ($\mathcal{R}_1 \cap \mathcal{R}_2 = \emptyset$) | 
+| **9. Phân biệt Đồng bộ vs. Hai Đỉnh Đối xứng (**$\Psi_{14\text{D}}$**)** | `raw_lag_std_bimodal` / `bimod_minus_sync_excess_std_diff` | **`0.4000` / `+0.4000`** | `> 0.30` | 
+
+## 3. Giao thức Chẩn đoán Có Kiểm soát trên GPU (`M3`)
+
+Như anh đã nêu rất chuẩn xác trong phần kết luận của bản review:
+
+* Các kiểm tra `M0` ở trên chứng minh tính đúng đắn đại số, tính bất biến dưới phép dịch hàng/cột, tính đối xứng đảo thời gian, và cơ chế tách cổng không có mức sàn `0.65` trên các bài kiểm tra đơn vị có kiểm soát.
+
+* Việc đánh giá hiệu năng QA thực tế, hiệu quả của cầu nối rollout (`mc_pred_routed_fwd` so với `mc_pred_routed_direct` và `mc_pred_caor_attn_only`), cũng như kiểm tra xem cầu nối có phụ thuộc vào nội dung quan hệ thật hay không cần được chạy trực tiếp trên GPU thông qua `run_stage0_m3_bivector_vo_tangent_routing()` với đầy đủ các trường chẩn đoán đã khóa trong code:
+
+  1. `tmrope_stem_position_max_diff` (kiểm chứng `== 0` trên mọi mẫu thật).
+
+  2. `prefix_cache_routed_parity_max_err` (kiểm chứng sai số KV-cache prefix `<= 0.02`).
+
+  3. `endpoint_role_split_audit` (ghi nhận `detected_pair_regime`, `connector_found`, `disjoint_endpoint_roles`, `endpoint_modality_weights_A`).
+
+  4. `gate_2x2_factorial_true_query` đối chiếu với `gate_2x2_factorial_semantic_wrong_query` (với `gate_has_zero_floor: True`).
+
+  5. `rollout_bridge_controls_audit` (`mc_pred_bridge_order_rev_ctrl`, `mc_pred_bridge_opt_perm_unpermuted_ctrl`, `mc_pred_bridge_trace_only_no_media_ctrl` và các khoảng cách TV tương ứng).
